@@ -1,0 +1,19 @@
+# 🚀 WinFlexMenu
+
+**WinFlexMenu** is the ultimate management and optimization interface for **WinFlexOS**. Built entirely in PowerShell using the Anthygrvty UI framework, it provides a seamless, modern, and high-performance way to control your system.
+
+---
+
+## ✨ Key Features
+
+* **System Optimization:** One-click debloating and performance tweaks.
+* **Custom UI:** Modern interactive menus powered by Anthygrvty.
+* **Process Management:** Keep your system lean (optimized for <80 processes).
+* **Modular Tools:** Quick access to essential WinFlexOS utilities and scripts.
+
+## 🛠 Installation & Usage
+
+You can run **WinFlexMenu** directly from PowerShell. Open an elevated PowerShell session (Run as Administrator) and execute the following command:
+
+```powershell
+iwr -useb "[https://raw.githubusercontent.com/dor2500/winFlexMenu/main/WinFlexMenu.ps1](https://raw.githubusercontent.com/dor2500/winFlexMenu/main/WinFlexMenu.ps1)" | iex
