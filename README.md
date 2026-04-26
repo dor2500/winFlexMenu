@@ -15,4 +15,4 @@
 You can run **WinFlexMenu** directly from PowerShell. Open an elevated PowerShell session (Run as Administrator) and execute the following command:
 
 ```powershell
- irm "https://raw.githubusercontent.com/dor2500/winFlexMenu/refs/heads/main/WinFlexMenu.ps1" | iex
+ irm https://raw.githubusercontent.com/dor2500/winFlexMenu/refs/heads/main/WinFlexMenu.ps1 | iex
