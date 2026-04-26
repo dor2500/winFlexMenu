@@ -7,8 +7,7 @@
 ## ✨ Key Features
 
 * **System Optimization:** One-click debloating and performance tweaks.
-* **Custom UI:** Modern interactive menus powered by Anthygrvty.
-* **Process Management:** Keep your system lean (optimized for <80 processes).
+* **Custom UI:** Modern interactive menus
 * **Modular Tools:** Quick access to essential WinFlexOS utilities and scripts.
 
 ## 🛠 Installation & Usage
