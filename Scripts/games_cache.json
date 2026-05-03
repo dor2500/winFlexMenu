@@ -1,0 +1,137 @@
+﻿[
+    {
+        "Name":  "Steamworks Common Redistributables",
+        "Platform":  "Steam",
+        "ExePath":  "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Steamworks Shared"
+    },
+    {
+        "Name":  "Supermarket Together",
+        "Platform":  "Steam",
+        "ExePath":  "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Supermarket Together\\Supermarket Together.exe"
+    },
+    {
+        "Name":  "Brawlhalla",
+        "Platform":  "Steam",
+        "ExePath":  "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Brawlhalla\\Brawlhalla.exe"
+    },
+    {
+        "Name":  "Bloons TD 6",
+        "Platform":  "Steam",
+        "ExePath":  "C:\\Program Files (x86)\\Steam\\steamapps\\common\\BloonsTD6\\BloonsTD6.exe"
+    },
+    {
+        "Name":  "Steamworks Common Redistributables",
+        "Platform":  "Steam",
+        "ExePath":  "C:\\\\Program Files (x86)\\\\Steam\\steamapps\\common\\Steamworks Shared"
+    },
+    {
+        "Name":  "Supermarket Together",
+        "Platform":  "Steam",
+        "ExePath":  "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Supermarket Together\\Supermarket Together.exe"
+    },
+    {
+        "Name":  "Brawlhalla",
+        "Platform":  "Steam",
+        "ExePath":  "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Brawlhalla\\Brawlhalla.exe"
+    },
+    {
+        "Name":  "Bloons TD 6",
+        "Platform":  "Steam",
+        "ExePath":  "C:\\Program Files (x86)\\Steam\\steamapps\\common\\BloonsTD6\\BloonsTD6.exe"
+    },
+    {
+        "Name":  "Fortnite",
+        "Platform":  "Epic",
+        "ExePath":  "C:\\Program Files\\Epic Games\\Fortnite\\FortniteGame\\Binaries\\Win64\\FortniteLauncher.exe"
+    },
+    {
+        "Name":  "Among Us",
+        "Platform":  "Epic",
+        "ExePath":  "C:\\Program Files\\Epic Games\\AmongUs\\Among Us.exe"
+    },
+    {
+        "Name":  "Brawlhalla",
+        "Platform":  "Ubisoft",
+        "ExePath":  "C:\\Program Files (x86)\\Ubisoft\\Ubisoft Game Launcher\\games\\Brawlhalla\\Brawlhalla.exe"
+    },
+    {
+        "Name":  "RealtekAudioControl",
+        "Platform":  "Xbox/MS",
+        "ExePath":  "C:\\Program Files\\WindowsApps\\RealtekSemiconductorCorp.RealtekAudioControl_1.53.385.0_x64__dt26b99r8h8gj\\RtkUWP.exe"
+    },
+    {
+        "Name":  "SmartIPTVforWindows",
+        "Platform":  "Xbox/MS",
+        "ExePath":  "C:\\Program Files\\WindowsApps\\51922ssProx.SmartIPTVforWindows_1.0.7.0_x64__456ap2qe2bz6g\\createdump.exe"
+    },
+    {
+        "Name":  "TuHome",
+        "Platform":  "Xbox/MS",
+        "ExePath":  "C:\\Program Files\\WindowsApps\\34868MaximeGuisset.TuHome_1.3.0.0_x64__72bxx40vvdejt\\tu_home.exe"
+    },
+    {
+        "Name":  "302867473CD6E",
+        "Platform":  "Xbox/MS",
+        "ExePath":  "C:\\Program Files\\WindowsApps\\ComfortSoftwareGroup.302867473CD6E_5.3.0.0_x64__2tsmkga83t66w\\CsBringWindow.exe"
+    },
+    {
+        "Name":  "TholzCasaInteligente",
+        "Platform":  "Xbox/MS",
+        "ExePath":  "C:\\Program Files\\WindowsApps\\Tholz.TholzCasaInteligente_3.5.1.0_x64__mtq7h5hy51svt\\plataforma_tholz.exe"
+    },
+    {
+        "Name":  "App.ICONMaker-PNGtoICO",
+        "Platform":  "Xbox/MS",
+        "ExePath":  "C:\\Program Files\\WindowsApps\\QXOLD2.App.ICONMaker-PNGtoICO_1.2.0.0_x64__030ddfegyzee2\\LYXICONCreator.exe"
+    },
+    {
+        "Name":  "MicaForEveryone",
+        "Platform":  "Xbox/MS",
+        "ExePath":  "C:\\Program Files\\WindowsApps\\DongleInsovaki.MicaForEveryone_2.0.5.0_x64__t8299cmby5bjr\\MicaForEveryone.App.exe"
+    },
+    {
+        "Name":  "CrossDevice",
+        "Platform":  "Xbox/MS",
+        "ExePath":  "C:\\Program Files\\WindowsApps\\MicrosoftWindows.CrossDevice_0.26022.46.0_x64__cw5n1h2txyewy\\CrossDeviceSettingsHost.exe"
+    },
+    {
+        "Name":  "CloudMatic",
+        "Platform":  "Xbox/MS",
+        "ExePath":  "C:\\Program Files\\WindowsApps\\EASYSmartHomeGmbH.CloudMatic_3.2.31.0_x64__p4mhg25xtqtrm\\Frontend.Maui.exe"
+    },
+    {
+        "Name":  "ModernWinver",
+        "Platform":  "Xbox/MS",
+        "ExePath":  "C:\\Program Files\\WindowsApps\\14082CryzenTechnologies.ModernWinver_1.1.1.0_x64__6b5yntewjra3r\\NewModernWinver.exe"
+    },
+    {
+        "Name":  "SmartHome-Controller",
+        "Platform":  "Xbox/MS",
+        "ExePath":  "C:\\Program Files\\WindowsApps\\41517ChristophHlken.SmartHome-Controller_10.6.308.0_x64__zxfysrj57vpn6\\SmartHomeController.WinUI\\createdump.exe"
+    },
+    {
+        "Name":  "UnigramPreview",
+        "Platform":  "Xbox/MS",
+        "ExePath":  "C:\\Program Files\\WindowsApps\\38833FF26BA1D.UnigramPreview_12.4.1.0_x64__g9c9v27vpyspw\\Telegram.exe"
+    },
+    {
+        "Name":  "SpotifyMusic",
+        "Platform":  "Xbox/MS",
+        "ExePath":  "C:\\Program Files\\WindowsApps\\SpotifyAB.SpotifyMusic_1.288.483.0_x64__zpdnekdrzrea0\\Spotify.exe"
+    },
+    {
+        "Name":  "Clipchamp",
+        "Platform":  "Xbox/MS",
+        "ExePath":  "C:\\Program Files\\WindowsApps\\Clipchamp.Clipchamp_4.5.10520.0_x64__yxz26nhyzhsrt\\Clipchamp\\Clipchamp.exe"
+    },
+    {
+        "Name":  "51895FA4EA97F",
+        "Platform":  "Xbox/MS",
+        "ExePath":  "C:\\Program Files\\WindowsApps\\5319275A.51895FA4EA97F_2.2616.100.0_x64__cv1g1gvanyjgm\\createdump.exe"
+    },
+    {
+        "Name":  "Windows365",
+        "Platform":  "Xbox/MS",
+        "ExePath":  "C:\\Program Files\\WindowsApps\\MicrosoftCorporationII.Windows365_2.0.1071.0_x64__8wekyb3d8bbwe\\triage-tool.exe"
+    }
+]

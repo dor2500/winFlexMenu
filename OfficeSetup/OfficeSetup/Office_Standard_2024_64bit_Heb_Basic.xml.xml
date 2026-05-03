@@ -1,0 +1,19 @@
+<Configuration ID="9ec4f89a-6249-4d23-841e-96f193090fdd">
+  <Add OfficeClientEdition="64" Channel="PerpetualVL2024">
+    <Product ID="Standard2024Volume" PIDKEY="V28N4-JG22K-W66P8-VTMGK-H6HGR">
+      <Language ID="he-il" />
+      <Language ID="en-us" />
+      <ExcludeApp ID="OneDrive" />
+      <ExcludeApp ID="OneNote" />
+      <ExcludeApp ID="Outlook" />
+      <ExcludeApp ID="Publisher" />
+    </Product>
+  </Add>
+  <Property Name="SharedComputerLicensing" Value="0" />
+  <Property Name="FORCEAPPSHUTDOWN" Value="FALSE" />
+  <Property Name="DeviceBasedLicensing" Value="0" />
+  <Property Name="SCLCacheOverride" Value="0" />
+  <Property Name="AUTOACTIVATE" Value="1" />
+  <Updates Enabled="TRUE" />
+  <RemoveMSI />
+</Configuration>

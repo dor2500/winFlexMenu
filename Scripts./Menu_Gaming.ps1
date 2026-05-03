@@ -1,4 +1,4 @@
-﻿# GAMING CENTER - Fully Embedded (no external file dependency)
+# GAMING CENTER - Fully Embedded (no external file dependency)
 # ==============================================================================
 Set-Click "btnGameCenter" { Switch-Panel $pnlGaming }
 Set-Click "btnThemeXP" { $cmbThemes.SelectedIndex = 18 }
@@ -212,7 +212,7 @@ function Refresh-GList {
     $lst.Items.Clear()
     $script:gGames | Where-Object {
         ($q -eq "" -or $_.Name -like "*$q*") -and ($pf -eq "All" -or $_.Platform -eq $pf)
-    } | Sort-Object Platform,Name | ForEach-Object { $lst.Items.Add($_) }
+    } | Sort-Object Platform,Name | ForEach-Object { [void]$lst.Items.Add($_) }
 }
 
 $s = Get-GuiElement "txtGSearch"; if ($s) { $s.Add_TextChanged({ Refresh-GList }) }

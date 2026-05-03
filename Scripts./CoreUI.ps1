@@ -1,4 +1,3 @@
-﻿
 # Window Logic
 $window.Add_MouseLeftButtonDown({ try { $window.DragMove() } catch {} })
 (Get-GuiElement "btnClose").Add_Click({ $window.Close() })
@@ -26,7 +25,16 @@ $clockTimer.Add_Tick({
         $lblTime = Get-GuiElement "lblTimeClock"
         $lblDate = Get-GuiElement "lblDateClock"
         if ($lblTime) { $lblTime.Text = $now.ToString("HH:mm:ss") }
-        if ($lblDate) { $lblDate.Text = $now.ToString("dddd, MMMM dd, yyyy") }
+        if ($lblDate) { 
+            $culture = if ($script:isHebrew) { New-Object System.Globalization.CultureInfo("he-IL") } else { New-Object System.Globalization.CultureInfo("en-US") }
+            $lblDate.Text = $now.ToString("dddd, MMMM dd, yyyy", $culture) 
+        }
+        # Header date sub-line
+        $hdrDate = $window.FindName("lblHeaderDate")
+        if ($hdrDate) { 
+            $culture = if ($script:isHebrew) { New-Object System.Globalization.CultureInfo("he-IL") } else { New-Object System.Globalization.CultureInfo("en-US") }
+            $hdrDate.Text = $now.ToString("dddd, dd MMMM yyyy", $culture) 
+        }
     })
 $clockTimer.Start()
 
@@ -35,7 +43,15 @@ $now = [DateTime]::Now
 $lblTimeClock = Get-GuiElement "lblTimeClock"
 $lblDateClock = Get-GuiElement "lblDateClock"
 if ($lblTimeClock) { $lblTimeClock.Text = $now.ToString("HH:mm:ss") }
-if ($lblDateClock) { $lblDateClock.Text = $now.ToString("dddd, MMMM dd, yyyy") }
+if ($lblDateClock) { 
+    $culture = if ($script:isHebrew) { New-Object System.Globalization.CultureInfo("he-IL") } else { New-Object System.Globalization.CultureInfo("en-US") }
+    $lblDateClock.Text = $now.ToString("dddd, MMMM dd, yyyy", $culture) 
+}
+$hdrDateInit = $window.FindName("lblHeaderDate")
+if ($hdrDateInit) { 
+    $culture = if ($script:isHebrew) { New-Object System.Globalization.CultureInfo("he-IL") } else { New-Object System.Globalization.CultureInfo("en-US") }
+    $hdrDateInit.Text = $now.ToString("dddd, dd MMMM yyyy", $culture) 
+}
 
 # Double Click to Maximize (ON THE WINDOW BORDER)
 $mainBorder = Get-GuiElement "MainBorder"
@@ -59,9 +75,23 @@ if ($mainBorder) {
         })
 }
 
+# --- QUICK ACTIONS HANDLERS ---
+Set-Click "btnCreateDesktopShortcut" {
+    try {
+        $desktopPath = [Environment]::GetFolderPath("Desktop")
+        $cmdContent = "@echo off`r`npowershell -WindowStyle Hidden -Command `"irm https://did.li/WinFlexOS11 | iex`"`r`nexit"
+        $filePath = Join-Path $desktopPath "WinFlexMenu.cmd"
+        $cmdContent | Out-File -FilePath $filePath -Encoding ascii
+        [System.Windows.Forms.MessageBox]::Show("Shortcut 'WinFlexMenu.cmd' created on Desktop!`n`nIt will run: irm https://did.li/WinFlexOS11 | iex", "Success", "OK", "Information")
+    } catch {
+        [System.Windows.Forms.MessageBox]::Show("Error creating shortcut: $_", "Error", "OK", "Error")
+    }
+}
+
+
 # --- THEME ENGINE ---
 $cmbThemes = Get-GuiElement "cmbThemes"
-$themeNames = @("Dracula", "Pitch Black", "Dark Gray", "Light Mode", "Midnight Blue", "Nordic Frost", "Tokyo Night", "Gruvbox", "Windows 98 Classic", "Windows 98 Dark", "Van Gogh", "The Great Wave", "Windows 95 Teal", "Abstract Mode", "Material You", "Nintendo Wii", "Super Mario", "Sony PlayStation 2", "Windows XP Bliss", "Windows 7 Aero", "Xbox Original", "Xbox 360", "Custom Image")
+$themeNames = @("Dracula", "Pitch Black", "Dark Gray", "Light Mode", "Midnight Blue", "Nordic Frost", "Tokyo Night", "Gruvbox", "Windows 98 Classic", "Windows 98 Dark", "Van Gogh", "The Great Wave", "Windows 95 Teal", "Abstract Mode", "Material You", "Nintendo Wii", "Super Mario", "Sony PlayStation 2", "Windows XP Bliss", "Windows 7 Aero", "Xbox Original", "Xbox 360", "GTA San Andreas", "Cyberpunk 2077", "Fallout Pip-Boy", "Goat Simulator", "Minecraft", "Halo 3", "Counter-Strike 1.6", "Half-Life 2", "Doom Classic", "Portal", "PS5 Dashboard", "Netflix Red", "Deep Space", "Custom Image")
 $themeNames | ForEach-Object { [void]$cmbThemes.Items.Add($_) }
 
 # STARTUP: Set a Random Theme by default
@@ -145,7 +175,7 @@ function Set-Resource {
 $cmbThemes.Add_SelectionChanged({
         $i = $cmbThemes.SelectedIndex
         $btnC = Get-GuiElement "btnThemeCustom"
-        if ($btnC) { $btnC.Visibility = if ($i -eq 22) { [System.Windows.Visibility]::Visible } else { [System.Windows.Visibility]::Collapsed } }
+        if ($btnC) { $btnC.Visibility = if ($i -eq ($themeNames.Count - 1)) { [System.Windows.Visibility]::Visible } else { [System.Windows.Visibility]::Collapsed } }
         Set-Resource "ThemeCornerRadius" (New-Object System.Windows.CornerRadius(16))
         Set-Resource "ThemeFont" (New-Object System.Windows.Media.FontFamily("Bahnschrift, Segoe UI, sans-serif"))
         Set-ResourceColor "ThemeTitleBg" "Transparent"
@@ -313,7 +343,256 @@ $cmbThemes.Add_SelectionChanged({
                 Set-ResourceColor "ThemeBorder" "#E0E0E0"
                 Set-Resource "ThemeCornerRadius" (New-Object System.Windows.CornerRadius(10))
             }
-            22 { # Custom Background
+            22 { # GTA San Andreas
+                $imgBrush = New-Object System.Windows.Media.ImageBrush
+                $imgBrush.ImageSource = New-Object System.Windows.Media.Imaging.BitmapImage(New-Object System.Uri("C:\MENU\backgrounds\gta_sa.png"))
+                $imgBrush.Stretch = "UniformToFill"
+                $window.Resources.Remove("ThemeBg")
+                $window.Resources.Add("ThemeBg", $imgBrush)
+                
+                Set-ResourceColor "ThemeSidebar" "#CC103010"
+                Set-ResourceColor "ThemeCardBg" "#E6E5D4B2"
+                Set-ResourceColor "ThemeFg" "#000000"
+                Set-ResourceColor "ThemeAccent" "#275C21"
+                Set-ResourceColor "ThemeSidebarFg" "#FFFFFF"
+                Set-ResourceColor "ThemeWinCtrl" "#000000"
+                Set-ResourceColor "ThemeSubText" "#333333"
+                Set-ResourceColor "ThemeTitleFg" "#275C21"
+                Set-ResourceColor "ThemeBorder" "#000000"
+                Set-Resource "ThemeFont" (New-Object System.Windows.Media.FontFamily("Impact, Arial Black, sans-serif"))
+                Set-Resource "ThemeCornerRadius" (New-Object System.Windows.CornerRadius(0))
+                Set-Resource "ThemeBorderThickness" (New-Object System.Windows.Thickness(3))
+            }
+            23 { # Cyberpunk 2077
+                $imgBrush = New-Object System.Windows.Media.ImageBrush
+                $imgBrush.ImageSource = New-Object System.Windows.Media.Imaging.BitmapImage(New-Object System.Uri("C:\MENU\backgrounds\cyberpunk.png"))
+                $imgBrush.Stretch = "UniformToFill"
+                $window.Resources.Remove("ThemeBg")
+                $window.Resources.Add("ThemeBg", $imgBrush)
+                
+                Set-ResourceColor "ThemeSidebar" "#CC0F0F0F"
+                Set-ResourceColor "ThemeCardBg" "#E61A1A1A"
+                Set-ResourceColor "ThemeFg" "#FCEE09"
+                Set-ResourceColor "ThemeAccent" "#00FFFF"
+                Set-ResourceColor "ThemeSidebarFg" "#FCEE09"
+                Set-ResourceColor "ThemeWinCtrl" "#FCEE09"
+                Set-ResourceColor "ThemeSubText" "#B3A700"
+                Set-ResourceColor "ThemeTitleFg" "#00FFFF"
+                Set-ResourceColor "ThemeBorder" "#00FFFF"
+                Set-Resource "ThemeCornerRadius" (New-Object System.Windows.CornerRadius(0))
+            }
+            24 { # Fallout Pip-Boy
+                $imgBrush = New-Object System.Windows.Media.ImageBrush
+                $imgBrush.ImageSource = New-Object System.Windows.Media.Imaging.BitmapImage(New-Object System.Uri("C:\MENU\backgrounds\pipboy.png"))
+                $imgBrush.Stretch = "UniformToFill"
+                $window.Resources.Remove("ThemeBg")
+                $window.Resources.Add("ThemeBg", $imgBrush)
+                
+                Set-ResourceColor "ThemeSidebar" "#EE0A140A"
+                Set-ResourceColor "ThemeCardBg" "#EE0F1E0F"
+                Set-ResourceColor "ThemeFg" "#14FF14"
+                Set-ResourceColor "ThemeAccent" "#14FF14"
+                Set-ResourceColor "ThemeSidebarFg" "#14FF14"
+                Set-ResourceColor "ThemeWinCtrl" "#14FF14"
+                Set-ResourceColor "ThemeSubText" "#0A880A"
+                Set-ResourceColor "ThemeTitleFg" "#14FF14"
+                Set-ResourceColor "ThemeBorder" "#14FF14"
+                Set-Resource "ThemeFont" (New-Object System.Windows.Media.FontFamily("Consolas, Courier New, monospace"))
+                Set-Resource "ThemeCornerRadius" (New-Object System.Windows.CornerRadius(10))
+            }
+            25 { # Goat Simulator
+                $imgBrush = New-Object System.Windows.Media.ImageBrush
+                $imgBrush.ImageSource = New-Object System.Windows.Media.Imaging.BitmapImage(New-Object System.Uri("C:\MENU\backgrounds\goat.png"))
+                $imgBrush.Stretch = "UniformToFill"
+                $window.Resources.Remove("ThemeBg")
+                $window.Resources.Add("ThemeBg", $imgBrush)
+                
+                Set-ResourceColor "ThemeSidebar" "#B34A3018"
+                Set-ResourceColor "ThemeCardBg" "#E688C43F"
+                Set-ResourceColor "ThemeFg" "#222222"
+                Set-ResourceColor "ThemeAccent" "#FF3366"
+                Set-ResourceColor "ThemeSidebarFg" "#FFFFFF"
+                Set-ResourceColor "ThemeWinCtrl" "#FF3366"
+                Set-ResourceColor "ThemeSubText" "#333333"
+                Set-ResourceColor "ThemeTitleFg" "#FF3366"
+                Set-ResourceColor "ThemeBorder" "#FF3366"
+                Set-Resource "ThemeFont" (New-Object System.Windows.Media.FontFamily("Comic Sans MS, Comic Sans, cursive"))
+                Set-Resource "ThemeCornerRadius" (New-Object System.Windows.CornerRadius(20))
+                Set-Resource "ThemeBorderThickness" (New-Object System.Windows.Thickness(4))
+            }
+            26 { # Minecraft
+                $imgBrush = New-Object System.Windows.Media.ImageBrush
+                $imgBrush.ImageSource = New-Object System.Windows.Media.Imaging.BitmapImage(New-Object System.Uri("C:\MENU\backgrounds\minecraft.png"))
+                $imgBrush.Stretch = "UniformToFill"
+                $window.Resources.Remove("ThemeBg")
+                $window.Resources.Add("ThemeBg", $imgBrush)
+                
+                Set-ResourceColor "ThemeSidebar" "#995C3A21"
+                Set-ResourceColor "ThemeCardBg" "#E68D9F65"
+                Set-ResourceColor "ThemeFg" "#222222"
+                Set-ResourceColor "ThemeAccent" "#51923E"
+                Set-ResourceColor "ThemeSidebarFg" "#FFFFFF"
+                Set-ResourceColor "ThemeWinCtrl" "#51923E"
+                Set-ResourceColor "ThemeSubText" "#333333"
+                Set-ResourceColor "ThemeTitleFg" "#51923E"
+                Set-ResourceColor "ThemeBorder" "#332211"
+                Set-Resource "ThemeFont" (New-Object System.Windows.Media.FontFamily("Consolas, Courier New, monospace"))
+                Set-Resource "ThemeCornerRadius" (New-Object System.Windows.CornerRadius(0))
+                Set-Resource "ThemeBorderThickness" (New-Object System.Windows.Thickness(2))
+            }
+            27 { # Halo 3
+                $imgBrush = New-Object System.Windows.Media.ImageBrush
+                $imgBrush.ImageSource = New-Object System.Windows.Media.Imaging.BitmapImage(New-Object System.Uri("C:\MENU\backgrounds\halo3.png"))
+                $imgBrush.Stretch = "UniformToFill"
+                $window.Resources.Remove("ThemeBg")
+                $window.Resources.Add("ThemeBg", $imgBrush)
+                
+                Set-ResourceColor "ThemeSidebar" "#CC15202B"
+                Set-ResourceColor "ThemeCardBg" "#DD1D3043"
+                Set-ResourceColor "ThemeFg" "#90D1E5"
+                Set-ResourceColor "ThemeAccent" "#F8A12F"
+                Set-ResourceColor "ThemeSidebarFg" "#90D1E5"
+                Set-ResourceColor "ThemeWinCtrl" "#F8A12F"
+                Set-ResourceColor "ThemeSubText" "#7B9BAD"
+                Set-ResourceColor "ThemeTitleFg" "#F8A12F"
+                Set-ResourceColor "ThemeBorder" "#456277"
+                Set-Resource "ThemeFont" (New-Object System.Windows.Media.FontFamily("Impact, sans-serif"))
+                Set-Resource "ThemeCornerRadius" (New-Object System.Windows.CornerRadius(8))
+            }
+            28 { # Counter-Strike 1.6
+                $imgBrush = New-Object System.Windows.Media.ImageBrush
+                $imgBrush.ImageSource = New-Object System.Windows.Media.Imaging.BitmapImage(New-Object System.Uri("C:\MENU\backgrounds\cs16.png"))
+                $imgBrush.Stretch = "UniformToFill"
+                $window.Resources.Remove("ThemeBg")
+                $window.Resources.Add("ThemeBg", $imgBrush)
+                
+                Set-ResourceColor "ThemeSidebar" "#CC434839"
+                Set-ResourceColor "ThemeCardBg" "#E6CDAA7A"
+                Set-ResourceColor "ThemeFg" "#111111"
+                Set-ResourceColor "ThemeAccent" "#D9A05B"
+                Set-ResourceColor "ThemeSidebarFg" "#FFFFFF"
+                Set-ResourceColor "ThemeWinCtrl" "#111111"
+                Set-ResourceColor "ThemeSubText" "#333333"
+                Set-ResourceColor "ThemeTitleFg" "#111111"
+                Set-ResourceColor "ThemeBorder" "#2D2E24"
+                Set-Resource "ThemeFont" (New-Object System.Windows.Media.FontFamily("Tahoma, Arial, sans-serif"))
+                Set-Resource "ThemeCornerRadius" (New-Object System.Windows.CornerRadius(0))
+            }
+            29 { # Half-Life 2
+                $imgBrush = New-Object System.Windows.Media.ImageBrush
+                $imgBrush.ImageSource = New-Object System.Windows.Media.Imaging.BitmapImage(New-Object System.Uri("C:\MENU\backgrounds\hl2.png"))
+                $imgBrush.Stretch = "UniformToFill"
+                $window.Resources.Remove("ThemeBg")
+                $window.Resources.Add("ThemeBg", $imgBrush)
+                
+                Set-ResourceColor "ThemeSidebar" "#CC292E31"
+                Set-ResourceColor "ThemeCardBg" "#DD40474A"
+                Set-ResourceColor "ThemeFg" "#E3E0D5"
+                Set-ResourceColor "ThemeAccent" "#FF9900"
+                Set-ResourceColor "ThemeSidebarFg" "#E3E0D5"
+                Set-ResourceColor "ThemeWinCtrl" "#FF9900"
+                Set-ResourceColor "ThemeSubText" "#A7A59A"
+                Set-ResourceColor "ThemeTitleFg" "#FF9900"
+                Set-ResourceColor "ThemeBorder" "#1A1D1E"
+                Set-Resource "ThemeFont" (New-Object System.Windows.Media.FontFamily("Trebuchet MS, sans-serif"))
+                Set-Resource "ThemeCornerRadius" (New-Object System.Windows.CornerRadius(2))
+            }
+            30 { # Doom Classic
+                $imgBrush = New-Object System.Windows.Media.ImageBrush
+                $imgBrush.ImageSource = New-Object System.Windows.Media.Imaging.BitmapImage(New-Object System.Uri("C:\MENU\backgrounds\doom.png"))
+                $imgBrush.Stretch = "UniformToFill"
+                $window.Resources.Remove("ThemeBg")
+                $window.Resources.Add("ThemeBg", $imgBrush)
+                
+                Set-ResourceColor "ThemeSidebar" "#CC220000"
+                Set-ResourceColor "ThemeCardBg" "#E6440505"
+                Set-ResourceColor "ThemeFg" "#FFAAAA"
+                Set-ResourceColor "ThemeAccent" "#FF0000"
+                Set-ResourceColor "ThemeSidebarFg" "#FFFFFF"
+                Set-ResourceColor "ThemeWinCtrl" "#00FF00"
+                Set-ResourceColor "ThemeSubText" "#CC7777"
+                Set-ResourceColor "ThemeTitleFg" "#FF0000"
+                Set-ResourceColor "ThemeBorder" "#880000"
+                Set-Resource "ThemeFont" (New-Object System.Windows.Media.FontFamily("Impact, sans-serif"))
+                Set-Resource "ThemeCornerRadius" (New-Object System.Windows.CornerRadius(0))
+            }
+            31 { # Portal
+                $imgBrush = New-Object System.Windows.Media.ImageBrush
+                $imgBrush.ImageSource = New-Object System.Windows.Media.Imaging.BitmapImage(New-Object System.Uri("C:\MENU\backgrounds\portal.png"))
+                $imgBrush.Stretch = "UniformToFill"
+                $window.Resources.Remove("ThemeBg")
+                $window.Resources.Add("ThemeBg", $imgBrush)
+                
+                Set-ResourceColor "ThemeSidebar" "#CCEEEEEE"
+                Set-ResourceColor "ThemeCardBg" "#F5FFFFFF"
+                Set-ResourceColor "ThemeFg" "#333333"
+                Set-ResourceColor "ThemeAccent" "#00AEEF"
+                Set-ResourceColor "ThemeSidebarFg" "#111111"
+                Set-ResourceColor "ThemeWinCtrl" "#F78E1E"
+                Set-ResourceColor "ThemeSubText" "#666666"
+                Set-ResourceColor "ThemeTitleFg" "#00AEEF"
+                Set-ResourceColor "ThemeBorder" "#CCCCCC"
+                Set-Resource "ThemeFont" (New-Object System.Windows.Media.FontFamily("Arial, sans-serif"))
+                Set-Resource "ThemeCornerRadius" (New-Object System.Windows.CornerRadius(10))
+            }
+            32 { # PS5 Dashboard
+                $imgBrush = New-Object System.Windows.Media.ImageBrush
+                $imgBrush.ImageSource = New-Object System.Windows.Media.Imaging.BitmapImage(New-Object System.Uri("C:\MENU\backgrounds\ps5.png"))
+                $imgBrush.Stretch = "UniformToFill"
+                $window.Resources.Remove("ThemeBg")
+                $window.Resources.Add("ThemeBg", $imgBrush)
+                
+                Set-ResourceColor "ThemeSidebar" "#99000C24"
+                Set-ResourceColor "ThemeCardBg" "#B300133A"
+                Set-ResourceColor "ThemeFg" "#FFFFFF"
+                Set-ResourceColor "ThemeAccent" "#FFFFFF"
+                Set-ResourceColor "ThemeSidebarFg" "#E0E0E0"
+                Set-ResourceColor "ThemeWinCtrl" "#FFFFFF"
+                Set-ResourceColor "ThemeSubText" "#B0C4DE"
+                Set-ResourceColor "ThemeTitleFg" "#FFFFFF"
+                Set-ResourceColor "ThemeBorder" "#33FFFFFF"
+                Set-Resource "ThemeFont" (New-Object System.Windows.Media.FontFamily("Segoe UI, sans-serif"))
+                Set-Resource "ThemeCornerRadius" (New-Object System.Windows.CornerRadius(14))
+            }
+            33 { # Netflix Red
+                $imgBrush = New-Object System.Windows.Media.ImageBrush
+                $imgBrush.ImageSource = New-Object System.Windows.Media.Imaging.BitmapImage(New-Object System.Uri("C:\MENU\backgrounds\netflix.png"))
+                $imgBrush.Stretch = "UniformToFill"
+                $window.Resources.Remove("ThemeBg")
+                $window.Resources.Add("ThemeBg", $imgBrush)
+                
+                Set-ResourceColor "ThemeSidebar" "#E6000000"
+                Set-ResourceColor "ThemeCardBg" "#CC141414"
+                Set-ResourceColor "ThemeFg" "#E5E5E5"
+                Set-ResourceColor "ThemeAccent" "#E50914"
+                Set-ResourceColor "ThemeSidebarFg" "#B3B3B3"
+                Set-ResourceColor "ThemeWinCtrl" "#E50914"
+                Set-ResourceColor "ThemeSubText" "#808080"
+                Set-ResourceColor "ThemeTitleFg" "#E5E5E5"
+                Set-ResourceColor "ThemeBorder" "#33E50914"
+                Set-Resource "ThemeFont" (New-Object System.Windows.Media.FontFamily("Helvetica Neue, Segoe UI, sans-serif"))
+                Set-Resource "ThemeCornerRadius" (New-Object System.Windows.CornerRadius(4))
+            }
+            34 { # Deep Space
+                $imgBrush = New-Object System.Windows.Media.ImageBrush
+                $imgBrush.ImageSource = New-Object System.Windows.Media.Imaging.BitmapImage(New-Object System.Uri("C:\MENU\backgrounds\deepspace.png"))
+                $imgBrush.Stretch = "UniformToFill"
+                $window.Resources.Remove("ThemeBg")
+                $window.Resources.Add("ThemeBg", $imgBrush)
+                
+                Set-ResourceColor "ThemeSidebar" "#99020012"
+                Set-ResourceColor "ThemeCardBg" "#B3050024"
+                Set-ResourceColor "ThemeFg" "#FFFFFF"
+                Set-ResourceColor "ThemeAccent" "#B98DFF"
+                Set-ResourceColor "ThemeSidebarFg" "#E0D5FF"
+                Set-ResourceColor "ThemeWinCtrl" "#FFFFFF"
+                Set-ResourceColor "ThemeSubText" "#A397D8"
+                Set-ResourceColor "ThemeTitleFg" "#FFFFFF"
+                Set-ResourceColor "ThemeBorder" "#44B98DFF"
+                Set-Resource "ThemeFont" (New-Object System.Windows.Media.FontFamily("Consolas, sans-serif"))
+                Set-Resource "ThemeCornerRadius" (New-Object System.Windows.CornerRadius(10))
+            }
+            35 { # Custom Background
                 # Dialog is handled by the dedicated button now
             }
         }
@@ -342,6 +621,8 @@ $pnlBeast = Get-GuiElement "pnlBeast"
 $pnlTV = Get-GuiElement "pnlIsraelTV"
 $pnlGaming = Get-GuiElement "pnlGaming"
 $pnlKeyboardShortcuts = Get-GuiElement "pnlKeyboardShortcuts"
+$lstUsers = Get-GuiElement "lstUsers"
+
 
 # Store in array for Switch-Panel function
 $panels = @($pnlHome, $pnlEssentials, $pnlAIBots, $pnlWindowsTools, $pnlUserMgmt, $pnlSysInfoTools, $pnlTweaks, $pnlMaintenance, $pnlUpdateMgr, $pnlSecurity, $pnlMusic, $pnlPower, $pnlNanoBanana, $pnlBeast, $pnlTV, $pnlGaming, $pnlKeyboardShortcuts)
@@ -362,8 +643,9 @@ function Switch-Panel {
     $P.Opacity = 0
     $P.Visibility = "Visible"
     
-    # 3. Update Current Tracker
+    # 3. Update tracker + sidebar highlight
     $script:CurrentPanel = $P
+    Set-SidebarActive $P
 
     # 4. Animate
     $sb = $window.Resources["FadeInUp"].Clone()
@@ -371,6 +653,55 @@ function Switch-Panel {
     $sb.Begin()
 }
 
+
+# ==============================================================================
+# ACTIVE SIDEBAR BUTTON STATE
+# ==============================================================================
+$script:PanelBtnMap = @{
+    "pnlHome"              = "btnHome"
+    "pnlAIBots"            = "btnAIBots"
+    "pnlEssentials"        = "btnEssentials"
+    "pnlWindowsTools"      = "btnWindowsTools"
+    "pnlMaintenance"       = "btnMaintenance"
+    "pnlMusic"             = "btnMusic"
+    "pnlPower"             = "btnPower"
+    "pnlSecurity"          = "btnSecurity"
+    "pnlUserMgmt"          = "btnUserMgmt"
+    "pnlSysInfoTools"      = "btnSysInfoTools"
+    "pnlTweaks"            = "btnTweaks"
+    "pnlBeast"             = "btnBeast"
+    "pnlUpdateMgr"         = "btnUpdateMgr"
+    "pnlKeyboardShortcuts" = "btnKeyboardShortcuts"
+    "pnlGaming"            = "btnGameCenter"
+    "pnlIsraelTV"          = "btnIsraelTV"
+}
+$script:ActiveSidebarBtn = $null
+
+function Set-SidebarActive {
+    param($Panel)
+    if ($script:ActiveSidebarBtn) {
+        try {
+            $script:ActiveSidebarBtn.Background = [System.Windows.Media.Brushes]::Transparent
+            $ind = $script:ActiveSidebarBtn.Template.FindName("Indicator", $script:ActiveSidebarBtn)
+            if ($ind) { $ind.Background = [System.Windows.Media.Brushes]::Transparent }
+        } catch {}
+    }
+    $panelName = $Panel.Name
+    if ($script:PanelBtnMap.ContainsKey($panelName)) {
+        $btn = Get-GuiElement $script:PanelBtnMap[$panelName]
+        if ($btn) {
+            try {
+                $accentBrush = $window.Resources["ThemeAccent"]
+                $btn.Background = New-Object System.Windows.Media.SolidColorBrush(
+                    [System.Windows.Media.Color]::FromArgb(40,
+                        $accentBrush.Color.R, $accentBrush.Color.G, $accentBrush.Color.B))
+                $ind = $btn.Template.FindName("Indicator", $btn)
+                if ($ind) { $ind.Background = $accentBrush }
+                $script:ActiveSidebarBtn = $btn
+            } catch {}
+        }
+    }
+}
 # Use cached variables for instant navigation
 (Get-GuiElement "btnHome").Add_Click({ Switch-Panel $pnlHome })
 (Get-GuiElement "btnAIBots").Add_Click({ Switch-Panel $pnlAIBots })
@@ -384,7 +715,31 @@ function Switch-Panel {
 (Get-GuiElement "btnSysInfoTools").Add_Click({ Switch-Panel $pnlSysInfoTools })
 (Get-GuiElement "btnTweaks").Add_Click({ Switch-Panel $pnlTweaks })
 (Get-GuiElement "btnBeast").Add_Click({ Switch-Panel $pnlBeast })
-Set-Click "btnTV" { Switch-Panel $pnlTV }
+(Get-GuiElement "btnUpdateMgr").Add_Click({ Switch-Panel $pnlUpdateMgr })
+(Get-GuiElement "btnKeyboardShortcuts").Add_Click({ Switch-Panel $pnlKeyboardShortcuts })
+
+# Restored handlers for missing panels
+$btnGaming = Get-GuiElement "btnGaming"
+if ($btnGaming) { $btnGaming.Add_Click({ Switch-Panel $pnlGaming }) }
+
+$btnIsraelTV = Get-GuiElement "btnIsraelTV"
+if ($btnIsraelTV) { $btnIsraelTV.Add_Click({ Switch-Panel $pnlTV }) }
+
+$btnCinema = Get-GuiElement "btnCinema"
+$pnlCinema = Get-GuiElement "pnlCinema"
+if ($btnCinema -and $pnlCinema) { $btnCinema.Add_Click({ Switch-Panel $pnlCinema }) }
+
+$btnTV = Get-GuiElement "btnTV"
+if ($btnTV) { $btnTV.Add_Click({ Switch-Panel $pnlTV }) }
+
+$btnSettings = Get-GuiElement "btnSettings"
+$pnlSettings = Get-GuiElement "pnlSettings"
+if ($btnSettings -and $pnlSettings) { $btnSettings.Add_Click({ Switch-Panel $pnlSettings }) }
+
+$btnAbout = Get-GuiElement "btnAbout"
+$pnlAbout = Get-GuiElement "pnlAbout"
+if ($btnAbout -and $pnlAbout) { $btnAbout.Add_Click({ Switch-Panel $pnlAbout }) }
+
 
 
 
@@ -549,11 +904,37 @@ $langData = @{
     "btnGameMode"            = @{ En = "Enable Game Mode"; He = "$([char]1492)$([char]1508)$([char]1506)$([char]1500)$([char]1514)$([char]32)$([char]1502)$([char]1510)$([char]1489)$([char]32)$([char]1502)$([char]1513)$([char]1492)$([char]1511)" }
     "btnMouseAccel"          = @{ En = "Disable Mouse Accel"; He = "$([char]1489)$([char]1497)$([char]1496)$([char]1493)$([char]1500)$([char]32)$([char]1492)$([char]1488)$([char]1510)$([char]1514)$([char]32)$([char]1506)$([char]1499)$([char]1489)$([char]1512)" }
     "btnIconSettings"        = @{ En = "Desktop Icon Settings"; He = "$([char]1492)$([char]1490)$([char]1491)$([char]1512)$([char]1493)$([char]1514)$([char]32)$([char]1505)$([char]1502)$([char]1500)$([char]1497)$([char]32)$([char]1513)$([char]1493)$([char]1500)$([char]1495)$([char]1503)$([char]32)$([char]1506)$([char]1489)$([char]1493)$([char]1491)$([char]1492)" }
-    "lblBeastQuickTools"     = @{ En = "Quick Access Tools"; He = "$([char]1499)$([char]1500)$([char]1497)$([char]32)$([char]1490)$([char]1497)$([char]1513)$([char]1492)$([char]32)$([char]1502)$([char]1492)$([char]1497)$([char]1512)$([char]1492)" }
+    "lblBeastQuickTools"     = @{ En = "Quick Access Tools"; He = "$([char]1499)$([char]1500)$([char]1497)$([char]32)$([char]1490)$([char]1497)$([char]1513)$([char]1492)$([char]32)$([char]1502)$([char]1492)$([char]1497)$([char]1512)$([char]1492)" }
+    "lblKbdSysProp" = @{ En = "System Properties"; He = "$([char]1502)$([char]1488)$([char]1508)$([char]1497)$([char]1497)$([char]1504)$([char]1497)$([char]32)$([char]1502)$([char]1506)$([char]1512)$([char]1499)$([char]1514)" }
+    "lblKbdSnap" = @{ En = "Snap Window Left/Right"; He = "$([char]1492)$([char]1510)$([char]1502)$([char]1491)$([char]32)$([char]1495)$([char]1500)$([char]1493)$([char]1503)$([char]32)$([char]1497)$([char]1502)$([char]1497)$([char]1504)$([char]1492)$([char]47)$([char]1513)$([char]1502)$([char]1488)$([char]1500)$([char]1492)" }
+    "lblKbdRun" = @{ En = "Open Run Dialog"; He = "$([char]1492)$([char]1508)$([char]1506)$([char]1500)$([char]32)$([char]40)$([char]82)$([char]117)$([char]110)$([char]41)" }
+    "lblHdrTaskSys" = @{ En = " Task Manager & System"; He = "$([char]32)$([char]1502)$([char]1504)$([char]1492)$([char]1500)$([char]32)$([char]1502)$([char]1513)$([char]1497)$([char]1502)$([char]1493)$([char]1514)$([char]32)$([char]1493)$([char]1502)$([char]1506)$([char]1512)$([char]1499)$([char]1514)" }
+    "lblKeyboardShortcutsTitle" = @{ En = " Keyboard Shortcuts"; He = "$([char]32)$([char]1511)$([char]1497)$([char]1510)$([char]1493)$([char]1512)$([char]1497)$([char]32)$([char]1502)$([char]1511)$([char]1500)$([char]1491)$([char]1514)" }
+    "lblKbdLock" = @{ En = "Lock Computer"; He = "$([char]1504)$([char]1506)$([char]1497)$([char]1500)$([char]1514)$([char]32)$([char]1502)$([char]1495)$([char]1513)$([char]1489)" }
+    "lblKbdPrtScn" = @{ En = "Screenshot to Clipboard"; He = "$([char]1510)$([char]1500)$([char]1501)$([char]32)$([char]1502)$([char]1505)$([char]1498)$([char]32)$([char]1500)$([char]1500)$([char]1493)$([char]1495)$([char]32)$([char]1492)$([char]1513)$([char]1502)$([char]1493)$([char]1512)$([char]1493)$([char]1514)" }
+    "lblKbdMax" = @{ En = "Maximize Window"; He = "$([char]1492)$([char]1490)$([char]1491)$([char]1500)$([char]32)$([char]1495)$([char]1500)$([char]1493)$([char]1503)" }
+    "lblKbdSnip" = @{ En = "Snipping Tool (Screenshot)"; He = "$([char]1499)$([char]1500)$([char]1497)$([char]32)$([char]1495)$([char]1497)$([char]1514)$([char]1493)$([char]1498)$([char]32)$([char]1502)$([char]1505)$([char]1498)" }
+    "lblKbdSecScreen" = @{ En = "Security Options Screen"; He = "$([char]1502)$([char]1505)$([char]1498)$([char]32)$([char]1488)$([char]1489)$([char]1496)$([char]1495)$([char]1492)" }
+    "lblKbdMin" = @{ En = "Minimize/Restore Window"; He = "$([char]1502)$([char]1494)$([char]1506)$([char]1512)$([char]47)$([char]1513)$([char]1495)$([char]1494)$([char]1512)$([char]32)$([char]1495)$([char]1500)$([char]1493)$([char]1503)" }
+    "lblKbdEmoji" = @{ En = "Emoji Picker"; He = "$([char]1514)$([char]1508)$([char]1512)$([char]1497)$([char]1496)$([char]32)$([char]1505)$([char]1502)$([char]1497)$([char]1497)$([char]1500)$([char]1497)$([char]1501)$([char]32)$([char]40)$([char]1488)$([char]1497)$([char]1502)$([char]1493)$([char]1490)$([char]39)$([char]1497)$([char]41)" }
+    "lblKbdSettings" = @{ En = "Open Settings"; He = "$([char]1492)$([char]1490)$([char]1491)$([char]1512)$([char]1493)$([char]1514)" }
+    "lblKbdTaskMgr" = @{ En = "Open Task Manager"; He = "$([char]1502)$([char]1504)$([char]1492)$([char]1500)$([char]32)$([char]1492)$([char]1502)$([char]1513)$([char]1497)$([char]1502)$([char]1493)$([char]1514)" }
+    "lblKbdExplorer" = @{ En = "Open File Explorer"; He = "$([char]1505)$([char]1497)$([char]1497)$([char]1512)$([char]32)$([char]1492)$([char]1511)$([char]1489)$([char]1510)$([char]1497)$([char]1501)" }
+    "lblHdrWinMgmt" = @{ En = " Window Management"; He = "$([char]32)$([char]1504)$([char]1497)$([char]1492)$([char]1493)$([char]1500)$([char]32)$([char]1495)$([char]1500)$([char]1493)$([char]1504)$([char]1493)$([char]1514)" }
+    "lblHdrClip" = @{ En = " Screenshot & Clipboard"; He = "$([char]32)$([char]1510)$([char]1497)$([char]1500)$([char]1493)$([char]1501)$([char]32)$([char]1502)$([char]1505)$([char]1498)$([char]32)$([char]1493)$([char]1500)$([char]1493)$([char]1495)$([char]32)$([char]1492)$([char]1506)$([char]1514)$([char]1511)$([char]1492)" }
+    "lblKbdQuickLink" = @{ En = "Quick Link Menu"; He = "$([char]1514)$([char]1508)$([char]1512)$([char]1497)$([char]1496)$([char]32)$([char]1502)$([char]1513)$([char]1514)$([char]1502)$([char]1513)$([char]32)$([char]1502)$([char]1514)$([char]1511)$([char]1491)$([char]1501)" }
+    "lblKbdClipHist" = @{ En = "Clipboard History"; He = "$([char]1492)$([char]1497)$([char]1505)$([char]1496)$([char]1493)$([char]1512)$([char]1497)$([char]1497)$([char]1514)$([char]32)$([char]1492)$([char]1506)$([char]1514)$([char]1511)$([char]1493)$([char]1514)" }
+    "lblKbdSwitch" = @{ En = "Switch Between Windows"; He = "$([char]1506)$([char]1489)$([char]1493)$([char]1512)$([char]32)$([char]1489)$([char]1497)$([char]1503)$([char]32)$([char]1495)$([char]1500)$([char]1493)$([char]1504)$([char]1493)$([char]1514)" }
+    "lblKbdClose" = @{ En = "Close Active Window"; He = "$([char]1505)$([char]1490)$([char]1493)$([char]1512)$([char]32)$([char]1495)$([char]1500)$([char]1493)$([char]1503)$([char]32)$([char]1508)$([char]1506)$([char]1497)$([char]1500)" }
+    "lblHdrGeneralWin" = @{ En = " General Windows"; He = "$([char]32)$([char]1499)$([char]1500)$([char]1500)$([char]1497)$([char]32)$([char]45)$([char]32)$([char]1493)$([char]1493)$([char]1497)$([char]1504)$([char]1491)$([char]1493)$([char]1505)" }
+    "lblKbdDesktop" = @{ En = "Show/Hide Desktop"; He = "$([char]1492)$([char]1510)$([char]1490)$([char]47)$([char]1492)$([char]1505)$([char]1514)$([char]1512)$([char]32)$([char]1513)$([char]1493)$([char]1500)$([char]1495)$([char]1503)$([char]32)$([char]1506)$([char]1489)$([char]1493)$([char]1491)$([char]1492)" }
+    "lblKbdTaskView" = @{ En = "Task View (Virtual Desktops)"; He = "$([char]1514)$([char]1510)$([char]1493)$([char]1490)$([char]1514)$([char]32)$([char]1502)$([char]1513)$([char]1497)$([char]1502)$([char]1493)$([char]1514)$([char]32)$([char]40)$([char]1512)$([char]1497)$([char]1489)$([char]1493)$([char]1497)$([char]32)$([char]1513)$([char]1493)$([char]1500)$([char]1495)$([char]1504)$([char]1493)$([char]1514)$([char]41)" }
+
 }
 
 function Toggle-Language {
     $script:isHebrew = -not $script:isHebrew
+    $global:isHebrew = $script:isHebrew
     $mode = $(if ($script:isHebrew) { "He" } else { "En" })
     $flow = $(if ($script:isHebrew) { [System.Windows.FlowDirection]::RightToLeft } else { [System.Windows.FlowDirection]::LeftToRight })
         # Fix: Keep background from flipping by only mirroring the content grid
@@ -759,3 +1140,9 @@ function Update-StyleList {
 
 
 # MUSIC ENGINE
+
+
+
+
+
+

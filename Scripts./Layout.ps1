@@ -1,4 +1,4 @@
-﻿$xaml = @"
+$xaml = @"
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:wfi="clr-namespace:System.Windows.Forms.Integration;assembly=WindowsFormsIntegration"
@@ -191,6 +191,7 @@
             <Setter Property="FontWeight" Value="Normal"/>
             <Setter Property="Margin" Value="10,2"/>
             <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Effect" Value="{DynamicResource NeonGlow}"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
@@ -431,8 +432,31 @@
         </Style>
     </Window.Resources>
 
+    <Window.Triggers>
+        <EventTrigger RoutedEvent="Window.Loaded">
+            <BeginStoryboard>
+                <Storyboard>
+                    <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0.0" To="1.0" Duration="0:0:0.6" />
+                    <DoubleAnimation Storyboard.TargetName="MainScale" Storyboard.TargetProperty="ScaleX" From="0.95" To="1.0" Duration="0:0:0.6">
+                        <DoubleAnimation.EasingFunction>
+                            <CubicEase EasingMode="EaseOut"/>
+                        </DoubleAnimation.EasingFunction>
+                    </DoubleAnimation>
+                    <DoubleAnimation Storyboard.TargetName="MainScale" Storyboard.TargetProperty="ScaleY" From="0.95" To="1.0" Duration="0:0:0.6">
+                        <DoubleAnimation.EasingFunction>
+                            <CubicEase EasingMode="EaseOut"/>
+                        </DoubleAnimation.EasingFunction>
+                    </DoubleAnimation>
+                </Storyboard>
+            </BeginStoryboard>
+        </EventTrigger>
+    </Window.Triggers>
+
     <!-- MAIN CONTAINER -->
-    <Border Name="MainBorder" Background="{DynamicResource ThemeBg}" CornerRadius="{DynamicResource ThemeCornerRadius}" BorderBrush="{DynamicResource ThemeBorder}" BorderThickness="1">
+    <Border Name="MainBorder" Background="{DynamicResource ThemeBg}" CornerRadius="{DynamicResource ThemeCornerRadius}" BorderBrush="{DynamicResource ThemeBorder}" BorderThickness="1" RenderTransformOrigin="0.5,0.5">
+        <Border.RenderTransform>
+            <ScaleTransform x:Name="MainScale" ScaleX="1" ScaleY="1"/>
+        </Border.RenderTransform>
         <Grid Name="MainGrid">
             <Grid.ColumnDefinitions><ColumnDefinition Width="260"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
 
@@ -539,19 +563,8 @@
                             <!-- 1. HOME -->
                             <StackPanel Name="pnlHome" Visibility="Visible">
                                 <!-- DYNAMIC DASHBOARD HEADER -->
-                                <Border Margin="0,0,0,25" CornerRadius="12" Padding="20">
-                                    <Border.Background>
-                                        <SolidColorBrush Color="#22FFFFFF"/> <!-- Glass Effect -->
-                                    </Border.Background>
-                                    <Grid>
-                                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-                                        <StackPanel Grid.Column="0">
-                                            <TextBlock Name="lblGreeting" Text="Good Evening, User" FontSize="36" FontWeight="Bold" Foreground="{DynamicResource ThemeFg}"/>
-                                        </StackPanel>
-                                        <!-- Icon Removed -->
-                                    </Grid>
-                                </Border>
-                                
+                                <TextBlock Name="lblGreeting" Text="Good Evening, User" FontSize="34" FontWeight="Bold" Foreground="White" FontFamily="Segoe UI Variable Display, Segoe UI" Margin="0,0,0,25"/>
+
                                 <!-- 2-COLUMN LAYOUT -->
                                 <Grid Margin="0,0,0,30">
                                     <Grid.ColumnDefinitions>
@@ -586,31 +599,51 @@
                                                 <!-- Gauges Container (RAM + DISK) -->
                                                 <Grid Grid.Column="2" VerticalAlignment="Center">
                                                     
-                                                    <!-- MODERN BARS (Clean Linear Style) -->
-                                                    <StackPanel Name="pnlBarsModern" Visibility="{DynamicResource VisModern}" Width="200">
-                                                        <!-- RAM BAR -->
-                                                        <Grid Margin="0,0,0,15">
-                                                            <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
-                                                            <Grid Grid.Row="0" Margin="0,0,0,5">
-                                                                <TextBlock Name="lblRamTxt" Text="RAM Usage" Foreground="{DynamicResource ThemeSubText}" FontSize="12" HorizontalAlignment="Left"/>
-                                                                <TextBlock Name="txtRamPercModern" Text="0%" Foreground="{DynamicResource ThemeFg}" FontWeight="Bold" FontSize="12" HorizontalAlignment="Right"/>
-                                                            </Grid>
-                                                            <Border Grid.Row="1" Height="8" CornerRadius="4" Background="#333333">
-                                                                <Border Name="barRamFill" HorizontalAlignment="Left" Width="0" CornerRadius="4" Background="{DynamicResource ThemeAccent}"/>
-                                                            </Border>
-                                                        </Grid>
+                                                     <!-- MODERN RINGS (StrokeDashArray - perfectly aligned) -->
+                                                    <StackPanel Name="pnlBarsModern" Visibility="{DynamicResource VisModern}" Orientation="Horizontal" HorizontalAlignment="Center">
 
-                                                        <!-- DISK BAR -->
-                                                        <Grid>
-                                                            <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
-                                                            <Grid Grid.Row="0" Margin="0,0,0,5">
-                                                                <TextBlock Name="lblDiskTxt" Text="Disk (C:)" Foreground="{DynamicResource ThemeSubText}" FontSize="12" HorizontalAlignment="Left"/>
-                                                                <TextBlock Name="txtDiskPercModern" Text="0%" Foreground="{DynamicResource ThemeFg}" FontWeight="Bold" FontSize="12" HorizontalAlignment="Right"/>
+                                                        <!-- RAM Ring -->
+                                                        <StackPanel HorizontalAlignment="Center" Margin="0,0,24,0">
+                                                            <Grid Width="96" Height="96">
+                                                                <Ellipse Width="80" Height="80" Stroke="#333333" StrokeThickness="9" Fill="Transparent"/>
+                                                                <Ellipse Name="arcRamFill" Width="80" Height="80"
+                                                                         Stroke="{DynamicResource ThemeAccent}" StrokeThickness="9"
+                                                                         Fill="Transparent" StrokeDashOffset="0"
+                                                                         StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                                                         RenderTransformOrigin="0.5,0.5">
+                                                                    <Ellipse.RenderTransform><RotateTransform Angle="-90"/></Ellipse.RenderTransform>
+                                                                </Ellipse>
+                                                                <TextBlock Name="txtRamPercModern" Text="0%" FontSize="15" FontWeight="Bold"
+                                                                           Foreground="{DynamicResource ThemeFg}"
+                                                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                                             </Grid>
-                                                            <Border Grid.Row="1" Height="8" CornerRadius="4" Background="#333333">
-                                                                <Border Name="barDiskFill" HorizontalAlignment="Left" Width="0" CornerRadius="4" Background="{DynamicResource ThemeAccent}"/>
-                                                            </Border>
-                                                        </Grid>
+                                                            <TextBlock Name="lblRamTxt" Text="RAM" FontSize="11"
+                                                                       Foreground="{DynamicResource ThemeSubText}"
+                                                                       HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                                                        </StackPanel>
+
+                                                        <!-- Disk Ring -->
+                                                        <StackPanel HorizontalAlignment="Center">
+                                                            <Grid Width="96" Height="96">
+                                                                <Ellipse Width="80" Height="80" Stroke="#333333" StrokeThickness="9" Fill="Transparent"/>
+                                                                <Ellipse Name="arcDiskFill" Width="80" Height="80"
+                                                                         Stroke="{DynamicResource ThemeAccent}" StrokeThickness="9"
+                                                                         Fill="Transparent" StrokeDashOffset="0"
+                                                                         StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                                                         RenderTransformOrigin="0.5,0.5">
+                                                                    <Ellipse.RenderTransform><RotateTransform Angle="-90"/></Ellipse.RenderTransform>
+                                                                </Ellipse>
+                                                                <TextBlock Name="txtDiskPercModern" Text="0%" FontSize="15" FontWeight="Bold"
+                                                                           Foreground="{DynamicResource ThemeFg}"
+                                                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                            </Grid>
+                                                            <TextBlock Name="lblDiskTxt" Text="Disk C:" FontSize="11"
+                                                                       Foreground="{DynamicResource ThemeSubText}"
+                                                                       HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                                                        </StackPanel>
+
+                                                        <Border Name="barRamFill"  Width="0" Height="0" Visibility="Collapsed"/>
+                                                        <Border Name="barDiskFill" Width="0" Height="0" Visibility="Collapsed"/>
                                                     </StackPanel>
 
                                                     <!-- RETRO BARS (Win95 Style - PROTECTED) -->
@@ -640,7 +673,7 @@
                                     <!-- RIGHT CARD: SIMPLE CLOCK -->
                                     <Border Grid.Column="2" Style="{StaticResource CardStyle}">
                                         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                                            <TextBlock Name="lblTimeClock" Text="--:--" FontSize="72" FontWeight="Bold" Foreground="{DynamicResource ThemeFg}" HorizontalAlignment="Center"/>
+                                            <TextBlock Name="lblTimeClock" Text="--:--" FontSize="72" FontWeight="Bold" Foreground="{DynamicResource ThemeFg}" HorizontalAlignment="Center" TextAlignment="Center" Width="380" FontFamily="Consolas"/>
                                             <TextBlock Name="lblDateClock" Text="..." FontSize="16" Foreground="{DynamicResource ThemeSubText}" HorizontalAlignment="Center" Margin="0,10,0,0"/>
                                         </StackPanel>
                                     </Border>
@@ -671,6 +704,8 @@
                                                     <RowDefinition Height="Auto"/>
                                                     <RowDefinition Height="5"/>
                                                     <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="5"/>
+                                                    <RowDefinition Height="Auto"/>
                                                 </Grid.RowDefinitions>
                                                 
                                                 <!-- Row 1 -->
@@ -680,6 +715,9 @@
                                                 <!-- Row 2 -->
                                                 <Button Grid.Row="2" Grid.Column="0" Name="btnQuickUpdate" Content=" Win Update" Height="36" Style="{StaticResource ActionBtn}" ToolTip="Check for Updates"/>
                                                 <Button Grid.Row="2" Grid.Column="2" Name="btnQuickClean" Content=" Clean" Height="36" Style="{StaticResource ActionBtn}" ToolTip="Disk Cleanup"/>
+
+                                                <!-- Row 3 -->
+                                                <Button Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" Name="btnCreateDesktopShortcut" Content=" Create Desktop Shortcut" Height="36" Style="{StaticResource ActionBtn}" ToolTip="Create a CMD shortcut on Desktop to run this menu via IRM"/>
                                             </Grid>
                                         </StackPanel>
                                     </Border>
@@ -1375,18 +1413,59 @@
                                         </WrapPanel>
                                     </StackPanel>
                                  </Border>
+
+                                 <Border Style="{StaticResource CardStyle}" Padding="25" Margin="0,15,0,0">
+                                     <StackPanel>
+                                          <TextBlock Text=" Office &amp; Activation" FontSize="20" FontWeight="Bold" Foreground="{DynamicResource ThemeAccent}"/>
+                                          <TextBlock Text=" Select version, apps and language to install or manage activation." Foreground="{DynamicResource ThemeSubText}" Margin="0,5,0,15" TextWrapping="Wrap"/>
+                                          
+                                          <StackPanel Orientation="Horizontal" Margin="0,0,0,15">
+                                              <StackPanel Margin="0,0,20,0">
+                                                  <TextBlock Text="Version:" Foreground="{DynamicResource ThemeSubText}" FontSize="12" Margin="0,0,0,5"/>
+                                                  <ComboBox Name="cmbOfficeVersion" Width="220" Height="30" SelectedIndex="4">
+                                                      <ComboBoxItem Content="O365 Business (64-bit Heb)" FlowDirection="LeftToRight"/>
+                                                      <ComboBoxItem Content="O365 Enterprise (64-bit Heb)" FlowDirection="LeftToRight"/>
+                                                      <ComboBoxItem Content="Office ProPlus 2019 (64-bit Heb)" FlowDirection="LeftToRight"/>
+                                                      <ComboBoxItem Content="Office ProPlus 2021 (64-bit Heb)" FlowDirection="LeftToRight"/>
+                                                      <ComboBoxItem Content="Office ProPlus 2024 (64-bit Heb)" FlowDirection="LeftToRight"/>
+                                                      <ComboBoxItem Content="Office Standard 2019 (64-bit Heb)" FlowDirection="LeftToRight"/>
+                                                      <ComboBoxItem Content="Office Standard 2021 (64-bit Heb)" FlowDirection="LeftToRight"/>
+                                                      <ComboBoxItem Content="Office Standard 2024 (64-bit Heb)" FlowDirection="LeftToRight"/>
+                                                  </ComboBox>
+                                              </StackPanel>
+                                              <StackPanel Margin="0,0,20,0">
+                                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                                                        <TextBlock Text="Installation Type:" Foreground="{DynamicResource ThemeSubText}" FontSize="12" VerticalAlignment="Center"/>
+                                                        <Button Name="btnOfficeInfo" Content="&#xE946;" FontFamily="Segoe MDL2 Assets" Background="Transparent" Foreground="{DynamicResource ThemeAccent}" BorderThickness="0" Margin="5,0,0,0" FontSize="14" Cursor="Hand" ToolTip="Click to see what is included in each version"/>
+                                                    </StackPanel>
+                                                    <ComboBox Name="cmbOfficeType" Width="260" Height="30" SelectedIndex="0" FlowDirection="LeftToRight" HorizontalContentAlignment="Left">
+                                                        <ComboBoxItem Content="Basic (Word, Excel, PowerPoint)"/>
+                                                        <ComboBoxItem Content="Full (All Apps)"/>
+                                                    </ComboBox>
+                                                </StackPanel>
+                                          </StackPanel>
+
+                                          <WrapPanel>
+                                              <Button Name="btnInstallOffice" Content="Install Office" Width="180" Style="{StaticResource ActionBtn}" Background="#217346" Foreground="White" FontWeight="Bold" Margin="0,0,10,10"/>
+                                              <Button Name="btnRunMAS" Width="180" Style="{StaticResource ActionBtn}" Background="#0078D7" Foreground="White" FontWeight="Bold" Margin="0,0,10,10">
+                                                  <TextBlock Text="Run Activation (MAS)" FlowDirection="LeftToRight"/>
+                                              </Button>
+                                              <Button Name="btnRemoveOffice" Content="Remove Office" Width="180" Style="{StaticResource ActionBtn}" Background="#C42B1C" Foreground="White" FontWeight="Bold" Margin="0,0,10,10"/>
+                                          </WrapPanel>
+                                     </StackPanel>
+                                 </Border>
                             </StackPanel>
 
-                            <!-- KEYBOARD SHORTCUTS PANEL -->
+                                                        <!-- KEYBOARD SHORTCUTS PANEL -->
                             <StackPanel Name="pnlKeyboardShortcuts" Visibility="Collapsed">
-                                <TextBlock Text=" Keyboard Shortcuts" FontSize="32" FontWeight="Bold" Foreground="{DynamicResource ThemeFg}" Margin="0,0,0,20"/>
+                                <TextBlock Name="lblKeyboardShortcutsTitle" Text=" Keyboard Shortcuts" FontSize="32" FontWeight="Bold" Foreground="{DynamicResource ThemeFg}" Margin="0,0,0,20"/>
                                 
                                 <ScrollViewer VerticalScrollBarVisibility="Auto" Height="650">
                                     <StackPanel>
                                         <!-- General Windows Shortcuts -->
                                         <Border Style="{StaticResource CardStyle}" Padding="20" Margin="0,0,0,15">
                                             <StackPanel>
-                                                <TextBlock Text=" General Windows" FontSize="18" FontWeight="SemiBold" Foreground="{DynamicResource ThemeAccent}" Margin="0,0,0,15"/>
+                                                <TextBlock Name="lblHdrGeneralWin" Text=" General Windows" FontSize="18" FontWeight="SemiBold" Foreground="{DynamicResource ThemeAccent}" Margin="0,0,0,15"/>
                                                 <Grid>
                                                     <Grid.ColumnDefinitions>
                                                         <ColumnDefinition Width="200"/>
@@ -1401,23 +1480,23 @@
                                                         <RowDefinition Height="Auto"/>
                                                     </Grid.RowDefinitions>
                                                     
-                                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Win + I" FontFamily="Consolas" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource ThemeAccent}" Margin="0,5"/>
-                                                    <TextBlock Grid.Row="0" Grid.Column="1" Text="Open Settings" FontSize="14" Foreground="{DynamicResource ThemeSubText}" Margin="0,5"/>
+                                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Win + I" FontFamily="Consolas" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource ThemeAccent}" Margin="0,5" FlowDirection="LeftToRight" HorizontalAlignment="Left"/>
+                                                    <TextBlock Name="lblKbdSettings" Grid.Row="0" Grid.Column="1" Text="Open Settings" FontSize="14" Foreground="{DynamicResource ThemeSubText}" Margin="0,5"/>
                                                     
-                                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Win + X" FontFamily="Consolas" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource ThemeAccent}" Margin="0,5"/>
-                                                    <TextBlock Grid.Row="1" Grid.Column="1" Text="Quick Link Menu (Power User Menu)" FontSize="14" Foreground="{DynamicResource ThemeSubText}" Margin="0,5"/>
+                                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Win + X" FontFamily="Consolas" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource ThemeAccent}" Margin="0,5" FlowDirection="LeftToRight" HorizontalAlignment="Left"/>
+                                                    <TextBlock Name="lblKbdQuickLink" Grid.Row="1" Grid.Column="1" Text="Quick Link Menu" FontSize="14" Foreground="{DynamicResource ThemeSubText}" Margin="0,5"/>
                                                     
-                                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Win + E" FontFamily="Consolas" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource ThemeAccent}" Margin="0,5"/>
-                                                    <TextBlock Grid.Row="2" Grid.Column="1" Text="Open File Explorer" FontSize="14" Foreground="{DynamicResource ThemeSubText}" Margin="0,5"/>
+                                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Win + E" FontFamily="Consolas" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource ThemeAccent}" Margin="0,5" FlowDirection="LeftToRight" HorizontalAlignment="Left"/>
+                                                    <TextBlock Name="lblKbdExplorer" Grid.Row="2" Grid.Column="1" Text="Open File Explorer" FontSize="14" Foreground="{DynamicResource ThemeSubText}" Margin="0,5"/>
                                                     
-                                                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Win + R" FontFamily="Consolas" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource ThemeAccent}" Margin="0,5"/>
-                                                    <TextBlock Grid.Row="3" Grid.Column="1" Text="Open Run Dialog" FontSize="14" Foreground="{DynamicResource ThemeSubText}" Margin="0,5"/>
+                                                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Win + R" FontFamily="Consolas" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource ThemeAccent}" Margin="0,5" FlowDirection="LeftToRight" HorizontalAlignment="Left"/>
+                                                    <TextBlock Name="lblKbdRun" Grid.Row="3" Grid.Column="1" Text="Open Run Dialog" FontSize="14" Foreground="{DynamicResource ThemeSubText}" Margin="0,5"/>
                                                     
-                                                    <TextBlock Grid.Row="4" Grid.Column="0" Text="Win + L" FontFamily="Consolas" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource ThemeAccent}" Margin="0,5"/>
-                                                    <TextBlock Grid.Row="4" Grid.Column="1" Text="Lock Computer" FontSize="14" Foreground="{DynamicResource ThemeSubText}" Margin="0,5"/>
+                                                    <TextBlock Grid.Row="4" Grid.Column="0" Text="Win + L" FontFamily="Consolas" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource ThemeAccent}" Margin="0,5" FlowDirection="LeftToRight" HorizontalAlignment="Left"/>
+                                                    <TextBlock Name="lblKbdLock" Grid.Row="4" Grid.Column="1" Text="Lock Computer" FontSize="14" Foreground="{DynamicResource ThemeSubText}" Margin="0,5"/>
                                                     
-                                                    <TextBlock Grid.Row="5" Grid.Column="0" Text="Win + D" FontFamily="Consolas" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource ThemeAccent}" Margin="0,5"/>
-                                                    <TextBlock Grid.Row="5" Grid.Column="1" Text="Show/Hide Desktop" FontSize="14" Foreground="{DynamicResource ThemeSubText}" Margin="0,5"/>
+                                                    <TextBlock Grid.Row="5" Grid.Column="0" Text="Win + D" FontFamily="Consolas" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource ThemeAccent}" Margin="0,5" FlowDirection="LeftToRight" HorizontalAlignment="Left"/>
+                                                    <TextBlock Name="lblKbdDesktop" Grid.Row="5" Grid.Column="1" Text="Show/Hide Desktop" FontSize="14" Foreground="{DynamicResource ThemeSubText}" Margin="0,5"/>
                                                 </Grid>
                                             </StackPanel>
                                         </Border>
@@ -1425,7 +1504,7 @@
                                         <!-- Task Manager & System -->
                                         <Border Style="{StaticResource CardStyle}" Padding="20" Margin="0,0,0,15">
                                             <StackPanel>
-                                                <TextBlock Text=" Task Manager &amp; System" FontSize="18" FontWeight="SemiBold" Foreground="{DynamicResource ThemeAccent}" Margin="0,0,0,15"/>
+                                                <TextBlock Name="lblHdrTaskSys" Text=" Task Manager &amp; System" FontSize="18" FontWeight="SemiBold" Foreground="{DynamicResource ThemeAccent}" Margin="0,0,0,15"/>
                                                 <Grid>
                                                     <Grid.ColumnDefinitions>
                                                         <ColumnDefinition Width="200"/>
@@ -1438,17 +1517,17 @@
                                                         <RowDefinition Height="Auto"/>
                                                     </Grid.RowDefinitions>
                                                     
-                                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Ctrl + Shift + Esc" FontFamily="Consolas" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource ThemeAccent}" Margin="0,5"/>
-                                                    <TextBlock Grid.Row="0" Grid.Column="1" Text="Open Task Manager" FontSize="14" Foreground="{DynamicResource ThemeSubText}" Margin="0,5"/>
+                                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Ctrl + Shift + Esc" FontFamily="Consolas" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource ThemeAccent}" Margin="0,5" FlowDirection="LeftToRight" HorizontalAlignment="Left"/>
+                                                    <TextBlock Name="lblKbdTaskMgr" Grid.Row="0" Grid.Column="1" Text="Open Task Manager" FontSize="14" Foreground="{DynamicResource ThemeSubText}" Margin="0,5"/>
                                                     
-                                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Ctrl + Alt + Del" FontFamily="Consolas" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource ThemeAccent}" Margin="0,5"/>
-                                                    <TextBlock Grid.Row="1" Grid.Column="1" Text="Security Options Screen" FontSize="14" Foreground="{DynamicResource ThemeSubText}" Margin="0,5"/>
+                                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Ctrl + Alt + Del" FontFamily="Consolas" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource ThemeAccent}" Margin="0,5" FlowDirection="LeftToRight" HorizontalAlignment="Left"/>
+                                                    <TextBlock Name="lblKbdSecScreen" Grid.Row="1" Grid.Column="1" Text="Security Options Screen" FontSize="14" Foreground="{DynamicResource ThemeSubText}" Margin="0,5"/>
                                                     
-                                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Win + Pause" FontFamily="Consolas" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource ThemeAccent}" Margin="0,5"/>
-                                                    <TextBlock Grid.Row="2" Grid.Column="1" Text="System Properties" FontSize="14" Foreground="{DynamicResource ThemeSubText}" Margin="0,5"/>
+                                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Win + Pause" FontFamily="Consolas" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource ThemeAccent}" Margin="0,5" FlowDirection="LeftToRight" HorizontalAlignment="Left"/>
+                                                    <TextBlock Name="lblKbdSysProp" Grid.Row="2" Grid.Column="1" Text="System Properties" FontSize="14" Foreground="{DynamicResource ThemeSubText}" Margin="0,5"/>
                                                     
-                                                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Win + Tab" FontFamily="Consolas" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource ThemeAccent}" Margin="0,5"/>
-                                                    <TextBlock Grid.Row="3" Grid.Column="1" Text="Task View (Virtual Desktops)" FontSize="14" Foreground="{DynamicResource ThemeSubText}" Margin="0,5"/>
+                                                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Win + Tab" FontFamily="Consolas" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource ThemeAccent}" Margin="0,5" FlowDirection="LeftToRight" HorizontalAlignment="Left"/>
+                                                    <TextBlock Name="lblKbdTaskView" Grid.Row="3" Grid.Column="1" Text="Task View (Virtual Desktops)" FontSize="14" Foreground="{DynamicResource ThemeSubText}" Margin="0,5"/>
                                                 </Grid>
                                             </StackPanel>
                                         </Border>
@@ -1456,7 +1535,7 @@
                                         <!-- Window Management -->
                                         <Border Style="{StaticResource CardStyle}" Padding="20" Margin="0,0,0,15">
                                             <StackPanel>
-                                                <TextBlock Text=" Window Management" FontSize="18" FontWeight="SemiBold" Foreground="{DynamicResource ThemeAccent}" Margin="0,0,0,15"/>
+                                                <TextBlock Name="lblHdrWinMgmt" Text=" Window Management" FontSize="18" FontWeight="SemiBold" Foreground="{DynamicResource ThemeAccent}" Margin="0,0,0,15"/>
                                                 <Grid>
                                                     <Grid.ColumnDefinitions>
                                                         <ColumnDefinition Width="200"/>
@@ -1470,20 +1549,20 @@
                                                         <RowDefinition Height="Auto"/>
                                                     </Grid.RowDefinitions>
                                                     
-                                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Win + /" FontFamily="Consolas" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource ThemeAccent}" Margin="0,5"/>
-                                                    <TextBlock Grid.Row="0" Grid.Column="1" Text="Snap Window Left/Right" FontSize="14" Foreground="{DynamicResource ThemeSubText}" Margin="0,5"/>
+                                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Win + Arrows" FontFamily="Consolas" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource ThemeAccent}" Margin="0,5" FlowDirection="LeftToRight" HorizontalAlignment="Left"/>
+                                                    <TextBlock Name="lblKbdSnap" Grid.Row="0" Grid.Column="1" Text="Snap Window Left/Right" FontSize="14" Foreground="{DynamicResource ThemeSubText}" Margin="0,5"/>
                                                     
-                                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Win + " FontFamily="Consolas" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource ThemeAccent}" Margin="0,5"/>
-                                                    <TextBlock Grid.Row="1" Grid.Column="1" Text="Maximize Window" FontSize="14" Foreground="{DynamicResource ThemeSubText}" Margin="0,5"/>
+                                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Win + Up" FontFamily="Consolas" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource ThemeAccent}" Margin="0,5" FlowDirection="LeftToRight" HorizontalAlignment="Left"/>
+                                                    <TextBlock Name="lblKbdMax" Grid.Row="1" Grid.Column="1" Text="Maximize Window" FontSize="14" Foreground="{DynamicResource ThemeSubText}" Margin="0,5"/>
                                                     
-                                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Win + " FontFamily="Consolas" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource ThemeAccent}" Margin="0,5"/>
-                                                    <TextBlock Grid.Row="2" Grid.Column="1" Text="Minimize/Restore Window" FontSize="14" Foreground="{DynamicResource ThemeSubText}" Margin="0,5"/>
+                                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Win + Down" FontFamily="Consolas" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource ThemeAccent}" Margin="0,5" FlowDirection="LeftToRight" HorizontalAlignment="Left"/>
+                                                    <TextBlock Name="lblKbdMin" Grid.Row="2" Grid.Column="1" Text="Minimize/Restore Window" FontSize="14" Foreground="{DynamicResource ThemeSubText}" Margin="0,5"/>
                                                     
-                                                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Alt + F4" FontFamily="Consolas" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource ThemeAccent}" Margin="0,5"/>
-                                                    <TextBlock Grid.Row="3" Grid.Column="1" Text="Close Active Window" FontSize="14" Foreground="{DynamicResource ThemeSubText}" Margin="0,5"/>
+                                                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Alt + F4" FontFamily="Consolas" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource ThemeAccent}" Margin="0,5" FlowDirection="LeftToRight" HorizontalAlignment="Left"/>
+                                                    <TextBlock Name="lblKbdClose" Grid.Row="3" Grid.Column="1" Text="Close Active Window" FontSize="14" Foreground="{DynamicResource ThemeSubText}" Margin="0,5"/>
                                                     
-                                                    <TextBlock Grid.Row="4" Grid.Column="0" Text="Alt + Tab" FontFamily="Consolas" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource ThemeAccent}" Margin="0,5"/>
-                                                    <TextBlock Grid.Row="4" Grid.Column="1" Text="Switch Between Windows" FontSize="14" Foreground="{DynamicResource ThemeSubText}" Margin="0,5"/>
+                                                    <TextBlock Grid.Row="4" Grid.Column="0" Text="Alt + Tab" FontFamily="Consolas" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource ThemeAccent}" Margin="0,5" FlowDirection="LeftToRight" HorizontalAlignment="Left"/>
+                                                    <TextBlock Name="lblKbdSwitch" Grid.Row="4" Grid.Column="1" Text="Switch Between Windows" FontSize="14" Foreground="{DynamicResource ThemeSubText}" Margin="0,5"/>
                                                 </Grid>
                                             </StackPanel>
                                         </Border>
@@ -1491,7 +1570,7 @@
                                         <!-- Screenshot & Clipboard -->
                                         <Border Style="{StaticResource CardStyle}" Padding="20">
                                             <StackPanel>
-                                                <TextBlock Text=" Screenshot &amp; Clipboard" FontSize="18" FontWeight="SemiBold" Foreground="{DynamicResource ThemeAccent}" Margin="0,0,0,15"/>
+                                                <TextBlock Name="lblHdrClip" Text=" Screenshot &amp; Clipboard" FontSize="18" FontWeight="SemiBold" Foreground="{DynamicResource ThemeAccent}" Margin="0,0,0,15"/>
                                                 <Grid>
                                                     <Grid.ColumnDefinitions>
                                                         <ColumnDefinition Width="200"/>
@@ -1504,17 +1583,17 @@
                                                         <RowDefinition Height="Auto"/>
                                                     </Grid.RowDefinitions>
                                                     
-                                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Win + Shift + S" FontFamily="Consolas" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource ThemeAccent}" Margin="0,5"/>
-                                                    <TextBlock Grid.Row="0" Grid.Column="1" Text="Snipping Tool (Screenshot)" FontSize="14" Foreground="{DynamicResource ThemeSubText}" Margin="0,5"/>
+                                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Win + Shift + S" FontFamily="Consolas" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource ThemeAccent}" Margin="0,5" FlowDirection="LeftToRight" HorizontalAlignment="Left"/>
+                                                    <TextBlock Name="lblKbdSnip" Grid.Row="0" Grid.Column="1" Text="Snipping Tool (Screenshot)" FontSize="14" Foreground="{DynamicResource ThemeSubText}" Margin="0,5"/>
                                                     
-                                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="PrtScn" FontFamily="Consolas" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource ThemeAccent}" Margin="0,5"/>
-                                                    <TextBlock Grid.Row="1" Grid.Column="1" Text="Screenshot to Clipboard" FontSize="14" Foreground="{DynamicResource ThemeSubText}" Margin="0,5"/>
+                                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="PrtScn" FontFamily="Consolas" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource ThemeAccent}" Margin="0,5" FlowDirection="LeftToRight" HorizontalAlignment="Left"/>
+                                                    <TextBlock Name="lblKbdPrtScn" Grid.Row="1" Grid.Column="1" Text="Screenshot to Clipboard" FontSize="14" Foreground="{DynamicResource ThemeSubText}" Margin="0,5"/>
                                                     
-                                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Win + V" FontFamily="Consolas" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource ThemeAccent}" Margin="0,5"/>
-                                                    <TextBlock Grid.Row="2" Grid.Column="1" Text="Clipboard History" FontSize="14" Foreground="{DynamicResource ThemeSubText}" Margin="0,5"/>
+                                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Win + V" FontFamily="Consolas" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource ThemeAccent}" Margin="0,5" FlowDirection="LeftToRight" HorizontalAlignment="Left"/>
+                                                    <TextBlock Name="lblKbdClipHist" Grid.Row="2" Grid.Column="1" Text="Clipboard History" FontSize="14" Foreground="{DynamicResource ThemeSubText}" Margin="0,5"/>
                                                     
-                                                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Win + ." FontFamily="Consolas" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource ThemeAccent}" Margin="0,5"/>
-                                                    <TextBlock Grid.Row="3" Grid.Column="1" Text="Emoji Picker" FontSize="14" Foreground="{DynamicResource ThemeSubText}" Margin="0,5"/>
+                                                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Win + ." FontFamily="Consolas" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource ThemeAccent}" Margin="0,5" FlowDirection="LeftToRight" HorizontalAlignment="Left"/>
+                                                    <TextBlock Name="lblKbdEmoji" Grid.Row="3" Grid.Column="1" Text="Emoji Picker" FontSize="14" Foreground="{DynamicResource ThemeSubText}" Margin="0,5"/>
                                                 </Grid>
                                             </StackPanel>
                                         </Border>
@@ -1522,7 +1601,8 @@
                                 </ScrollViewer>
                             </StackPanel>
 
-                            <!-- 4. WINDOWS TOOLS (FULL) -->
+
+                              <!-- 4. WINDOWS TOOLS (FULL) -->
                             <StackPanel Name="pnlWindowsTools" Visibility="Collapsed">
                                 <TextBlock Name="lblWinTools" Text="Windows Tools" FontSize="32" FontWeight="Bold" Foreground="{DynamicResource ThemeFg}" Margin="0,0,0,20"/>
                                 <WrapPanel>
@@ -2228,19 +2308,18 @@
                                         </WrapPanel>
                                     </StackPanel>
                                 </Border>
-                                 
-                                 <Border Style="{StaticResource CardStyle}" Margin="0,0,0,12">
-                                     <StackPanel>
-                                         <TextBlock Text="Quick Desktop Themes" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource ThemeAccent}" Margin="0,0,0,10"/>
-                                         <WrapPanel>
-                                             <Button Name="btnThemeXP" Content="Windows XP Bliss" Style="{StaticResource ActionBtn}" Width="150" Height="34" Margin="0,0,6,6"/>
-                                             <Button Name="btnThemeVista7" Content="Windows 7 Aero" Style="{StaticResource ActionBtn}" Width="150" Height="34" Margin="0,0,6,6"/>
-                                             <Button Name="btnThemeXboxOG" Content="Xbox Original" Style="{StaticResource ActionBtn}" Width="150" Height="34" Margin="0,0,6,6"/>
-                                             <Button Name="btnThemeXbox360" Content="Xbox 360" Style="{StaticResource ActionBtn}" Width="150" Height="34" Margin="0,0,6,6"/>
-                                         </WrapPanel>
-                                     </StackPanel>
-                                 </Border>
-                                
+
+                                <Border Style="{StaticResource CardStyle}" Margin="0,0,0,12">
+                                    <StackPanel>
+                                        <TextBlock Text="Quick Desktop Themes" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource ThemeAccent}" Margin="0,0,0,10"/>
+                                        <WrapPanel>
+                                            <Button Name="btnThemeXP" Content="Windows XP Bliss" Style="{StaticResource ActionBtn}" Width="150" Height="34" Margin="0,0,6,6"/>
+                                            <Button Name="btnThemeVista7" Content="Windows 7 Aero" Style="{StaticResource ActionBtn}" Width="150" Height="34" Margin="0,0,6,6"/>
+                                            <Button Name="btnThemeXboxOG" Content="Xbox Original" Style="{StaticResource ActionBtn}" Width="150" Height="34" Margin="0,0,6,6"/>
+                                            <Button Name="btnThemeXbox360" Content="Xbox 360" Style="{StaticResource ActionBtn}" Width="150" Height="34" Margin="0,0,6,6"/>
+                                        </WrapPanel>
+                                    </StackPanel>
+                                </Border>
                                 <!-- Game Library + Side -->
                                 <Grid>
                                     <Grid.ColumnDefinitions>
