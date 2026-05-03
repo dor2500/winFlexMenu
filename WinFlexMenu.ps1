@@ -38,7 +38,28 @@ try {
 $ModuleDir = "C:\MENU\Modules"
 if (!(Test-Path $ModuleDir)) { New-Item $ModuleDir -ItemType Directory | Out-Null }
 
-# GitHub Sync Logic Disabled for Local Development
+
+# --- AUTO UPDATE LOGIC ---
+$githubBase = "https://raw.githubusercontent.com/dor2500/winFlexMenu/main/winFlexMenu/winFlexMenu"
+$moduleDir = "$PSScriptRoot\Modules"
+if (-not (Test-Path $moduleDir)) { New-Item -Path $moduleDir -ItemType Directory -Force }
+
+function Update-FromGitHub {
+    param([string]$fileName, [string]$subFolder = "Scripts")
+    try {
+        $url = "$githubBase/$subFolder/$fileName"
+        $dest = "$moduleDir/$fileName"
+        # Simple download - you can add hash checking later for speed
+        Invoke-WebRequest -Uri $url -OutFile $dest -TimeoutSec 5 -ErrorAction SilentlyContinue
+    } catch {}
+}
+
+# Update core modules on startup (Quietly)
+$modulesToUpdate = @("Menu_System.ps1", "Menu_Office.ps1", "Layout.ps1", "Menu_Gaming.ps1", "CoreUI.ps1", "Helpers.ps1")
+foreach ($m in $modulesToUpdate) {
+    Update-FromGitHub -fileName $m
+}
+
 # The system will strictly load modules from the local $ModuleDir.
 
 # 4. Load Core Definitions (Local Cached Versions)
