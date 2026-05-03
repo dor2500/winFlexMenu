@@ -39,7 +39,27 @@ $ModuleDir = "C:\MENU\Modules"
 if (!(Test-Path $ModuleDir)) { New-Item $ModuleDir -ItemType Directory | Out-Null }
 
 
-# --- AUTO UPDATE LOGIC ---
+
+# --- DYNAMIC GITHUB UPDATE LOGIC ---
+$githubBase = "https://raw.githubusercontent.com/dor2500/winFlexMenu/refs/heads/main/Scripts"
+$moduleDir = "C:\MENU\Modules"
+if (-not (Test-Path $moduleDir)) { New-Item -Path $moduleDir -ItemType Directory -Force }
+
+$filesToDownload = @(
+    "Assets.ps1", "CoreUI.ps1", "Helpers.ps1", "Layout.ps1", 
+    "Menu_Cinema.ps1", "Menu_Gaming.ps1", "Menu_Music.ps1", 
+    "Menu_Office.ps1", "Menu_System.ps1", "Menu_TV.ps1"
+)
+
+Write-Host "Checking for updates from GitHub..." -ForegroundColor Cyan
+foreach ($file in $filesToDownload) {
+    try {
+        $url = "$githubBase/$file"
+        $dest = Join-Path $moduleDir $file
+        Invoke-WebRequest -Uri $url -OutFile $dest -TimeoutSec 15 -ErrorAction SilentlyContinue
+    } catch {}
+}
+
 $githubBase = "https://raw.githubusercontent.com/dor2500/winFlexMenu/main/winFlexMenu/winFlexMenu"
 $moduleDir = "$PSScriptRoot\Modules"
 if (-not (Test-Path $moduleDir)) { New-Item -Path $moduleDir -ItemType Directory -Force }
