@@ -1,22 +1,22 @@
 # ==============================================================================
-# WinFlexOS - Office Module (Refined & Sorted)
+# WinFlexOS - Office Module (Logical Sort)
 # ==============================================================================
 
-# 1. Initialize Dropdowns with Sorted Values
+# 1. Initialize Dropdowns with Logical Grouping
 $cmbOfficeVersion = Get-GuiElement "cmbOfficeVersion"
 if ($cmbOfficeVersion) {
     $versions = @(
         "O365 Business (64-bit Heb)",
-        "O365 Enterprise (64-bit Heb)",
-        "Office ProPlus 2019 (64-bit Heb)",
-        "Office ProPlus 2021 (64-bit Heb)",
         "Office ProPlus 2024 (64-bit Heb)",
-        "Office Standard 2019 (64-bit Heb)",
+        "Office Standard 2024 (64-bit Heb)",
+        "Office ProPlus 2021 (64-bit Heb)",
         "Office Standard 2021 (64-bit Heb)",
-        "Office Standard 2024 (64-bit Heb)"
+        "Office ProPlus 2019 (64-bit Heb)",
+        "Office Standard 2019 (64-bit Heb)",
+        "O365 Enterprise (64-bit Heb)"
     )
     $cmbOfficeVersion.ItemsSource = $versions
-    $cmbOfficeVersion.SelectedIndex = 4 # Default to 2024
+    $cmbOfficeVersion.SelectedIndex = 1 # Default to ProPlus 2024
 }
 
 $cmbOfficeType = Get-GuiElement "cmbOfficeType"
@@ -26,7 +26,7 @@ if ($cmbOfficeType) {
     $cmbOfficeType.SelectedIndex = 0
 }
 
-# 2. Installation Handler
+# 2. Installation Handler (Matches sorted names)
 $btnInstallOffice = Get-GuiElement "btnInstallOffice"
 if ($btnInstallOffice) {
     Set-Click "btnInstallOffice" {
