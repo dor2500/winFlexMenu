@@ -42,7 +42,7 @@ if (!(Test-Path $ModuleDir)) { New-Item $ModuleDir -ItemType Directory | Out-Nul
 
 # --- DYNAMIC GITHUB UPDATE LOGIC ---
 $githubBase = "https://raw.githubusercontent.com/dor2500/winFlexMenu/refs/heads/main/Scripts"
-$moduleDir = "C:\MENU\Modules"
+$ModuleDir = "C:\MENU\Modules"
 if (-not (Test-Path $moduleDir)) { New-Item -Path $moduleDir -ItemType Directory -Force }
 
 $filesToDownload = @(
@@ -61,7 +61,7 @@ foreach ($file in $filesToDownload) {
 }
 
 $githubBase = "https://raw.githubusercontent.com/dor2500/winFlexMenu/main/winFlexMenu/winFlexMenu"
-$moduleDir = "$PSScriptRoot\Modules"
+$ModuleDir = "C:\MENU\Modules"
 if (-not (Test-Path $moduleDir)) { New-Item -Path $moduleDir -ItemType Directory -Force }
 
 function Update-FromGitHub {
