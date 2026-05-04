@@ -1,5 +1,5 @@
 # ==============================================================================
-# WinFlexOS - Office Module (Refined Version)
+# WinFlexOS - Office Module (Refined & Sorted)
 # ==============================================================================
 
 # 1. Initialize Dropdowns with Sorted Values
@@ -55,30 +55,16 @@ if ($btnInstallOffice) {
         $targetXml = "$xmlPrefix$xmlSuffix"
         $xmlPath = "C:\MENU\Tools\OfficeSetup\$targetXml"
         
-        # DEBUG: Let user know what we are looking for
-        Write-Host "Looking for: $xmlPath" -ForegroundColor Cyan
-        
         if (!(Test-Path $xmlPath)) {
-            $msg = "XML file not found: $targetXml`n`nLooking in: C:\MENU\Tools\OfficeSetup`n`nPlease ensure the file was downloaded correctly."
-            [System.Windows.Forms.MessageBox]::Show($msg, "File Not Found", "OK", "Error")
+            $msg = "XML file not found: $targetXml`n`nLooking in: C:\MENU\Tools\OfficeSetup"
+            [System.Windows.Forms.MessageBox]::Show($msg, "Error", "OK", "Error")
             return
         }
         
         $setupExe = "C:\MENU\Tools\OfficeSetup\setup.exe"
-        if (!(Test-Path $setupExe)) {
-            try {
-                Write-Host "Downloading ODT..." -ForegroundColor Yellow
-                Invoke-WebRequest -Uri "https://download.microsoft.com/download/2/7/A/27AF1BE6-DD20-4CB4-B154-EBAB8A7D4A7E/officedeploymenttool_18129-20030.exe" -OutFile "C:\MENU\Tools\OfficeSetup\odt.exe"
-                Start-Process -FilePath "C:\MENU\Tools\OfficeSetup\odt.exe" -ArgumentList "/extract:`"C:\MENU\Tools\OfficeSetup`" /quiet" -Wait
-            } catch {
-                [System.Windows.Forms.MessageBox]::Show("Failed to download Office Deployment Tool.", "Error", "OK", "Error")
-                return
-            }
-        }
-        
         if (Test-Path $setupExe) {
             Start-Process -FilePath $setupExe -ArgumentList "/configure `"$xmlPath`""
-            [System.Windows.Forms.MessageBox]::Show("Office Installation has started. Please wait.", "Success", "OK", "Information")
+            [System.Windows.Forms.MessageBox]::Show("Office Installation has started.", "Success", "OK", "Information")
         }
     }
 }
