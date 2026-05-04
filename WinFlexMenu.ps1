@@ -40,9 +40,10 @@ if (!(Test-Path $ModuleDir)) { New-Item $ModuleDir -ItemType Directory | Out-Nul
 
 
 
-# --- DYNAMIC GITHUB UPDATE LOGIC ---
+
+# --- SMART GITHUB UPDATE LOGIC ---
 $githubBase = "https://raw.githubusercontent.com/dor2500/winFlexMenu/refs/heads/main/Scripts"
-$ModuleDir = "C:\MENU\Modules"
+$moduleDir = "C:\MENU\Modules"
 if (-not (Test-Path $moduleDir)) { New-Item -Path $moduleDir -ItemType Directory -Force }
 
 $filesToDownload = @(
@@ -56,9 +57,30 @@ foreach ($file in $filesToDownload) {
     try {
         $url = "$githubBase/$file"
         $dest = Join-Path $moduleDir $file
-        Invoke-WebRequest -Uri $url -OutFile $dest -TimeoutSec 15 -ErrorAction SilentlyContinue
-    } catch {}
+        
+        $doDownload = $true
+        if (Test-Path $dest) {
+            # Check headers from GitHub without downloading the whole file
+            $headers = Invoke-WebRequest -Uri $url -Method Head -ErrorAction SilentlyContinue
+            $remoteDate = [DateTime]::Parse($headers.Headers."Last-Modified")
+            $localDate = (Get-Item $dest).LastWriteTime
+            
+            # If local file is newer or same as remote, skip download
+            if ($localDate -ge $remoteDate) { $doDownload = $false }
+        }
+
+        if ($doDownload) {
+            Invoke-WebRequest -Uri $url -OutFile $dest -TimeoutSec 15 -ErrorAction SilentlyContinue
+            Write-Host "Updated: $file" -ForegroundColor Green
+        }
+    } catch {
+        # Fallback if Head request fails or file missing
+        if (-not (Test-Path $dest)) {
+            Invoke-WebRequest -Uri $url -OutFile $dest -TimeoutSec 15 -ErrorAction SilentlyContinue
+        }
+    }
 }
+
 
 $githubBase = "https://raw.githubusercontent.com/dor2500/winFlexMenu/main/winFlexMenu/winFlexMenu"
 $ModuleDir = "C:\MENU\Modules"
