@@ -40,7 +40,6 @@ if ($btnInstallOffice) {
         $setupExe = "C:\MENU\Tools\OfficeSetup\setup.exe"
         if (Test-Path $setupExe) {
             Start-Process -FilePath $setupExe -ArgumentList "/configure `"$xmlPath`""
-            [System.Windows.Forms.MessageBox]::Show("Office Installation has started.", "Success", "OK", "Information")
         }
     }
 }
