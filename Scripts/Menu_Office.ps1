@@ -21,8 +21,8 @@ if ($btnInstallOffice) {
         }
         
         $xmlSuffix = ""
-        if ($typeStr -match "Basic") { $xmlSuffix = "_Basic.xml.xml" }
-        elseif ($typeStr -match "Full") { $xmlSuffix = "_Full.xml.xml" }
+        if ($typeStr -match "Basic") { $xmlSuffix = "_Basic.xml" }
+        elseif ($typeStr -match "Full") { $xmlSuffix = "_Full.xml" }
         
         $targetXml = "$xmlPrefix$xmlSuffix"
         $xmlPath = "C:\MENU\Tools\OfficeSetup\$targetXml"
