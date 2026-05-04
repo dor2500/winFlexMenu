@@ -9,6 +9,7 @@
 * **System Optimization:** One-click debloating and performance tweaks.
 * **Custom UI:** Modern interactive menus
 * **Modular Tools:** Quick access to essential WinFlexOS utilities and scripts.
+<img width="3830" height="2159" alt="image" src="https://github.com/user-attachments/assets/eff6275f-0b25-4954-97ff-3a0b79835e1a" />
 
 ## 🛠 Installation & Usage
 
