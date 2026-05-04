@@ -38,70 +38,7 @@ try {
 $ModuleDir = "C:\MENU\Modules"
 if (!(Test-Path $ModuleDir)) { New-Item $ModuleDir -ItemType Directory | Out-Null }
 
-
-
-
-# --- SMART GITHUB UPDATE LOGIC ---
-$githubBase = "https://raw.githubusercontent.com/dor2500/winFlexMenu/refs/heads/main/Scripts"
-$moduleDir = "C:\MENU\Modules"
-if (-not (Test-Path $moduleDir)) { New-Item -Path $moduleDir -ItemType Directory -Force }
-
-$filesToDownload = @(
-    "Assets.ps1", "CoreUI.ps1", "Helpers.ps1", "Layout.ps1", 
-    "Menu_Cinema.ps1", "Menu_Gaming.ps1", "Menu_Music.ps1", 
-    "Menu_Office.ps1", "Menu_System.ps1", "Menu_TV.ps1"
-)
-
-Write-Host "Checking for updates from GitHub..." -ForegroundColor Cyan
-foreach ($file in $filesToDownload) {
-    try {
-        $url = "$githubBase/$file"
-        $dest = Join-Path $moduleDir $file
-        
-        $doDownload = $true
-        if (Test-Path $dest) {
-            # Check headers from GitHub without downloading the whole file
-            $headers = Invoke-WebRequest -Uri $url -Method Head -ErrorAction SilentlyContinue
-            $remoteDate = [DateTime]::Parse($headers.Headers."Last-Modified")
-            $localDate = (Get-Item $dest).LastWriteTime
-            
-            # If local file is newer or same as remote, skip download
-            if ($localDate -ge $remoteDate) { $doDownload = $false }
-        }
-
-        if ($doDownload) {
-            Invoke-WebRequest -Uri $url -OutFile $dest -TimeoutSec 15 -ErrorAction SilentlyContinue
-            Write-Host "Updated: $file" -ForegroundColor Green
-        }
-    } catch {
-        # Fallback if Head request fails or file missing
-        if (-not (Test-Path $dest)) {
-            Invoke-WebRequest -Uri $url -OutFile $dest -TimeoutSec 15 -ErrorAction SilentlyContinue
-        }
-    }
-}
-
-
-$githubBase = "https://raw.githubusercontent.com/dor2500/winFlexMenu/main/winFlexMenu/winFlexMenu"
-$ModuleDir = "C:\MENU\Modules"
-if (-not (Test-Path $moduleDir)) { New-Item -Path $moduleDir -ItemType Directory -Force }
-
-function Update-FromGitHub {
-    param([string]$fileName, [string]$subFolder = "Scripts")
-    try {
-        $url = "$githubBase/$subFolder/$fileName"
-        $dest = "$moduleDir/$fileName"
-        # Simple download - you can add hash checking later for speed
-        Invoke-WebRequest -Uri $url -OutFile $dest -TimeoutSec 5 -ErrorAction SilentlyContinue
-    } catch {}
-}
-
-# Update core modules on startup (Quietly)
-$modulesToUpdate = @("Menu_System.ps1", "Menu_Office.ps1", "Layout.ps1", "Menu_Gaming.ps1", "CoreUI.ps1", "Helpers.ps1")
-foreach ($m in $modulesToUpdate) {
-    Update-FromGitHub -fileName $m
-}
-
+# GitHub Sync Logic Disabled for Local Development
 # The system will strictly load modules from the local $ModuleDir.
 
 # 4. Load Core Definitions (Local Cached Versions)
