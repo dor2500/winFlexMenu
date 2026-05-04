@@ -1422,16 +1422,16 @@ $xaml = @"
                                           <StackPanel Orientation="Horizontal" Margin="0,0,0,15">
                                               <StackPanel Margin="0,0,20,0">
                                                   <TextBlock Text="Version:" Foreground="{DynamicResource ThemeSubText}" FontSize="12" Margin="0,0,0,5"/>
-                                                  <ComboBox Name="cmbOfficeVersion" Width="220" Height="30" SelectedIndex="4">
-                                                      <ComboBoxItem Content="O365 Business (64-bit Heb)" FlowDirection="LeftToRight"/>
-                                                      <ComboBoxItem Content="O365 Enterprise (64-bit Heb)" FlowDirection="LeftToRight"/>
-                                                      <ComboBoxItem Content="Office ProPlus 2019 (64-bit Heb)" FlowDirection="LeftToRight"/>
-                                                      <ComboBoxItem Content="Office ProPlus 2021 (64-bit Heb)" FlowDirection="LeftToRight"/>
-                                                      <ComboBoxItem Content="Office ProPlus 2024 (64-bit Heb)" FlowDirection="LeftToRight"/>
-                                                      <ComboBoxItem Content="Office Standard 2019 (64-bit Heb)" FlowDirection="LeftToRight"/>
-                                                      <ComboBoxItem Content="Office Standard 2021 (64-bit Heb)" FlowDirection="LeftToRight"/>
-                                                      <ComboBoxItem Content="Office Standard 2024 (64-bit Heb)" FlowDirection="LeftToRight"/>
-                                                  </ComboBox>
+                                                  <ComboBox Name="cmbOfficeVersion" Width="220" Height="30" SelectedIndex="1">
+                                                        <ComboBoxItem Content="O365 Business (64-bit Heb)" FlowDirection="LeftToRight"/>
+                                                        <ComboBoxItem Content="Office ProPlus 2024 (64-bit Heb)" FlowDirection="LeftToRight"/>
+                                                        <ComboBoxItem Content="Office Standard 2024 (64-bit Heb)" FlowDirection="LeftToRight"/>
+                                                        <ComboBoxItem Content="Office ProPlus 2021 (64-bit Heb)" FlowDirection="LeftToRight"/>
+                                                        <ComboBoxItem Content="Office Standard 2021 (64-bit Heb)" FlowDirection="LeftToRight"/>
+                                                        <ComboBoxItem Content="Office ProPlus 2019 (64-bit Heb)" FlowDirection="LeftToRight"/>
+                                                        <ComboBoxItem Content="Office Standard 2019 (64-bit Heb)" FlowDirection="LeftToRight"/>
+                                                        <ComboBoxItem Content="O365 Enterprise (64-bit Heb)" FlowDirection="LeftToRight"/>
+                                                    </ComboBox>
                                               </StackPanel>
                                               <StackPanel Margin="0,0,20,0">
                                                     <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
