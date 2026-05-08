@@ -11,6 +11,7 @@ try {
 } catch {}
 
 # 1. Load Required Assemblies
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase, System.Windows.Forms, System.Drawing
 
 # 1.5. Show Minimal Splash Screen
@@ -41,33 +42,39 @@ $OfficeDir = "C:\MENU\Tools\OfficeSetup"
 if (!(Test-Path $ModuleDir)) { New-Item $ModuleDir -ItemType Directory -Force | Out-Null }
 if (!(Test-Path $OfficeDir)) { New-Item $OfficeDir -ItemType Directory -Force | Out-Null }
 
-# --- GitHub Sync (Online Update to Local Storage) ---
-$githubBase = "https://raw.githubusercontent.com/dor2500/winFlexMenu/main/Scripts"
-$officeBase = "https://raw.githubusercontent.com/dor2500/winFlexMenu/main/OfficeSetup/OfficeSetup"
 
-$moduleFiles = @("Assets.ps1", "CoreUI.ps1", "Helpers.ps1", "Layout.ps1", "Menu_Cinema.ps1", "Menu_Gaming.ps1", "Menu_Music.ps1", "Menu_Office.ps1", "Menu_System.ps1", "Menu_TV.ps1")
-$officeFiles = @(
-    "O365_Business_64bit_Heb_Basic.xml.xml", "O365_Business_64bit_Heb_Full.xml.xml",
-    "O365_Enterprise_64bit_Heb_Basic.xml.xml", "O365_Enterprise_64bit_Heb_Full.xml.xml",
-    "Office_ProPlus_2019_64bit_Heb_Basic.xml.xml", "Office_ProPlus_2019_64bit_Heb_Full.xml.xml",
-    "Office_ProPlus_2021_64bit_Heb_Basic.xml.xml", "Office_ProPlus_2021_64bit_Heb_Full.xml.xml",
-    "Office_ProPlus_2024_64bit_Heb_Basic.xml.xml", "Office_ProPlus_2024_64bit_Heb_Full.xml.xml"
-)
 
-# Perform Sync
+
+# --- ULTRA FAST SYNC (One-Check Logic) ---
+$moduleDir = "C:\MENU\Modules"
+$lastSyncFile = "C:\MENU\last_sync.txt"
+$githubApi = "https://api.github.com/repos/dor2500/winFlexMenu/branches/main"
+
 try {
-    # Update Modules
-    foreach ($f in $moduleFiles) {
-        Invoke-WebRequest -Uri "$githubBase/$f" -OutFile "$ModuleDir/$f" -TimeoutSec 10 -ErrorAction SilentlyContinue
-    }
-    # Update Office XMLs (Save as single .xml locally)
-    foreach ($f in $officeFiles) {
-        $localName = $f -replace "\.xml\.xml$", ".xml"
-        Invoke-WebRequest -Uri "$officeBase/$f" -OutFile "$OfficeDir/$localName" -TimeoutSec 10 -ErrorAction SilentlyContinue
+    # 1. Get latest commit SHA from GitHub API (Very fast)
+    $apiRes = Invoke-RestMethod -Uri $githubApi -TimeoutSec 2 -ErrorAction Stop
+    $latestSha = $apiRes.commit.sha
+    $localSha = ""
+    if (Test-Path $lastSyncFile) { $localSha = Get-Content $lastSyncFile }
+
+    # 2. If SHA matches, skip everything and open instantly
+    if ($latestSha -ne $localSha) {
+        Write-Host "New update detected! Syncing..." -ForegroundColor Cyan
+        $githubBase = "https://raw.githubusercontent.com/dor2500/winFlexMenu/main/Scripts"
+        $files = @("Assets.ps1", "CoreUI.ps1", "Helpers.ps1", "Layout.ps1", "Menu_Cinema.ps1", "Menu_Gaming.ps1", "Menu_Music.ps1", "Menu_Office.ps1", "Menu_System.ps1", "Menu_TV.ps1")
+        
+        foreach ($f in $files) {
+            Invoke-WebRequest -Uri "$githubBase/$f" -OutFile "$moduleDir/$f" -TimeoutSec 10 -ErrorAction SilentlyContinue
+        }
+        # Save new SHA after successful sync
+        $latestSha | Set-Content $lastSyncFile
     }
 } catch {
-    # Offline? No problem, script will use existing files in $ModuleDir
+    # If API fails or no internet, just proceed to open local files immediately
 }
+
+
+
 
 # 4. Load Core Definitions (From Local Disk)
 if (Test-Path "$ModuleDir\Helpers.ps1") { . "$ModuleDir\Helpers.ps1" }
