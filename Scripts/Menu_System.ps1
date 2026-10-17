@@ -188,23 +188,176 @@ Set-Click "btnCreateUser" {
     if ($u) { $p = Invoke-WpfDialog "Set Password" "Enter Password:" $true; try { if ($p) { & net user $u $p /add } else { & net user $u /add }; Refresh-Users } catch {} }
 }
 Set-Click "btnDeleteUser" {
-    if ($lstUsers.SelectedItem) { $u = $lstUsers.SelectedItem.Name; if ([System.Windows.Forms.MessageBox]::Show("Delete $u?", "Confirm", 4) -eq 'Yes') { & net user $u /delete; Refresh-Users } }
+    $lst = Get-GuiElement "lstUsers"
+    if ($lst -and $lst.SelectedItem) {
+        $u = $lst.SelectedItem.Name
+        if ([System.Windows.Forms.MessageBox]::Show("Delete user '$u'?", "Confirm Delete", [System.Windows.Forms.MessageBoxButtons]::YesNo, [System.Windows.Forms.MessageBoxIcon]::Warning) -eq [System.Windows.Forms.DialogResult]::Yes) {
+            & net user $u /delete
+            Refresh-Users
+        }
+    }
 }
-Set-Click "btnLusrmgr" { Start-Process lusrmgr.msc }
-Set-Click "btnClearTemp" { 
-    try { 
-        Remove-Item "$env:TEMP\*" -Recurse -Force -ErrorAction SilentlyContinue
-        Remove-Item "C:\Windows\Temp\*" -Recurse -Force -ErrorAction SilentlyContinue
-        [System.Windows.MessageBox]::Show("Temp cleaned!", "Success")
-    } catch {}
+Set-Click "btnResetPass" {
+    $lst = Get-GuiElement "lstUsers"
+    if ($lst -and $lst.SelectedItem) {
+        $u = $lst.SelectedItem.Name
+        $p = Invoke-WpfDialog "Reset Password" "Enter new password for $($u):" $true
+        if ($p) {
+            try {
+                & net user $u $p
+                Show-Toast "Password for $u reset successfully" "success"
+            } catch {
+                Show-Toast "Error resetting password: $($_.Exception.Message)" "error"
+            }
+        }
+    } else {
+        Show-Toast "Please select a user from the list first" "warning"
+    }
 }
-Set-Click "btnSfcDism" { Start-Process powershell "-NoExit -Command sfc /scannow; dism /online /cleanup-image /restorehealth" -Verb RunAs }
+Set-Click "btnToggleActive" {
+    $lst = Get-GuiElement "lstUsers"
+    if ($lst -and $lst.SelectedItem) {
+        $u = $lst.SelectedItem.Name
+        try {
+            if ($lst.SelectedItem.Enabled) {
+                & net user $u /active:no
+                Show-Toast "User $u disabled" "info"
+            } else {
+                & net user $u /active:yes
+                Show-Toast "User $u enabled" "success"
+            }
+            Refresh-Users
+        } catch {
+            Show-Toast "Error: $($_.Exception.Message)" "error"
+        }
+    } else {
+        Show-Toast "Please select a user from the list first" "warning"
+    }
+}
+Set-Click "btnToggleAdmin" {
+    $lst = Get-GuiElement "lstUsers"
+    if ($lst -and $lst.SelectedItem) {
+        $u = $lst.SelectedItem.Name
+        try {
+            if ($lst.SelectedItem.IsAdmin) {
+                & net localgroup Administrators $u /delete
+                Show-Toast "Removed $u from Administrators" "info"
+            } else {
+                & net localgroup Administrators $u /add
+                Show-Toast "Added $u to Administrators" "success"
+            }
+            Refresh-Users
+        } catch {
+            Show-Toast "Requires administrator privileges: $($_.Exception.Message)" "error"
+        }
+    } else {
+        Show-Toast "Please select a user from the list first" "warning"
+    }
+}
+Set-Click "btnLusrmgr" { Start-Process "lusrmgr.msc" }
+Set-Click "btnNetplwiz" { Start-Process "netplwiz.exe" }
 
-# AI HUB
-Set-Click "btnGPT" { Start-Process "https://chat.openai.com" }
-Set-Click "btnGemini" { Start-Process "https://gemini.google.com" }
-Set-Click "btnCopilot" { Start-Process "https://copilot.microsoft.com" }
-Set-Click "btnClaude" { Start-Process "https://claude.ai" }
-Set-Click "btnV0" { Start-Process "https://v0.dev" }
+# --- QUICK ACTION BUTTONS ---
+Set-Click "btnQuickCP" { Start-Process "control.exe" }
+Set-Click "btnQuickSettings" { Start-Process "ms-settings:" }
+Set-Click "btnQuickDevicesClassic" { Start-Process "explorer.exe" "shell:::{A8A91A66-3A7D-4424-8D24-04E180695C7A}" }
+Set-Click "btnQuickDevicesModern" { Start-Process "ms-settings:bluetooth" }
+Set-Click "btnQuickDevMgr" { Start-Process "devmgmt.msc" }
+Set-Click "btnQuickPrintMgmt" { Start-Process "printmanagement.msc" }
+Set-Click "btnQuickCTT" { Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -Command `"irm https://christitus.com/win | iex`"" -Verb RunAs }
+Set-Click "btnQuickUpdateMgr" { Switch-Panel "pnlUpdateMgr"; Refresh-UpdateHistory }
+Set-Click "btnQuickUpdate" { Start-Process "ms-settings:windowsupdate" }
+Set-Click "btnQuickClean" { Start-Process "cleanmgr.exe" }
 
-# Users are loaded lazily: the Users sidebar button calls Refresh-Users when the panel opens
+# --- HARDWARE TOOLS & REPORT ---
+Set-Click "btnResMon" { Start-Process "resmon.exe" }
+Set-Click "btnMsInfo" { Start-Process "msinfo32.exe" }
+Set-Click "btnDxDiag" { Start-Process "dxdiag.exe" }
+Set-Click "btnRefreshHw" {
+    Show-Toast "Refreshing hardware info..." "info"
+    Start-Job -ScriptBlock {
+        $res = @{}
+        try { $res.cpu = (Get-CimInstance Win32_Processor | Select-Object -First 1).Name.Trim() } catch {}
+        try {
+            $ram = Get-CimInstance Win32_PhysicalMemory
+            $totalRam = ($ram | Measure-Object -Property Capacity -Sum).Sum / 1GB
+            $res.ram = "Total: $([math]::Round($totalRam, 2)) GB | Slots: $($ram.Count) | Speed: $($ram[0].Speed) MHz"
+        } catch {}
+        try { $res.gpu = (Get-CimInstance Win32_VideoController | Select-Object -First 1).Name } catch {}
+        try {
+            $disks = Get-CimInstance Win32_DiskDrive | Where-Object { $_.MediaType -eq 'Fixed hard disk media' }
+            $res.disk = ($disks | ForEach-Object { "$($_.Model) ($([math]::Round($_.Size / 1GB, 0)) GB)" }) -join "`n"
+        } catch {}
+        try { $bio = Get-CimInstance Win32_BIOS; $res.bio = "$($bio.Manufacturer) v$($bio.SMBIOSBIOSVersion)" } catch {}
+        return $res
+    } | Out-Null
+
+    $t = New-Object System.Windows.Threading.DispatcherTimer
+    $t.Interval = [TimeSpan]::FromMilliseconds(400)
+    $attempts = 0
+    $t.Add_Tick({
+        $attempts++
+        $j = Get-Job | Where-Object { $_.Command -like "*Win32_Processor*" } | Select-Object -Last 1
+        if ($j -and $j.State -eq "Completed") {
+            $data = Receive-Job $j
+            Remove-Job $j
+            if ($data.cpu)  { $el = Get-GuiElement "txtHwCPU";  if ($el) { $el.Text = $data.cpu } }
+            if ($data.ram)  { $el = Get-GuiElement "txtHwRAM";  if ($el) { $el.Text = $data.ram } }
+            if ($data.gpu)  { $el = Get-GuiElement "txtHwGPU";  if ($el) { $el.Text = $data.gpu } }
+            if ($data.disk) { $el = Get-GuiElement "txtHwDisk"; if ($el) { $el.Text = $data.disk } }
+            if ($data.bio)  { $el = Get-GuiElement "txtHwBio";  if ($el) { $el.Text = $data.bio } }
+            Show-Toast "Hardware info refreshed" "success"
+            $t.Stop()
+        } elseif ($attempts -gt 15) {
+            $t.Stop()
+        }
+    })
+    $t.Start()
+}
+
+Set-Click "btnExportHw" {
+    $desktop = [Environment]::GetFolderPath('Desktop')
+    $path = "$desktop\Hardware_Report.txt"
+    Show-Toast "Generating Hardware Report..." "info"
+
+    Start-Job -ScriptBlock {
+        param($outPath)
+        try {
+            $info = "Hardware Report - WinFlexOS`nDate: $(Get-Date)`n" + ("-" * 40) + "`n"
+            $info += "OS: $((Get-CimInstance Win32_OperatingSystem).Caption)`n"
+            $info += "CPU: $((Get-CimInstance Win32_Processor).Name.Trim())`n"
+            $info += "RAM: $([math]::Round(((Get-CimInstance Win32_ComputerSystem).TotalPhysicalMemory / 1GB), 2)) GB`n"
+            $info += "GPU: $((Get-CimInstance Win32_VideoController).Name)`n"
+            $info += "Storage Drives:`n"
+            $disks = Get-CimInstance Win32_DiskDrive | Where-Object { $_.MediaType -eq 'Fixed hard disk media' }
+            foreach ($d in $disks) {
+                $info += "  - $($d.Model) ($([math]::Round($d.Size / 1GB, 0)) GB)`n"
+            }
+            $info | Out-File -FilePath $outPath -Encoding utf8
+            return $true
+        } catch {
+            return $false
+        }
+    } -ArgumentList $path | Out-Null
+
+    $t = New-Object System.Windows.Threading.DispatcherTimer
+    $t.Interval = [TimeSpan]::FromMilliseconds(500)
+    $attempts = 0
+    $t.Add_Tick({
+        $attempts++
+        $j = Get-Job | Where-Object { $_.Command -like "*Hardware_Report*" } | Select-Object -Last 1
+        if ($j -and $j.State -eq "Completed") {
+            $ok = Receive-Job $j
+            Remove-Job $j
+            if ($ok) {
+                Show-Toast "Hardware Report saved to Desktop!" "success"
+            } else {
+                Show-Toast "Error generating Hardware Report" "error"
+            }
+            $t.Stop()
+        } elseif ($attempts -gt 10) {
+            $t.Stop()
+        }
+    })
+    $t.Start()
+}

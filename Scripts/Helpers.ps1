@@ -205,7 +205,7 @@ function Switch-Panel {
         $el = Get-GuiElement $p
         if ($el) { $el.Visibility = "Collapsed" }
     }
-    $target = Get-GuiElement $TargetName
+    $target = if ($TargetName -is [string]) { Get-GuiElement $TargetName } else { $TargetName }
     if ($target) {
         $target.Visibility = "Visible"
         # Fade in the new panel (GPU-accelerated, zero CPU cost)

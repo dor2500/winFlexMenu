@@ -61,57 +61,64 @@ try {
 } catch {}
 
 # 2. DELTA SYNC: only files whose git blob SHA changed are downloaded, all in parallel.
+#    - Running from local repo      -> instantly sync local Scripts to ModuleDir (zero network delay).
 #    - Warm start & nothing changed  -> a single (already in-flight) API call, zero downloads.
 #    - Offline / API rate-limited    -> falls straight through to the local copies.
-$hasLocal = (Test-Path "$ModuleDir\Layout.ps1") -and (Test-Path "$ModuleDir\CoreUI.ps1") -and (Test-Path "$ModuleDir\Helpers.ps1")
-$apiWaitMs = if ($hasLocal) { 2500 } else { 20000 }   # first run has nothing local, so we must wait
+$isLocalRepo = $PSScriptRoot -and (Test-Path "$PSScriptRoot\Scripts\Layout.ps1")
+if ($isLocalRepo) {
+    Copy-Item "$PSScriptRoot\Scripts\*.ps1" -Destination $ModuleDir -Force
+    Remove-Item "$ModuleDir\Assets.ps1" -Force -ErrorAction SilentlyContinue
+} else {
+    $hasLocal = (Test-Path "$ModuleDir\Layout.ps1") -and (Test-Path "$ModuleDir\CoreUI.ps1") -and (Test-Path "$ModuleDir\Helpers.ps1")
+    $apiWaitMs = if ($hasLocal) { 2500 } else { 20000 }   # first run has nothing local, so we must wait
 
-try {
-    if ($treeTask -and $treeTask.Wait($apiWaitMs)) {
-        $remoteFiles = @((ConvertFrom-Json $treeTask.Result).tree | Where-Object {
-            $_.type -eq 'blob' -and $_.path -like 'Scripts/*.ps1' -and $_.path -ne 'Scripts/Assets.ps1'
-        })
+    try {
+        if ($treeTask -and $treeTask.Wait($apiWaitMs)) {
+            $remoteFiles = @((ConvertFrom-Json $treeTask.Result).tree | Where-Object {
+                $_.type -eq 'blob' -and $_.path -like 'Scripts/*.ps1' -and $_.path -ne 'Scripts/Assets.ps1'
+            })
 
-        $known = @{}
-        if (Test-Path $manifestFile) {
-            foreach ($line in [IO.File]::ReadAllLines($manifestFile)) {
-                $kv = $line.Split('|'); if ($kv.Count -eq 2) { $known[$kv[0]] = $kv[1] }
-            }
-        }
-
-        $pending = @()
-        foreach ($rf in $remoteFiles) {
-            $name = [IO.Path]::GetFileName($rf.path)
-            $dest = Join-Path $ModuleDir $name
-            if ($known[$name] -eq $rf.sha -and (Test-Path $dest)) { continue }
-            $wc = New-Object Net.WebClient
-            $wc.Headers['User-Agent'] = 'WinFlexMenu'
-            # ?v=<blob sha> makes every file version a unique URL -> never served stale by the raw CDN cache
-            $pending += [pscustomobject]@{
-                Name = $name; Dest = $dest; Tmp = "$dest.download"; Sha = $rf.sha
-                Task = $wc.DownloadFileTaskAsync("$repoRaw/$($rf.path)?v=$($rf.sha)", "$dest.download")
-            }
-        }
-
-        if ($pending.Count -gt 0) {
-            try { [void][Threading.Tasks.Task]::WaitAll([Threading.Tasks.Task[]]@($pending | ForEach-Object { $_.Task }), 30000) } catch {}
-            foreach ($p in $pending) {
-                # Only swap in files that fully downloaded (a half-written module would break the whole UI)
-                if ($p.Task.Status -eq 'RanToCompletion' -and (Test-Path $p.Tmp) -and (Get-Item $p.Tmp).Length -gt 0) {
-                    Move-Item $p.Tmp $p.Dest -Force
-                    $known[$p.Name] = $p.Sha
-                } else {
-                    Remove-Item $p.Tmp -Force -ErrorAction SilentlyContinue
+            $known = @{}
+            if (Test-Path $manifestFile) {
+                foreach ($line in [IO.File]::ReadAllLines($manifestFile)) {
+                    $kv = $line.Split('|'); if ($kv.Count -eq 2) { $known[$kv[0]] = $kv[1] }
                 }
             }
-            [IO.File]::WriteAllLines($manifestFile, [string[]]@($known.GetEnumerator() | ForEach-Object { "$($_.Key)|$($_.Value)" }))
-        }
 
-        # Legacy cleanup: the 7MB base64 Assets module was replaced by on-demand background files
-        Remove-Item "$ModuleDir\Assets.ps1" -Force -ErrorAction SilentlyContinue
+            $pending = @()
+            foreach ($rf in $remoteFiles) {
+                $name = [IO.Path]::GetFileName($rf.path)
+                $dest = Join-Path $ModuleDir $name
+                if ($known[$name] -eq $rf.sha -and (Test-Path $dest)) { continue }
+                $wc = New-Object Net.WebClient
+                $wc.Headers['User-Agent'] = 'WinFlexMenu'
+                # ?v=<blob sha> makes every file version a unique URL -> never served stale by the raw CDN cache
+                $pending += [pscustomobject]@{
+                    Name = $name; Dest = $dest; Tmp = "$dest.download"; Sha = $rf.sha
+                    Task = $wc.DownloadFileTaskAsync("$repoRaw/$($rf.path)?v=$($rf.sha)", "$dest.download")
+                }
+            }
+
+            if ($pending.Count -gt 0) {
+                try { [void][Threading.Tasks.Task]::WaitAll([Threading.Tasks.Task[]]@($pending | ForEach-Object { $_.Task }), 30000) } catch {}
+                foreach ($p in $pending) {
+                    # Only swap in files that fully downloaded (a half-written module would break the whole UI)
+                    if ($p.Task.Status -eq 'RanToCompletion' -and (Test-Path $p.Tmp) -and (Get-Item $p.Tmp).Length -gt 0) {
+                        Move-Item $p.Tmp $p.Dest -Force
+                        $known[$p.Name] = $p.Sha
+                    } else {
+                        Remove-Item $p.Tmp -Force -ErrorAction SilentlyContinue
+                    }
+                }
+                [IO.File]::WriteAllLines($manifestFile, [string[]]@($known.GetEnumerator() | ForEach-Object { "$($_.Key)|$($_.Value)" }))
+            }
+
+            # Legacy cleanup: the 7MB base64 Assets module was replaced by on-demand background files
+            Remove-Item "$ModuleDir\Assets.ps1" -Force -ErrorAction SilentlyContinue
+        }
+    } catch {
+        # No internet / API failure: proceed with the local files immediately
     }
-} catch {
-    # No internet / API failure: proceed with the local files immediately
 }
 
 # 3. Load Core Definitions (From Local Disk)

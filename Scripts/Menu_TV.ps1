@@ -1,4 +1,4 @@
-﻿function Install-WebView2-Libs {
+function Install-WebView2-Libs {
     try {
         if (-not (Test-Path $global:LibPath)) { New-Item -ItemType Directory -Force -Path $global:LibPath | Out-Null }
         $dllPath = "$global:LibPath\Microsoft.Web.WebView2.Wpf.dll"
@@ -87,6 +87,7 @@ function Initialize-IsraelTV-WebView2 {
 
 function Play-Channel-Internal ($url, $isAudio, $channelName, $siteUrl) {
     try {
+        $global:currentTVUrl = $siteUrl
         # Update UI Status
         $statusTxt = Get-GuiElement "lblTVStatusText"
         if ($statusTxt) { $statusTxt.Text = "Launching $channelName..." }
@@ -183,6 +184,23 @@ Set-Click "btnIsraelTV" { Show-IsraelTV-Panel }
 Set-Click "btnCh11" { Play-Channel-Internal "https://kan11.media.kan.org.il/hls/live/2024514/2024514/master.m3u8" $false "Kan 11" "https://www.kan.org.il/live/" }
 Set-Click "btnCh12" { Play-Channel-Internal "https://mako-keshet-live-hls.akamaized.net/hls/live/2033791/k12dvr/master.m3u8" $false "Keshet 12" "https://www.mako.co.il/mako-vod-live-tv/VOD-6540b8dcb64fd31006.htm" }
 Set-Click "btnCh13" { Play-Channel-Internal "https://d18b0e6mopany4.cloudfront.net/out/v1/08bc71cf0a0f4712b6b03c732b0e6d25/index.m3u8" $false "Reshet 13" "https://13tv.co.il/live/" }
+Set-Click "btnCh14" { Play-Channel-Internal "https://edge1.streamgate.net/now14/live/playlist.m3u8" $false "Now 14" "https://www.c-14.co.il/live" }
+Set-Click "btnCh23" { Play-Channel-Internal "https://kan23.media.kan.org.il/hls/live/2024691/2024691/master.m3u8" $false "Kan 23" "https://www.kan.org.il/live/tv.aspx?stationid=20" }
+Set-Click "btnCh99" { Play-Channel-Internal "https://knesset.gostreaming.tv/knesset/myStream/playlist.m3u8" $false "Knesset 99" "https://www.knesset.gov.il/broadcast/heb/knesset99.htm" }
+
+# Radio Stations
+Set-Click "btnRadGlz"     { Play-Channel-Internal "https://glz.streamgate.net/glz/glz/playlist.m3u8" $true "Galatz" "https://glz.co.il/%D7%92%D7%9C%D7%A6" }
+Set-Click "btnRadGlglz"   { Play-Channel-Internal "https://glz.streamgate.net/glz/glglz/playlist.m3u8" $true "Galgalatz" "https://glz.co.il/%D7%92%D7%9C%D7%92%D7%9C%D7%A6" }
+Set-Click "btnRadKan88"   { Play-Channel-Internal "https://kan88.media.kan.org.il/hls/live/202488/202488/master.m3u8" $true "Kan 88" "https://www.kan.org.il/radio/player.aspx?stationId=4" }
+Set-Click "btnRadReshetB" { Play-Channel-Internal "https://kanb.media.kan.org.il/hls/live/202482/202482/master.m3u8" $true "Kan Reshet Bet" "https://www.kan.org.il/radio/player.aspx?stationId=3" }
+
+Set-Click "btnLaunchExternal" {
+    if ($global:currentTVUrl) {
+        Start-Process $global:currentTVUrl
+    } else {
+        Start-Process "https://www.kan.org.il/live/"
+    }
+}
 
 # --- UNIFIED AI BUTTON INFO SYSTEM ---
 $script:ToolInfoMap = @{

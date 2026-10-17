@@ -582,6 +582,8 @@ $script:CurrentPanel = $pnlHome
 function Switch-Panel { 
     param($P) 
     if (!$P) { return }
+    if ($P -is [string]) { $P = Get-GuiElement $P }
+    if (!$P) { return }
 
     # 1. Hide Current Panel (Instant)
     if ($script:CurrentPanel -and $script:CurrentPanel -ne $P -and $script:CurrentPanel.Visibility -eq "Visible") {
@@ -1014,7 +1016,10 @@ function Invoke-OnlineApp {
     catch { [System.Windows.Forms.MessageBox]::Show("Download failed via script. Opening browser.", "Error"); Start-Process $Url } finally { [System.Windows.Forms.Cursor]::Current = [System.Windows.Forms.Cursors]::Default }
 }
 
-Set-Click "btnRunCTT" { Start-Process powershell "iwr -useb https://christitus.com/win | iex" -Verb RunAs }
+Set-Click "btnRunCTT" { Start-Process powershell "-NoProfile -ExecutionPolicy Bypass -Command `"irm https://christitus.com/win | iex`"" -Verb RunAs }
+Set-Click "btnCTTExplain" { [System.Windows.MessageBox]::Show("Chris Titus Tech Windows Utility (WinUtil):`n`nAutomates software installation, debloats Windows, configures performance tweaks, and fixes common issues.", "Chris Titus Tech Toolkit", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Information) }
+Set-Click "btnCTTWeb" { Start-Process "https://christitus.com/windows-tool/" }
+Set-Click "btnCTTGit" { Start-Process "https://github.com/ChrisTitusTech/winutil" }
 Set-Click "btnQuickCTT" { Start-Process powershell "iwr -useb https://christitus.com/win | iex" -Verb RunAs }
 Set-Click "btnQuickCP" { Start-Process control }
 Set-Click "btnQuickUpdate" { Start-Process ms-settings:windowsupdate }
@@ -1056,6 +1061,7 @@ function Send-To-Gemini {
 (Get-GuiElement "btnGenHebrew").Add_Click({ $scn = $scenariosHebrew | Get-Random; $sty = $stylesHebrew | Get-Random; $mods = Get-ActiveModifiers 'He'; Send-To-Gemini "Generate an image of $scn, $sty$mods." })
 (Get-GuiElement "btnGenEnglish").Add_Click({ $scn = $scenariosEnglish | Get-Random; $sty = $stylesEnglish | Get-Random; $mods = Get-ActiveModifiers 'En'; Send-To-Gemini "Generate an image of $scn, $sty$mods." })
 (Get-GuiElement "btnLaunchCustom").Add_Click({ Send-To-Gemini (Get-GuiElement "txtCustomInput").Text })
+Set-Click "btnSurpriseMe" { $scn = $scenariosEnglish | Get-Random; $sty = $stylesEnglish | Get-Random; $mods = Get-ActiveModifiers 'En'; Send-To-Gemini "Generate an image of $scn, $sty$mods." }
 Set-Click "btnNanoBanana" { Switch-Panel $pnlNanoBanana }
 Set-Click "btnBackToAI" { Switch-Panel $pnlAIBots }
 
