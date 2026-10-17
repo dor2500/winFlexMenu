@@ -18,22 +18,25 @@ $btnMax.Add_Click({
 $btnMax.Content = [char]0xE922
 
 # CLOCK TIMER (Updates every second)
+# Cultures are created once (not 3x per tick) and the date text is only rewritten when the day/language changes.
+$script:cultureHe = New-Object System.Globalization.CultureInfo("he-IL")
+$script:cultureEn = New-Object System.Globalization.CultureInfo("en-US")
+$script:lastDateKey = ""
 $clockTimer = New-Object System.Windows.Threading.DispatcherTimer
 $clockTimer.Interval = [TimeSpan]::FromSeconds(1)
 $clockTimer.Add_Tick({
         $now = [DateTime]::Now
         $lblTime = Get-GuiElement "lblTimeClock"
-        $lblDate = Get-GuiElement "lblDateClock"
         if ($lblTime) { $lblTime.Text = $now.ToString("HH:mm:ss") }
-        if ($lblDate) { 
-            $culture = if ($script:isHebrew) { New-Object System.Globalization.CultureInfo("he-IL") } else { New-Object System.Globalization.CultureInfo("en-US") }
-            $lblDate.Text = $now.ToString("dddd, MMMM dd, yyyy", $culture) 
-        }
-        # Header date sub-line
-        $hdrDate = $window.FindName("lblHeaderDate")
-        if ($hdrDate) { 
-            $culture = if ($script:isHebrew) { New-Object System.Globalization.CultureInfo("he-IL") } else { New-Object System.Globalization.CultureInfo("en-US") }
-            $hdrDate.Text = $now.ToString("dddd, dd MMMM yyyy", $culture) 
+        $dateKey = "$($now.DayOfYear)|$($script:isHebrew)"
+        if ($dateKey -ne $script:lastDateKey) {
+            $script:lastDateKey = $dateKey
+            $culture = if ($script:isHebrew) { $script:cultureHe } else { $script:cultureEn }
+            $lblDate = Get-GuiElement "lblDateClock"
+            if ($lblDate) { $lblDate.Text = $now.ToString("dddd, MMMM dd, yyyy", $culture) }
+            # Header date sub-line
+            $hdrDate = Get-GuiElement "lblHeaderDate"
+            if ($hdrDate) { $hdrDate.Text = $now.ToString("dddd, dd MMMM yyyy", $culture) }
         }
     })
 $clockTimer.Start()
@@ -94,8 +97,17 @@ $cmbThemes = Get-GuiElement "cmbThemes"
 $themeNames = @("Dracula", "Pitch Black", "Dark Gray", "Light Mode", "Midnight Blue", "Nordic Frost", "Tokyo Night", "Gruvbox", "Windows 98 Classic", "Windows 98 Dark", "Van Gogh", "The Great Wave", "Windows 95 Teal", "Abstract Mode", "Material You", "Nintendo Wii", "Super Mario", "Sony PlayStation 2", "Windows XP Bliss", "Windows 7 Aero", "Xbox Original", "Xbox 360", "GTA San Andreas", "Cyberpunk 2077", "Fallout Pip-Boy", "Goat Simulator", "Minecraft", "Halo 3", "Counter-Strike 1.6", "Half-Life 2", "Doom Classic", "Portal", "PS5 Dashboard", "Netflix Red", "Deep Space", "Custom Image")
 $themeNames | ForEach-Object { [void]$cmbThemes.Items.Add($_) }
 
-# STARTUP: Set a Random Theme by default
-$randomIndex = Get-Random -Minimum 0 -Maximum $themeNames.Count
+# Which theme index uses which background file (all of them live in the repo's /backgrounds folder)
+$script:themeBgFile = @{ 15 = "wii.png"; 16 = "mario.png"; 17 = "ps2.png"; 18 = "winxp.png"; 19 = "vista7.png"; 20 = "xbox_orig.png"; 21 = "xbox_360.png"; 22 = "gta_sa.png"; 23 = "cyberpunk.png"; 24 = "pipboy.png"; 25 = "goat.png"; 26 = "minecraft.png"; 27 = "halo3.png"; 28 = "cs16.png"; 29 = "hl2.png"; 30 = "doom.png"; 31 = "portal.png"; 32 = "ps5.png"; 33 = "netflix.png"; 34 = "space.png" }
+
+# STARTUP: Set a Random Theme by default.
+# Only themes that can render instantly are eligible: no remote-URL wallpapers (10, 11, 13), no empty
+# "Custom Image" slot (last), and image themes only when their file is already on disk, so the first
+# paint never blocks on the network.
+$eligibleThemes = @(0..($themeNames.Count - 2) | Where-Object {
+        ($_ -notin 10, 11, 13) -and (-not $script:themeBgFile.ContainsKey($_) -or (Test-AssetLocal $script:themeBgFile[$_]))
+    })
+$randomIndex = $eligibleThemes | Get-Random
 
 function Set-ResourceColor { 
     param($Key, $Hex) 
@@ -172,6 +184,26 @@ function Set-Resource {
     $window.Resources.Add($Key, $Value)
 }
 
+# Applies an image theme background from C:\MENU\backgrounds (downloaded from the repo on first use).
+# If the image is unavailable (offline) a solid dark background is used instead of a broken window.
+function Set-ThemeImage {
+    param([string]$Name)
+    $needsDownload = -not (Test-AssetLocal $Name)
+    if ($needsDownload) { [System.Windows.Input.Mouse]::OverrideCursor = [System.Windows.Input.Cursors]::Wait }
+    try { $img = Get-AssetBitmap -Name $Name }
+    finally { if ($needsDownload) { [System.Windows.Input.Mouse]::OverrideCursor = $null } }
+    if ($img) {
+        $bg = New-Object System.Windows.Media.ImageBrush
+        $bg.ImageSource = $img
+        $bg.Stretch = "UniformToFill"
+        $bg.Freeze()
+    } else {
+        $bg = New-Object System.Windows.Media.SolidColorBrush([System.Windows.Media.ColorConverter]::ConvertFromString("#0F0F0F"))
+    }
+    $window.Resources.Remove("ThemeBg")
+    $window.Resources.Add("ThemeBg", $bg)
+}
+
 $cmbThemes.Add_SelectionChanged({
         $i = $cmbThemes.SelectedIndex
         $btnC = Get-GuiElement "btnThemeCustom"
@@ -207,11 +239,7 @@ $cmbThemes.Add_SelectionChanged({
             13 { $imgBrush = New-Object System.Windows.Media.ImageBrush; $uri = New-Object System.Uri("https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop"); $imgBrush.ImageSource = New-Object System.Windows.Media.Imaging.BitmapImage($uri); $imgBrush.Stretch = "UniformToFill"; $window.Resources.Remove("ThemeBg"); $window.Resources.Add("ThemeBg", $imgBrush); Set-ResourceColor "ThemeSidebar" "#CC050510"; Set-ResourceColor "ThemeCardBg" "#991E1E2C"; Set-ResourceColor "ThemeFg" "#FFFFFF"; Set-ResourceColor "ThemeAccent" "#00E0FF"; Set-ResourceColor "ThemeSidebarFg" "#E0E0FF"; Set-ResourceColor "ThemeWinCtrl" "#FFFFFF"; Set-ResourceColor "ThemeSubText" "#B0B0C0"; Set-ResourceColor "ThemeTitleFg" "#FFFFFF"; Set-ResourceColor "ThemeBorder" "#33FFFFFF" }
             14 { Set-ResourceColor "ThemeBg" "#09090B"; Set-ResourceColor "ThemeSidebar" "#111111"; Set-ResourceColor "ThemeCardBg" "#18181B"; Set-ResourceColor "ThemeFg" "#FAFAFA"; Set-ResourceColor "ThemeAccent" "#4C8BF5"; Set-ResourceColor "ThemeSidebarFg" "#A1A1AA"; Set-ResourceColor "ThemeWinCtrl" "#E4E4E7"; Set-ResourceColor "ThemeSubText" "#71717A"; Set-ResourceColor "ThemeTitleFg" "#4C8BF5"; Set-ResourceColor "ThemeBorder" "#27272A"; Set-Resource "ThemeCornerRadius" (New-Object System.Windows.CornerRadius(24)) }
             15 { 
-                $imgBrush = New-Object System.Windows.Media.ImageBrush
-                $imgBrush.ImageSource = Get-AssetBitmap -Name "wii.png"
-                $imgBrush.Stretch = "UniformToFill"
-                $window.Resources.Remove("ThemeBg")
-                $window.Resources.Add("ThemeBg", $imgBrush)
+                Set-ThemeImage "wii.png"
                 
                 Set-ResourceColor "ThemeSidebar" "#EEF2F5"
                 Set-ResourceColor "ThemeCardBg" "#FFFFFF"
@@ -233,11 +261,7 @@ $cmbThemes.Add_SelectionChanged({
                 if ($date) { $date.Foreground = $wiiBlue }
             }
             16 { # Super Mario
-                $imgBrush = New-Object System.Windows.Media.ImageBrush
-                $imgBrush.ImageSource = Get-AssetBitmap -Name "mario.png"
-                $imgBrush.Stretch = "UniformToFill"
-                $window.Resources.Remove("ThemeBg")
-                $window.Resources.Add("ThemeBg", $imgBrush)
+                Set-ThemeImage "mario.png"
                 Set-ResourceColor "ThemeSidebar" "#B01E1A"
                 Set-ResourceColor "ThemeCardBg" "#049CD8"
                 Set-ResourceColor "ThemeFg" "#FFFFFF"
@@ -249,11 +273,7 @@ $cmbThemes.Add_SelectionChanged({
                 Set-ResourceColor "ThemeBorder" "#FFFFFF"
             }
             17 { # PS2
-                $imgBrush = New-Object System.Windows.Media.ImageBrush
-                $imgBrush.ImageSource = Get-AssetBitmap -Name "ps2.png"
-                $imgBrush.Stretch = "UniformToFill"
-                $window.Resources.Remove("ThemeBg")
-                $window.Resources.Add("ThemeBg", $imgBrush)
+                Set-ThemeImage "ps2.png"
                 Set-ResourceColor "ThemeSidebar" "#000000"
                 Set-ResourceColor "ThemeCardBg" "#001A4D"
                 Set-ResourceColor "ThemeFg" "#FFFFFF"
@@ -265,11 +285,7 @@ $cmbThemes.Add_SelectionChanged({
                 Set-ResourceColor "ThemeBorder" "#004080"
             }
             18 { # Windows XP Bliss
-                $imgBrush = New-Object System.Windows.Media.ImageBrush
-                $imgBrush.ImageSource = Get-AssetBitmap -Name "winxp.png"
-                $imgBrush.Stretch = "UniformToFill"
-                $window.Resources.Remove("ThemeBg")
-                $window.Resources.Add("ThemeBg", $imgBrush)
+                Set-ThemeImage "winxp.png"
                 Set-ResourceColor "ThemeSidebar" "#FF245EDB"
                 Set-ResourceColor "ThemeCardBg" "#E0F0F0F0"
                 Set-ResourceColor "ThemeFg" "#003399"
@@ -284,11 +300,7 @@ $cmbThemes.Add_SelectionChanged({
                 Set-Resource "ThemeBorderThickness" (New-Object System.Windows.Thickness(3))
             }
             19 { # Windows 7 Official Harmony
-                $imgBrush = New-Object System.Windows.Media.ImageBrush
-                $imgBrush.ImageSource = Get-AssetBitmap -Name "vista7.png"
-                $imgBrush.Stretch = "UniformToFill"
-                $window.Resources.Remove("ThemeBg")
-                $window.Resources.Add("ThemeBg", $imgBrush)
+                Set-ThemeImage "vista7.png"
                 Set-ResourceColor "ThemeFg" "#001A33"
                 Set-ResourceColor "ThemeAccent" "#00A2E8"
                 Set-ResourceColor "ThemeSidebarFg" "#002244"
@@ -311,11 +323,7 @@ $cmbThemes.Add_SelectionChanged({
                 Set-Resource "ThemeCardBg" $cardGrad
             }
             20 { # Xbox Original
-                $imgBrush = New-Object System.Windows.Media.ImageBrush
-                $imgBrush.ImageSource = Get-AssetBitmap -Name "xbox_orig.png"
-                $imgBrush.Stretch = "UniformToFill"
-                $window.Resources.Remove("ThemeBg")
-                $window.Resources.Add("ThemeBg", $imgBrush)
+                Set-ThemeImage "xbox_orig.png"
                 Set-ResourceColor "ThemeSidebar" "#CC051005"
                 Set-ResourceColor "ThemeCardBg" "#990A200A"
                 Set-ResourceColor "ThemeFg" "#33FF33"
@@ -327,11 +335,7 @@ $cmbThemes.Add_SelectionChanged({
                 Set-ResourceColor "ThemeBorder" "#00AA00"
             }
             21 { # Xbox 360
-                $imgBrush = New-Object System.Windows.Media.ImageBrush
-                $imgBrush.ImageSource = Get-AssetBitmap -Name "xbox_360.png"
-                $imgBrush.Stretch = "UniformToFill"
-                $window.Resources.Remove("ThemeBg")
-                $window.Resources.Add("ThemeBg", $imgBrush)
+                Set-ThemeImage "xbox_360.png"
                 Set-ResourceColor "ThemeSidebar" "#CCF0F0F0"
                 Set-ResourceColor "ThemeCardBg" "#EEFFFFFF"
                 Set-ResourceColor "ThemeFg" "#333333"
@@ -344,11 +348,7 @@ $cmbThemes.Add_SelectionChanged({
                 Set-Resource "ThemeCornerRadius" (New-Object System.Windows.CornerRadius(10))
             }
             22 { # GTA San Andreas
-                $imgBrush = New-Object System.Windows.Media.ImageBrush
-                $imgBrush.ImageSource = New-Object System.Windows.Media.Imaging.BitmapImage(New-Object System.Uri("C:\MENU\backgrounds\gta_sa.png"))
-                $imgBrush.Stretch = "UniformToFill"
-                $window.Resources.Remove("ThemeBg")
-                $window.Resources.Add("ThemeBg", $imgBrush)
+                Set-ThemeImage "gta_sa.png"
                 
                 Set-ResourceColor "ThemeSidebar" "#CC103010"
                 Set-ResourceColor "ThemeCardBg" "#E6E5D4B2"
@@ -364,11 +364,7 @@ $cmbThemes.Add_SelectionChanged({
                 Set-Resource "ThemeBorderThickness" (New-Object System.Windows.Thickness(3))
             }
             23 { # Cyberpunk 2077
-                $imgBrush = New-Object System.Windows.Media.ImageBrush
-                $imgBrush.ImageSource = New-Object System.Windows.Media.Imaging.BitmapImage(New-Object System.Uri("C:\MENU\backgrounds\cyberpunk.png"))
-                $imgBrush.Stretch = "UniformToFill"
-                $window.Resources.Remove("ThemeBg")
-                $window.Resources.Add("ThemeBg", $imgBrush)
+                Set-ThemeImage "cyberpunk.png"
                 
                 Set-ResourceColor "ThemeSidebar" "#CC0F0F0F"
                 Set-ResourceColor "ThemeCardBg" "#E61A1A1A"
@@ -382,11 +378,7 @@ $cmbThemes.Add_SelectionChanged({
                 Set-Resource "ThemeCornerRadius" (New-Object System.Windows.CornerRadius(0))
             }
             24 { # Fallout Pip-Boy
-                $imgBrush = New-Object System.Windows.Media.ImageBrush
-                $imgBrush.ImageSource = New-Object System.Windows.Media.Imaging.BitmapImage(New-Object System.Uri("C:\MENU\backgrounds\pipboy.png"))
-                $imgBrush.Stretch = "UniformToFill"
-                $window.Resources.Remove("ThemeBg")
-                $window.Resources.Add("ThemeBg", $imgBrush)
+                Set-ThemeImage "pipboy.png"
                 
                 Set-ResourceColor "ThemeSidebar" "#EE0A140A"
                 Set-ResourceColor "ThemeCardBg" "#EE0F1E0F"
@@ -401,11 +393,7 @@ $cmbThemes.Add_SelectionChanged({
                 Set-Resource "ThemeCornerRadius" (New-Object System.Windows.CornerRadius(10))
             }
             25 { # Goat Simulator
-                $imgBrush = New-Object System.Windows.Media.ImageBrush
-                $imgBrush.ImageSource = New-Object System.Windows.Media.Imaging.BitmapImage(New-Object System.Uri("C:\MENU\backgrounds\goat.png"))
-                $imgBrush.Stretch = "UniformToFill"
-                $window.Resources.Remove("ThemeBg")
-                $window.Resources.Add("ThemeBg", $imgBrush)
+                Set-ThemeImage "goat.png"
                 
                 Set-ResourceColor "ThemeSidebar" "#B34A3018"
                 Set-ResourceColor "ThemeCardBg" "#E688C43F"
@@ -421,11 +409,7 @@ $cmbThemes.Add_SelectionChanged({
                 Set-Resource "ThemeBorderThickness" (New-Object System.Windows.Thickness(4))
             }
             26 { # Minecraft
-                $imgBrush = New-Object System.Windows.Media.ImageBrush
-                $imgBrush.ImageSource = New-Object System.Windows.Media.Imaging.BitmapImage(New-Object System.Uri("C:\MENU\backgrounds\minecraft.png"))
-                $imgBrush.Stretch = "UniformToFill"
-                $window.Resources.Remove("ThemeBg")
-                $window.Resources.Add("ThemeBg", $imgBrush)
+                Set-ThemeImage "minecraft.png"
                 
                 Set-ResourceColor "ThemeSidebar" "#995C3A21"
                 Set-ResourceColor "ThemeCardBg" "#E68D9F65"
@@ -441,11 +425,7 @@ $cmbThemes.Add_SelectionChanged({
                 Set-Resource "ThemeBorderThickness" (New-Object System.Windows.Thickness(2))
             }
             27 { # Halo 3
-                $imgBrush = New-Object System.Windows.Media.ImageBrush
-                $imgBrush.ImageSource = New-Object System.Windows.Media.Imaging.BitmapImage(New-Object System.Uri("C:\MENU\backgrounds\halo3.png"))
-                $imgBrush.Stretch = "UniformToFill"
-                $window.Resources.Remove("ThemeBg")
-                $window.Resources.Add("ThemeBg", $imgBrush)
+                Set-ThemeImage "halo3.png"
                 
                 Set-ResourceColor "ThemeSidebar" "#CC15202B"
                 Set-ResourceColor "ThemeCardBg" "#DD1D3043"
@@ -460,11 +440,7 @@ $cmbThemes.Add_SelectionChanged({
                 Set-Resource "ThemeCornerRadius" (New-Object System.Windows.CornerRadius(8))
             }
             28 { # Counter-Strike 1.6
-                $imgBrush = New-Object System.Windows.Media.ImageBrush
-                $imgBrush.ImageSource = New-Object System.Windows.Media.Imaging.BitmapImage(New-Object System.Uri("C:\MENU\backgrounds\cs16.png"))
-                $imgBrush.Stretch = "UniformToFill"
-                $window.Resources.Remove("ThemeBg")
-                $window.Resources.Add("ThemeBg", $imgBrush)
+                Set-ThemeImage "cs16.png"
                 
                 Set-ResourceColor "ThemeSidebar" "#CC434839"
                 Set-ResourceColor "ThemeCardBg" "#E6CDAA7A"
@@ -479,11 +455,7 @@ $cmbThemes.Add_SelectionChanged({
                 Set-Resource "ThemeCornerRadius" (New-Object System.Windows.CornerRadius(0))
             }
             29 { # Half-Life 2
-                $imgBrush = New-Object System.Windows.Media.ImageBrush
-                $imgBrush.ImageSource = New-Object System.Windows.Media.Imaging.BitmapImage(New-Object System.Uri("C:\MENU\backgrounds\hl2.png"))
-                $imgBrush.Stretch = "UniformToFill"
-                $window.Resources.Remove("ThemeBg")
-                $window.Resources.Add("ThemeBg", $imgBrush)
+                Set-ThemeImage "hl2.png"
                 
                 Set-ResourceColor "ThemeSidebar" "#CC292E31"
                 Set-ResourceColor "ThemeCardBg" "#DD40474A"
@@ -498,11 +470,7 @@ $cmbThemes.Add_SelectionChanged({
                 Set-Resource "ThemeCornerRadius" (New-Object System.Windows.CornerRadius(2))
             }
             30 { # Doom Classic
-                $imgBrush = New-Object System.Windows.Media.ImageBrush
-                $imgBrush.ImageSource = New-Object System.Windows.Media.Imaging.BitmapImage(New-Object System.Uri("C:\MENU\backgrounds\doom.png"))
-                $imgBrush.Stretch = "UniformToFill"
-                $window.Resources.Remove("ThemeBg")
-                $window.Resources.Add("ThemeBg", $imgBrush)
+                Set-ThemeImage "doom.png"
                 
                 Set-ResourceColor "ThemeSidebar" "#CC220000"
                 Set-ResourceColor "ThemeCardBg" "#E6440505"
@@ -517,11 +485,7 @@ $cmbThemes.Add_SelectionChanged({
                 Set-Resource "ThemeCornerRadius" (New-Object System.Windows.CornerRadius(0))
             }
             31 { # Portal
-                $imgBrush = New-Object System.Windows.Media.ImageBrush
-                $imgBrush.ImageSource = New-Object System.Windows.Media.Imaging.BitmapImage(New-Object System.Uri("C:\MENU\backgrounds\portal.png"))
-                $imgBrush.Stretch = "UniformToFill"
-                $window.Resources.Remove("ThemeBg")
-                $window.Resources.Add("ThemeBg", $imgBrush)
+                Set-ThemeImage "portal.png"
                 
                 Set-ResourceColor "ThemeSidebar" "#CCEEEEEE"
                 Set-ResourceColor "ThemeCardBg" "#F5FFFFFF"
@@ -536,11 +500,7 @@ $cmbThemes.Add_SelectionChanged({
                 Set-Resource "ThemeCornerRadius" (New-Object System.Windows.CornerRadius(10))
             }
             32 { # PS5 Dashboard
-                $imgBrush = New-Object System.Windows.Media.ImageBrush
-                $imgBrush.ImageSource = New-Object System.Windows.Media.Imaging.BitmapImage(New-Object System.Uri("C:\MENU\backgrounds\ps5.png"))
-                $imgBrush.Stretch = "UniformToFill"
-                $window.Resources.Remove("ThemeBg")
-                $window.Resources.Add("ThemeBg", $imgBrush)
+                Set-ThemeImage "ps5.png"
                 
                 Set-ResourceColor "ThemeSidebar" "#99000C24"
                 Set-ResourceColor "ThemeCardBg" "#B300133A"
@@ -555,11 +515,7 @@ $cmbThemes.Add_SelectionChanged({
                 Set-Resource "ThemeCornerRadius" (New-Object System.Windows.CornerRadius(14))
             }
             33 { # Netflix Red
-                $imgBrush = New-Object System.Windows.Media.ImageBrush
-                $imgBrush.ImageSource = New-Object System.Windows.Media.Imaging.BitmapImage(New-Object System.Uri("C:\MENU\backgrounds\netflix.png"))
-                $imgBrush.Stretch = "UniformToFill"
-                $window.Resources.Remove("ThemeBg")
-                $window.Resources.Add("ThemeBg", $imgBrush)
+                Set-ThemeImage "netflix.png"
                 
                 Set-ResourceColor "ThemeSidebar" "#E6000000"
                 Set-ResourceColor "ThemeCardBg" "#CC141414"
@@ -574,11 +530,7 @@ $cmbThemes.Add_SelectionChanged({
                 Set-Resource "ThemeCornerRadius" (New-Object System.Windows.CornerRadius(4))
             }
             34 { # Deep Space
-                $imgBrush = New-Object System.Windows.Media.ImageBrush
-                $imgBrush.ImageSource = New-Object System.Windows.Media.Imaging.BitmapImage(New-Object System.Uri("C:\MENU\backgrounds\deepspace.png"))
-                $imgBrush.Stretch = "UniformToFill"
-                $window.Resources.Remove("ThemeBg")
-                $window.Resources.Add("ThemeBg", $imgBrush)
+                Set-ThemeImage "space.png"
                 
                 Set-ResourceColor "ThemeSidebar" "#99020012"
                 Set-ResourceColor "ThemeCardBg" "#B3050024"

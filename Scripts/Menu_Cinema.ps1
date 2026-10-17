@@ -1,4 +1,4 @@
-﻿
+
 # --- CINEMA MODE HANDLERS ---
 function Toggle-TV-CinemaMode {
     try {
@@ -31,6 +31,6 @@ function Toggle-TV-CinemaMode {
     } catch {}
 }
 
-(Get-GuiElement "btnCinemaMode").Add_Click({ Toggle-TV-CinemaMode })
-(Get-GuiElement "btnExitCinema").Add_Click({ Toggle-TV-CinemaMode })
+Set-Click "btnCinemaMode" { Toggle-TV-CinemaMode }
+Set-Click "btnExitCinema" { Toggle-TV-CinemaMode }
 

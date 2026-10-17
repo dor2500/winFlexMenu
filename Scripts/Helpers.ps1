@@ -1,27 +1,38 @@
+# Theme background images live in C:\MENU\backgrounds. They used to be shipped as a 7MB base64 script
+# (Assets.ps1) that had to be downloaded + parsed on every start; now each image is fetched once, on
+# demand, straight from the repo, then decoded once (OnLoad + Freeze) and cached in memory.
+$script:BgDir = "C:\MENU\backgrounds"
+$script:BgRaw = "https://raw.githubusercontent.com/dor2500/winFlexMenu/main/backgrounds"
+
+function Test-AssetLocal {
+    param([string]$Name)
+    return (Test-Path (Join-Path $script:BgDir $Name))
+}
+
 function Get-AssetBitmap {
     param([string]$Name)
     if (-not $script:AssetCache) { $script:AssetCache = @{} }
     if ($script:AssetCache.ContainsKey($Name)) { return $script:AssetCache[$Name] }
-    
-    if ($script:assets -and $script:assets.ContainsKey($Name)) {
-        try {
-            $content = $script:assets[$Name]
-            if ($content -is [array]) { $content = $content -join '' }
-            $bytes = [Convert]::FromBase64String($content)
-            $ms = New-Object System.IO.MemoryStream($bytes, 0, $bytes.Length)
-            $bitmap = New-Object System.Windows.Media.Imaging.BitmapImage
-            $bitmap.BeginInit()
-            $bitmap.StreamSource = $ms
-            $bitmap.CacheOption = [System.Windows.Media.Imaging.BitmapCacheOption]::OnLoad
-            $bitmap.EndInit()
-            $bitmap.Freeze()
-            $script:AssetCache[$Name] = $bitmap
-            return $bitmap
-        } catch {
-            return $null
+
+    try {
+        $path = Join-Path $script:BgDir $Name
+        if (-not (Test-Path $path)) {
+            if (-not (Test-Path $script:BgDir)) { New-Item -ItemType Directory -Path $script:BgDir -Force | Out-Null }
+            $tmp = "$path.download"
+            Invoke-WebRequest -Uri "$script:BgRaw/$Name" -OutFile $tmp -UseBasicParsing -TimeoutSec 15 -ErrorAction Stop
+            Move-Item $tmp $path -Force
         }
+        $bitmap = New-Object System.Windows.Media.Imaging.BitmapImage
+        $bitmap.BeginInit()
+        $bitmap.UriSource = New-Object System.Uri($path)
+        $bitmap.CacheOption = [System.Windows.Media.Imaging.BitmapCacheOption]::OnLoad
+        $bitmap.EndInit()
+        $bitmap.Freeze()
+        $script:AssetCache[$Name] = $bitmap
+        return $bitmap
+    } catch {
+        return $null
     }
-    return $null
 }
 
 # UI Element cache - each element found once, O(1) afterwards

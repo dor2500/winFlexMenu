@@ -260,19 +260,33 @@ Set-Click "btnGAddManual" {
     }
 }
 
-# Load cache on panel open, scan if none
-if (Test-Path $script:gCacheFile) {
-    try {
-        $cached = Get-Content $script:gCacheFile -Raw | ConvertFrom-Json
-        foreach ($g in $cached) {
-            $script:gGames.Add([PSCustomObject]@{
-                Name=($g.Name);Platform=($g.Platform);ExePath=($g.ExePath)
-                Icon=(Get-GExeIcon $g.ExePath);PlatformBrush=(Get-GPlatformBrush $g.Platform)
-            }) | Out-Null
+# Load cache lazily on panel open (deferred from startup)
+$script:gCacheLoaded = $false
+function Ensure-GamingCache {
+    if ($script:gCacheLoaded) { return }
+    $script:gCacheLoaded = $true
+    if (Test-Path $script:gCacheFile) {
+        try {
+            $cached = Get-Content $script:gCacheFile -Raw | ConvertFrom-Json
+            foreach ($g in $cached) {
+                $script:gGames.Add([PSCustomObject]@{
+                    Name=($g.Name);Platform=($g.Platform);ExePath=($g.ExePath)
+                    Icon=(Get-GExeIcon $g.ExePath);PlatformBrush=(Get-GPlatformBrush $g.Platform)
+                }) | Out-Null
+            }
+            Refresh-GList
+            $lbl = Get-GuiElement "lblGGameCount"; if($lbl){$lbl.Text="$($script:gGames.Count) games (cached)"}
+            $ls  = Get-GuiElement "lblGLastScan";  if($ls){$ls.Text="Click Rescan to refresh"}
+        } catch {}
+    }
+}
+
+$pnlGamingEl = Get-GuiElement "pnlGaming"
+if ($pnlGamingEl) {
+    $pnlGamingEl.Add_IsVisibleChanged({
+        if ($pnlGamingEl.Visibility -eq [System.Windows.Visibility]::Visible) {
+            Ensure-GamingCache
         }
-        Refresh-GList
-        $lbl = Get-GuiElement "lblGGameCount"; if($lbl){$lbl.Text="$($script:gGames.Count) games (cached)"}
-        $ls  = Get-GuiElement "lblGLastScan";  if($ls){$ls.Text="Click Rescan to refresh"}
-    } catch {}
+    })
 }
 

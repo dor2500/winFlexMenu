@@ -3,15 +3,39 @@
 # ==============================================================================
 param([switch]$Restart, [switch]$Shutdown, [string]$Message)
 
-# 0. Hide Console ASAP
+# Progress bars make Invoke-WebRequest / Invoke-RestMethod up to 10x slower in Windows PowerShell 5.1
+$ProgressPreference = 'SilentlyContinue'
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+
+# 0. Define Module Config & fire the (async) GitHub check immediately,
+#    so the network round-trip overlaps with assembly loading + splash screen.
+$ModuleDir    = "C:\MENU\Modules"
+$OfficeDir    = "C:\MENU\Tools\OfficeSetup"
+$manifestFile = "C:\MENU\sync_manifest.txt"
+$repoApi      = "https://api.github.com/repos/dor2500/winFlexMenu/git/trees/main?recursive=1"
+$repoRaw      = "https://raw.githubusercontent.com/dor2500/winFlexMenu/main"
+if (!(Test-Path $ModuleDir)) { New-Item $ModuleDir -ItemType Directory -Force | Out-Null }
+if (!(Test-Path $OfficeDir)) { New-Item $OfficeDir -ItemType Directory -Force | Out-Null }
+
+$treeTask = $null
 try {
-    $code = '[DllImport("user32.dll")] public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow); [DllImport("kernel32.dll")] public static extern IntPtr GetConsoleWindow();'
-    $win32 = Add-Type -MemberDefinition $code -Name "Win32ShowWindow_$(Get-Random)" -Namespace "Win32" -PassThru
-    $win32::ShowWindow($win32::GetConsoleWindow(), 0) | Out-Null
+    $wcApi = New-Object Net.WebClient
+    $wcApi.Headers['User-Agent'] = 'WinFlexMenu'
+    $treeTask = $wcApi.DownloadStringTaskAsync($repoApi)
+} catch {}
+
+# 0.5 Hide Console ASAP (Reflection.Emit P/Invoke: ~10ms instead of a ~100-400ms Add-Type C# compile)
+try {
+    $asmName = New-Object System.Reflection.AssemblyName('WfxNative')
+    $asmBld  = [AppDomain]::CurrentDomain.DefineDynamicAssembly($asmName, [Reflection.Emit.AssemblyBuilderAccess]::Run)
+    $typeBld = $asmBld.DefineDynamicModule('WfxNative').DefineType('Native', 'Public,Class')
+    $null = $typeBld.DefinePInvokeMethod('GetConsoleWindow', 'kernel32.dll', 'Public,Static,PinvokeImpl', 'Standard', [IntPtr], [Type[]]@(), 'Winapi', 'Auto')
+    $null = $typeBld.DefinePInvokeMethod('ShowWindow', 'user32.dll', 'Public,Static,PinvokeImpl', 'Standard', [bool], [Type[]]@([IntPtr], [int]), 'Winapi', 'Auto')
+    $native = $typeBld.CreateType()
+    $null = $native::ShowWindow($native::GetConsoleWindow(), 0)
 } catch {}
 
 # 1. Load Required Assemblies
-[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase, System.Windows.Forms, System.Drawing
 
 # 1.5. Show Minimal Splash Screen
@@ -36,57 +60,65 @@ try {
     $global:splashScreen.Dispatcher.Invoke([Action]{}, [System.Windows.Threading.DispatcherPriority]::Render)
 } catch {}
 
-# 2. Define Module Config & Hybrid Sync Logic
-$ModuleDir = "C:\MENU\Modules"
-$OfficeDir = "C:\MENU\Tools\OfficeSetup"
-if (!(Test-Path $ModuleDir)) { New-Item $ModuleDir -ItemType Directory -Force | Out-Null }
-if (!(Test-Path $OfficeDir)) { New-Item $OfficeDir -ItemType Directory -Force | Out-Null }
-
-
-
-
-# --- ULTRA FAST SYNC (One-Check Logic) ---
-$moduleDir = "C:\MENU\Modules"
-$lastSyncFile = "C:\MENU\last_sync.txt"
-$githubApi = "https://api.github.com/repos/dor2500/winFlexMenu/branches/main"
+# 2. DELTA SYNC: only files whose git blob SHA changed are downloaded, all in parallel.
+#    - Warm start & nothing changed  -> a single (already in-flight) API call, zero downloads.
+#    - Offline / API rate-limited    -> falls straight through to the local copies.
+$hasLocal = (Test-Path "$ModuleDir\Layout.ps1") -and (Test-Path "$ModuleDir\CoreUI.ps1") -and (Test-Path "$ModuleDir\Helpers.ps1")
+$apiWaitMs = if ($hasLocal) { 2500 } else { 20000 }   # first run has nothing local, so we must wait
 
 try {
-    # 1. Get latest commit SHA from GitHub API (Very fast)
-    $apiRes = Invoke-RestMethod -Uri $githubApi -TimeoutSec 2 -ErrorAction Stop
-    $latestSha = $apiRes.commit.sha
-    $localSha = ""
-    if (Test-Path $lastSyncFile) { $localSha = Get-Content $lastSyncFile }
+    if ($treeTask -and $treeTask.Wait($apiWaitMs)) {
+        $remoteFiles = @((ConvertFrom-Json $treeTask.Result).tree | Where-Object {
+            $_.type -eq 'blob' -and $_.path -like 'Scripts/*.ps1' -and $_.path -ne 'Scripts/Assets.ps1'
+        })
 
-    # 2. If SHA matches, skip everything and open instantly
-    if ($latestSha -ne $localSha) {
-        Write-Host "New update detected! Syncing..." -ForegroundColor Cyan
-        $githubBase = "https://raw.githubusercontent.com/dor2500/winFlexMenu/main/Scripts"
-        $files = @("Assets.ps1", "CoreUI.ps1", "Helpers.ps1", "Layout.ps1", "Menu_Cinema.ps1", "Menu_Gaming.ps1", "Menu_Music.ps1", "Menu_Office.ps1", "Menu_System.ps1", "Menu_TV.ps1")
-        
-        foreach ($f in $files) {
-            Invoke-WebRequest -Uri "$githubBase/$f" -OutFile "$moduleDir/$f" -TimeoutSec 10 -ErrorAction SilentlyContinue
+        $known = @{}
+        if (Test-Path $manifestFile) {
+            foreach ($line in [IO.File]::ReadAllLines($manifestFile)) {
+                $kv = $line.Split('|'); if ($kv.Count -eq 2) { $known[$kv[0]] = $kv[1] }
+            }
         }
-        # Save new SHA after successful sync
-        $latestSha | Set-Content $lastSyncFile
+
+        $pending = @()
+        foreach ($rf in $remoteFiles) {
+            $name = [IO.Path]::GetFileName($rf.path)
+            $dest = Join-Path $ModuleDir $name
+            if ($known[$name] -eq $rf.sha -and (Test-Path $dest)) { continue }
+            $wc = New-Object Net.WebClient
+            $wc.Headers['User-Agent'] = 'WinFlexMenu'
+            # ?v=<blob sha> makes every file version a unique URL -> never served stale by the raw CDN cache
+            $pending += [pscustomobject]@{
+                Name = $name; Dest = $dest; Tmp = "$dest.download"; Sha = $rf.sha
+                Task = $wc.DownloadFileTaskAsync("$repoRaw/$($rf.path)?v=$($rf.sha)", "$dest.download")
+            }
+        }
+
+        if ($pending.Count -gt 0) {
+            try { [void][Threading.Tasks.Task]::WaitAll([Threading.Tasks.Task[]]@($pending | ForEach-Object { $_.Task }), 30000) } catch {}
+            foreach ($p in $pending) {
+                # Only swap in files that fully downloaded (a half-written module would break the whole UI)
+                if ($p.Task.Status -eq 'RanToCompletion' -and (Test-Path $p.Tmp) -and (Get-Item $p.Tmp).Length -gt 0) {
+                    Move-Item $p.Tmp $p.Dest -Force
+                    $known[$p.Name] = $p.Sha
+                } else {
+                    Remove-Item $p.Tmp -Force -ErrorAction SilentlyContinue
+                }
+            }
+            [IO.File]::WriteAllLines($manifestFile, [string[]]@($known.GetEnumerator() | ForEach-Object { "$($_.Key)|$($_.Value)" }))
+        }
+
+        # Legacy cleanup: the 7MB base64 Assets module was replaced by on-demand background files
+        Remove-Item "$ModuleDir\Assets.ps1" -Force -ErrorAction SilentlyContinue
     }
 } catch {
-    # If API fails or no internet, just proceed to open local files immediately
+    # No internet / API failure: proceed with the local files immediately
 }
 
-
-
-
-# 4. Load Core Definitions (From Local Disk)
+# 3. Load Core Definitions (From Local Disk)
 if (Test-Path "$ModuleDir\Helpers.ps1") { . "$ModuleDir\Helpers.ps1" }
-if (Test-Path "$ModuleDir\Assets.ps1") { . "$ModuleDir\Assets.ps1" }
 if (Test-Path "$ModuleDir\Layout.ps1") { . "$ModuleDir\Layout.ps1" }
 
-# 5. Initialize Assets Data
-if (Get-Command Initialize-GamingAssets -ErrorAction SilentlyContinue) {
-    Initialize-GamingAssets
-}
-
-# 6. Parse UI Layout
+# 4. Parse UI Layout
 try {
     if ($xaml) {
         $window = [Windows.Markup.XamlReader]::Parse($xaml)
@@ -99,19 +131,19 @@ try {
     exit
 }
 
-# 7. Load Core Logic
+# 5. Load Core Logic
 if (Test-Path "$ModuleDir\CoreUI.ps1") { . "$ModuleDir\CoreUI.ps1" }
 
-# 8. Load Menu Modules
+# 6. Load Menu Modules
 Get-ChildItem -Path $ModuleDir -Filter "Menu_*.ps1" | ForEach-Object { . $_.FullName }
 
-# 9. Post-Load Startup Logic
+# 7. Post-Load Startup Logic
+#    (user list is loaded lazily when the Users panel is opened - see btnUserMgmt)
 try {
     if (Get-Command Toggle-Language -ErrorAction SilentlyContinue) { Toggle-Language; Toggle-Language }
-    if (Get-Command Refresh-Users -ErrorAction SilentlyContinue) { Refresh-Users }
 } catch {}
 
-# 10. Show Application
+# 8. Show Application
 if ($global:splashScreen) { try { $global:splashScreen.Close() } catch {} }
 if ($window) {
     $window.ShowDialog()
