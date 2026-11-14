@@ -1,4 +1,4 @@
-# Get-GuiElement / Set-Click come from Helpers.ps1 (cached lookups). They used to be redefined here with an
+﻿# Get-GuiElement / Set-Click come from Helpers.ps1 (cached lookups). They used to be redefined here with an
 # uncached FindName version, which silently disabled the element cache for every module loaded afterwards.
 
 function Invoke-WpfDialog {
@@ -35,7 +35,7 @@ function Refresh-Users {
             try { $adminGroup = [ADSI]"WinNT://$env:COMPUTERNAME/Administrators,group"; $admins = @($adminGroup.Members() | ForEach-Object { $_.GetType().InvokeMember("Name", 'GetProperty', $null, $_, $null) }) } catch {}
             $computer.Children | Where-Object { $_.SchemaClassName -eq 'User' } | ForEach-Object {
                 $flags = $_.UserFlags.Value; $disabled = ($flags -band 2) -ne 0
-                [PSCustomObject]@{ Name = $_.Name.Value; Enabled = -not $disabled; IsAdmin = $admins -contains $_.Name.Value }
+                [PSCustomObject]@{ Name = $_.Name.Value; Enabled = -not $disabled; IsAdmin = $admins -contains $_.Name.Value; Description = $_.Description.Value }
             } | ForEach-Object { [void]$lstUsers.Items.Add($_) }
         } catch {}
     }
@@ -50,7 +50,7 @@ $tickMs = [double][Environment]::TickCount; if ($tickMs -lt 0) { $tickMs += 4294
 $staticInfo = @{
     CPU = "Loading..."; GPU = "Loading..."; TotalRAM = 0; LocalIP = "Offline"; PublicIP = "Loading..."; 
     WindowsVer = "Windows $winNum Pro - $winVer"; 
-    WinFlexVer = "WinFlex11-September25 Update"; BootTime = (Get-Date).AddMilliseconds(-$tickMs)   # exact value arrives from the background query
+    WinFlexVer = "WinFlexOS V3.2"; BootTime = (Get-Date).AddMilliseconds(-$tickMs)   # exact value arrives from the background query
 }
 
 # Total/available RAM straight from GlobalMemoryStatusEx (a few ms) instead of WMI + a PerformanceCounter
@@ -83,6 +83,13 @@ $script:ps.AddScript({
         if ($disk) { $res.hwDisk = "$($disk.Model) ($([math]::Round($disk.Size/1GB,1)) GB)" }
     } catch {}
     try { $bio = Get-CimInstance Win32_BIOS; $res.hwBio = "$($bio.Manufacturer) v$($bio.SMBIOSBIOSVersion)" } catch {}
+    try {
+        $os = Get-CimInstance Win32_OperatingSystem
+        $adapter = Get-NetAdapter -Physical -ErrorAction SilentlyContinue | Where-Object { $_.Status -eq 'Up' } | Select-Object -First 1
+        $adText = if ($adapter) { "$($adapter.Name) ($($adapter.LinkSpeed))" } else { "No Active Physical NIC" }
+        $ipText = if ($res.LocalIP) { $res.LocalIP } else { "Offline" }
+        $res.hwOSNet = "$($os.Caption)`nBuild: $($os.BuildNumber)`nLocal IP: $ipText`nAdapter: $adText"
+    } catch {}
     return $res
 }) | Out-Null
 $script:asyncResult = $script:ps.BeginInvoke()
@@ -124,6 +131,7 @@ function Update-DashboardTelemetry {
                 if ($bg.hwRAM) { $el = Get-GuiElement "txtHwRAM"; if ($el) { $el.Text = $bg.hwRAM } }
                 if ($bg.hwDisk) { $el = Get-GuiElement "txtHwDisk"; if ($el) { $el.Text = $bg.hwDisk } }
                 if ($bg.hwBio) { $el = Get-GuiElement "txtHwBio"; if ($el) { $el.Text = $bg.hwBio } }
+                if ($bg.hwOSNet) { $el = Get-GuiElement "txtHwOSNet"; if ($el) { $el.Text = $bg.hwOSNet } }
                 if ($bg.BootTime) { $staticInfo.BootTime = $bg.BootTime }
                 if ($bg.LocalIP) { $staticInfo.LocalIP = $bg.LocalIP }
                 if ($staticInfo.TotalRAM -le 0 -and $bg.TotalRAM) { $staticInfo.TotalRAM = $bg.TotalRAM }
@@ -160,6 +168,12 @@ function Update-DashboardTelemetry {
 
         $lblRam = Get-GuiElement "txtRamPercModern"; if ($lblRam) { $lblRam.Text = "$ramPerc%" }
         $lblDisk = Get-GuiElement "txtDiskPercModern"; if ($lblDisk) { $lblDisk.Text = "$($script:cachedDiskPerc)%" }
+        
+        # Retro Bars
+        $rectRamR = Get-GuiElement "rectRamRetro"; if ($rectRamR) { $rectRamR.Width = [math]::Round(($ramPerc / 100.0) * 158) }
+        $txtRamR  = Get-GuiElement "txtRamRetro";  if ($txtRamR)  { $txtRamR.Text = "$ramPerc% Used ($usedRam / $($staticInfo.TotalRAM) GB)" }
+        $rectDskR = Get-GuiElement "rectDiskRetro"; if ($rectDskR) { $rectDskR.Width = [math]::Round(($script:cachedDiskPerc / 100.0) * 158) }
+        $txtDskR  = Get-GuiElement "txtDiskRetro";  if ($txtDskR)  { $txtDskR.Text = "$($script:cachedDiskPerc)% Used ($($script:cachedDiskFreeGB) GB Free)" }
         
         # Rings (only rebuilt when the value actually changed)
         if ($ramPerc -ne $script:lastRamPerc) { Update-Ring "arcRamFill" $ramPerc; $script:lastRamPerc = $ramPerc }
@@ -282,7 +296,7 @@ Set-Click "btnMsInfo" { Start-Process "msinfo32.exe" }
 Set-Click "btnDxDiag" { Start-Process "dxdiag.exe" }
 Set-Click "btnRefreshHw" {
     Show-Toast "Refreshing hardware info..." "info"
-    Start-Job -ScriptBlock {
+    $hwJob = Start-Job -ScriptBlock {
         $res = @{}
         try { $res.cpu = (Get-CimInstance Win32_Processor | Select-Object -First 1).Name.Trim() } catch {}
         try {
@@ -296,29 +310,37 @@ Set-Click "btnRefreshHw" {
             $res.disk = ($disks | ForEach-Object { "$($_.Model) ($([math]::Round($_.Size / 1GB, 0)) GB)" }) -join "`n"
         } catch {}
         try { $bio = Get-CimInstance Win32_BIOS; $res.bio = "$($bio.Manufacturer) v$($bio.SMBIOSBIOSVersion)" } catch {}
+        try {
+            $os = Get-CimInstance Win32_OperatingSystem
+            $lip = (Get-NetIPAddress -AddressFamily IPv4 -ErrorAction SilentlyContinue | Where-Object { $_.IPAddress -notlike "127*" -and $_.IPAddress -notlike "169.254*" } | Select-Object -First 1).IPAddress
+            $adapter = Get-NetAdapter -Physical -ErrorAction SilentlyContinue | Where-Object { $_.Status -eq 'Up' } | Select-Object -First 1
+            $adText = if ($adapter) { "$($adapter.Name) ($($adapter.LinkSpeed))" } else { "No Active Physical NIC" }
+            $res.osnet = "$($os.Caption)`nBuild: $($os.BuildNumber)`nLocal IP: $(if ($lip) { $lip } else { 'Offline' })`nAdapter: $adText"
+        } catch {}
         return $res
-    } | Out-Null
+    }
 
     $t = New-Object System.Windows.Threading.DispatcherTimer
     $t.Interval = [TimeSpan]::FromMilliseconds(400)
     $attempts = 0
     $t.Add_Tick({
         $attempts++
-        $j = Get-Job | Where-Object { $_.Command -like "*Win32_Processor*" } | Select-Object -Last 1
-        if ($j -and $j.State -eq "Completed") {
-            $data = Receive-Job $j
-            Remove-Job $j
-            if ($data.cpu)  { $el = Get-GuiElement "txtHwCPU";  if ($el) { $el.Text = $data.cpu } }
-            if ($data.ram)  { $el = Get-GuiElement "txtHwRAM";  if ($el) { $el.Text = $data.ram } }
-            if ($data.gpu)  { $el = Get-GuiElement "txtHwGPU";  if ($el) { $el.Text = $data.gpu } }
-            if ($data.disk) { $el = Get-GuiElement "txtHwDisk"; if ($el) { $el.Text = $data.disk } }
-            if ($data.bio)  { $el = Get-GuiElement "txtHwBio";  if ($el) { $el.Text = $data.bio } }
+        if ($hwJob -and $hwJob.State -eq "Completed") {
+            $data = Receive-Job $hwJob
+            Remove-Job $hwJob -ErrorAction SilentlyContinue
+            if ($data.cpu)   { $el = Get-GuiElement "txtHwCPU";   if ($el) { $el.Text = $data.cpu } }
+            if ($data.ram)   { $el = Get-GuiElement "txtHwRAM";   if ($el) { $el.Text = $data.ram } }
+            if ($data.gpu)   { $el = Get-GuiElement "txtHwGPU";   if ($el) { $el.Text = $data.gpu } }
+            if ($data.disk)  { $el = Get-GuiElement "txtHwDisk";  if ($el) { $el.Text = $data.disk } }
+            if ($data.bio)   { $el = Get-GuiElement "txtHwBio";   if ($el) { $el.Text = $data.bio } }
+            if ($data.osnet) { $el = Get-GuiElement "txtHwOSNet"; if ($el) { $el.Text = $data.osnet } }
             Show-Toast "Hardware info refreshed" "success"
             $t.Stop()
-        } elseif ($attempts -gt 15) {
+        } elseif ($attempts -gt 20) {
+            if ($hwJob) { Remove-Job $hwJob -Force -ErrorAction SilentlyContinue }
             $t.Stop()
         }
-    })
+    }.GetNewClosure())
     $t.Start()
 }
 
@@ -327,7 +349,7 @@ Set-Click "btnExportHw" {
     $path = "$desktop\Hardware_Report.txt"
     Show-Toast "Generating Hardware Report..." "info"
 
-    Start-Job -ScriptBlock {
+    $expJob = Start-Job -ScriptBlock {
         param($outPath)
         try {
             $info = "Hardware Report - WinFlexOS`nDate: $(Get-Date)`n" + ("-" * 40) + "`n"
@@ -345,26 +367,23 @@ Set-Click "btnExportHw" {
         } catch {
             return $false
         }
-    } -ArgumentList $path | Out-Null
+    } -ArgumentList $path
 
     $t = New-Object System.Windows.Threading.DispatcherTimer
     $t.Interval = [TimeSpan]::FromMilliseconds(500)
     $attempts = 0
     $t.Add_Tick({
         $attempts++
-        $j = Get-Job | Where-Object { $_.Command -like "*Hardware_Report*" } | Select-Object -Last 1
-        if ($j -and $j.State -eq "Completed") {
-            $ok = Receive-Job $j
-            Remove-Job $j
-            if ($ok) {
-                Show-Toast "Hardware Report saved to Desktop!" "success"
-            } else {
-                Show-Toast "Error generating Hardware Report" "error"
-            }
+        if ($expJob -and $expJob.State -eq "Completed") {
+            $ok = Receive-Job $expJob
+            Remove-Job $expJob -ErrorAction SilentlyContinue
+            if ($ok) { Show-Toast "Hardware Report saved to Desktop!" "success" }
+            else { Show-Toast "Error generating Hardware Report" "error" }
             $t.Stop()
-        } elseif ($attempts -gt 10) {
+        } elseif ($attempts -gt 15) {
+            if ($expJob) { Remove-Job $expJob -Force -ErrorAction SilentlyContinue }
             $t.Stop()
         }
-    })
+    }.GetNewClosure())
     $t.Start()
 }

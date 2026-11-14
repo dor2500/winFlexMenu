@@ -1,4 +1,4 @@
-# ==============================================================================
+﻿# ==============================================================================
 # WinFlexOS - Power Management Module
 # ==============================================================================
 
@@ -47,8 +47,30 @@ Set-Click "btnHibernate" {
 }
 
 Set-Click "btnAbortShutdown" {
-    shutdown.exe /a
+    shutdown.exe /a 2>$null
     Show-Toast "Scheduled shutdown cancelled." "success"
+}
+
+function Start-ShutdownTimer {
+    param([int]$Seconds, [string]$Label)
+    shutdown.exe /a 2>$null
+    shutdown.exe /s /t $Seconds
+    Show-Toast "Shutdown scheduled in $Label (use Abort Shutdown to cancel)" "warning"
+}
+
+Set-Click "btnTimer30m" { Start-ShutdownTimer -Seconds 1800 -Label "30 minutes" }
+Set-Click "btnTimer1h"  { Start-ShutdownTimer -Seconds 3600 -Label "1 hour" }
+Set-Click "btnTimer2h"  { Start-ShutdownTimer -Seconds 7200 -Label "2 hours" }
+Set-Click "btnTimerCustom" {
+    $minsRaw = Invoke-WpfDialog "Custom Shutdown Timer" "Enter minutes until shutdown (e.g. 45):"
+    if ($minsRaw) {
+        $mins = 0
+        if ([int]::TryParse($minsRaw.Trim(), [ref]$mins) -and $mins -gt 0 -and $mins -le 14400) {
+            Start-ShutdownTimer -Seconds ($mins * 60) -Label "$mins minute(s)"
+        } else {
+            Show-Toast "Please enter a valid number of minutes (1 - 14400)" "warning"
+        }
+    }
 }
 
 Set-Click "btnAdvStartup" {

@@ -1,5 +1,5 @@
 # ==============================================================================
-# WinFlexOS V3.0 - Windows Management & Productivity Suite (Hybrid Loader)
+# WinFlexOS V3.2 - Windows Management & Productivity Suite (Hybrid Loader)
 # ==============================================================================
 
 # Progress bars make Invoke-WebRequest / Invoke-RestMethod up to 10x slower in Windows PowerShell 5.1
@@ -48,7 +48,7 @@ try {
             <DropShadowEffect BlurRadius="20" ShadowDepth="0" Color="Black" Opacity="0.5"/>
         </Border.Effect>
         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-            <TextBlock Text="WinFlexOS" FontSize="26" FontWeight="Bold" Foreground="#FFFFFF" HorizontalAlignment="Center"/>
+            <TextBlock Text="WinFlexOS V3.2" FontSize="26" FontWeight="Bold" Foreground="#FFFFFF" HorizontalAlignment="Center"/>
             <TextBlock Text="Syncing System Modules..." FontSize="12" Foreground="#8AB4F8" HorizontalAlignment="Center" Margin="0,5,0,0"/>
         </StackPanel>
     </Border>
@@ -75,8 +75,11 @@ if ($isLocalRepo) {
     if (Test-Path "$PSScriptRoot\OfficeSetup\OfficeSetup") {
         Copy-Item "$PSScriptRoot\OfficeSetup\OfficeSetup\*.xml" -Destination $OfficeDir -Force -ErrorAction SilentlyContinue
     }
-    if (Test-Path "$PSScriptRoot\OfficeSetup\Remove Office\setup.exe") {
-        Copy-Item "$PSScriptRoot\OfficeSetup\Remove Office\setup.exe" -Destination $OfficeDir -Force -ErrorAction SilentlyContinue
+    foreach ($offFile in @("setup.exe", "uninstall.xml")) {
+        $srcOff = "$PSScriptRoot\OfficeSetup\Remove Office\$offFile"
+        if (Test-Path $srcOff) {
+            Copy-Item $srcOff -Destination $OfficeDir -Force -ErrorAction SilentlyContinue
+        }
     }
 } else {
     $hasLocal = (Test-Path "$ModuleDir\Layout.ps1") -and (Test-Path "$ModuleDir\CoreUI.ps1") -and (Test-Path "$ModuleDir\Helpers.ps1")

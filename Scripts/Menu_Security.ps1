@@ -1,4 +1,4 @@
-# ==============================================================================
+﻿# ==============================================================================
 # WinFlexOS - Security Center Module
 # ==============================================================================
 
@@ -23,6 +23,22 @@ Set-Click "btnDefUpdate" {
     Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -NoExit -Command `"Write-Host 'Updating Windows Defender Signatures...' -ForegroundColor Cyan; Update-MpSignature; Write-Host 'Signatures Updated Successfully!' -ForegroundColor Green; Read-Host 'Press Enter to close'`"" -Verb RunAs
 }
 
+Set-Click "btnDefStatus" {
+    try {
+        $st = Get-MpComputerStatus -ErrorAction Stop
+        $msg = "Windows Defender Security Status:`n`n" +
+               "Antivirus Enabled: $($st.AntivirusEnabled)`n" +
+               "Real-Time Protection: $($st.RealTimeProtectionEnabled)`n" +
+               "Behavior Monitor: $($st.BehaviorMonitorEnabled)`n" +
+               "IOAV Protection: $($st.IoavProtectionEnabled)`n" +
+               "Signature Version: $($st.AntivirusSignatureVersion)`n" +
+               "Signatures Updated: $($st.AntivirusSignatureLastUpdated)"
+        [System.Windows.MessageBox]::Show($msg, "Defender Status", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Information) | Out-Null
+    } catch {
+        Show-Toast "Could not query Defender status (may be disabled or 3rd-party AV active)" "warning"
+    }
+}
+
 # --- NETWORK SECURITY ---
 Set-Click "btnFwAdv" {
     Start-Process "wf.msc"
@@ -32,10 +48,14 @@ Set-Click "btnFwReset" {
     $res = [System.Windows.MessageBox]::Show("Reset Windows Firewall to default settings?", "Confirm", [System.Windows.MessageBoxButton]::YesNo, [System.Windows.MessageBoxImage]::Warning)
     if ($res -eq [System.Windows.MessageBoxResult]::Yes) {
         try {
-            netsh.exe advfirewall reset | Out-Null
+            if (Test-IsAdmin) {
+                netsh.exe advfirewall reset | Out-Null
+            } else {
+                Start-Process "netsh.exe" -ArgumentList "advfirewall reset" -Verb RunAs -Wait
+            }
             Show-Toast "Firewall reset to default settings" "success"
         } catch {
-            Show-Toast "Requires administrator privileges" "error"
+            Show-Toast "Firewall reset cancelled or requires administrator privileges" "error"
         }
     }
 }
@@ -75,6 +95,22 @@ Set-Click "btnBitLocker" {
 
 Set-Click "btnTpm" {
     Start-Process "tpm.msc"
+}
+
+Set-Click "btnWinSandbox" {
+    try {
+        Start-Process "WindowsSandbox.exe" -ErrorAction Stop
+    } catch {
+        Show-Toast "Windows Sandbox is not enabled (check Turn Windows Features on/off)" "warning"
+    }
+}
+
+Set-Click "btnSmartScreen" {
+    try {
+        Start-Process "windowsdefender://appbrowser/"
+    } catch {
+        Start-Process "ms-settings:windowsdefender"
+    }
 }
 
 # --- FORENSICS & AUDIT ---

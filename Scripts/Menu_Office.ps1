@@ -1,4 +1,4 @@
-# ==============================================================================
+﻿# ==============================================================================
 # WinFlexOS - Office Module (Sync with XAML Layout)
 # ==============================================================================
 
@@ -83,7 +83,47 @@ if ($btnRunMAS) {
 $btnRemoveOffice = Get-GuiElement "btnRemoveOffice"
 if ($btnRemoveOffice) {
     Set-Click "btnRemoveOffice" {
-        Start-Process "appwiz.cpl"
+        $res = [System.Windows.MessageBox]::Show(
+            "Run automated Microsoft Office removal tool (uses uninstall.xml)?`nClick No to cancel, or use Programs & Features if automation fails.",
+            "Remove Microsoft Office",
+            [System.Windows.MessageBoxButton]::YesNo,
+            [System.Windows.MessageBoxImage]::Warning
+        )
+        if ($res -ne [System.Windows.MessageBoxResult]::Yes) { return }
+
+        $officeDir = "C:\MENU\Tools\OfficeSetup"
+        if (!(Test-Path $officeDir)) { New-Item $officeDir -ItemType Directory -Force | Out-Null }
+        $setupExe = "$officeDir\setup.exe"
+        $uninstallXml = "$officeDir\uninstall.xml"
+        $repoRaw = "https://raw.githubusercontent.com/dor2500/winFlexMenu/main"
+
+        if (!(Test-Path $setupExe)) {
+            $localSetup = Join-Path (Split-Path $PSScriptRoot -Parent) "OfficeSetup\Remove Office\setup.exe"
+            if (Test-Path $localSetup) { Copy-Item $localSetup $setupExe -Force }
+            else {
+                try {
+                    Show-Toast "Downloading Office setup.exe..." "info"
+                    Invoke-WebRequest -Uri "$repoRaw/OfficeSetup/Remove%20Office/setup.exe" -OutFile $setupExe -UseBasicParsing -TimeoutSec 30 -ErrorAction Stop
+                } catch {}
+            }
+        }
+        if (!(Test-Path $uninstallXml)) {
+            $localXml = Join-Path (Split-Path $PSScriptRoot -Parent) "OfficeSetup\Remove Office\uninstall.xml"
+            if (Test-Path $localXml) { Copy-Item $localXml $uninstallXml -Force }
+            else {
+                try {
+                    Invoke-WebRequest -Uri "$repoRaw/OfficeSetup/Remove%20Office/uninstall.xml" -OutFile $uninstallXml -UseBasicParsing -TimeoutSec 15 -ErrorAction Stop
+                } catch {}
+            }
+        }
+
+        if ((Test-Path $setupExe) -and (Test-Path $uninstallXml)) {
+            Show-Toast "Launching Office uninstaller..." "info"
+            Start-Process -FilePath $setupExe -ArgumentList "/configure `"$uninstallXml`"" -Verb RunAs
+        } else {
+            Show-Toast "Opening Programs & Features as fallback..." "warning"
+            Start-Process "appwiz.cpl"
+        }
     }
 }
 
@@ -95,4 +135,37 @@ if ($btnOfficeInfo) {
                "Full Installation Includes: All Apps + Teams & Outlook"
         [System.Windows.Forms.MessageBox]::Show($msg, "Office Info", "OK", "Information")
     }
+}
+
+# 3. Quick App Installer (Winget)
+function Install-WingetApp {
+    param([string]$PackageId, [string]$DisplayName)
+    if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
+        Show-Toast "Winget is not installed. Opening App Installer in Microsoft Store..." "warning"
+        Start-Process "ms-windows-store://pdp/?ProductId=9NBLGGH4NNS1"
+        return
+    }
+    Show-Toast "Starting Winget install: $DisplayName..." "info"
+    $cmd = "Write-Host 'Installing $DisplayName ($PackageId) via Winget...' -ForegroundColor Cyan; winget install --id $PackageId -e --accept-package-agreements --accept-source-agreements; Write-Host 'Done!' -ForegroundColor Green; Read-Host 'Press Enter to close'"
+    Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -Command `"$cmd`""
+}
+
+$wingetApps = @{
+    "btnWgChrome"     = @("Google.Chrome", "Google Chrome")
+    "btnWgFirefox"    = @("Mozilla.Firefox", "Mozilla Firefox")
+    "btnWgBrave"      = @("Brave.Brave", "Brave Browser")
+    "btnWg7Zip"       = @("7zip.7zip", "7-Zip")
+    "btnWgVLC"        = @("VideoLAN.VLC", "VLC Media Player")
+    "btnWgVSCode"     = @("Microsoft.VisualStudioCode", "Visual Studio Code")
+    "btnWgNotepadPP"  = @("Notepad++.Notepad++", "Notepad++")
+    "btnWgPowerToys"  = @("Microsoft.PowerToys", "Microsoft PowerToys")
+    "btnWgDiscord"    = @("Discord.Discord", "Discord")
+    "btnWgEverything" = @("voidtools.Everything", "Everything Search")
+    "btnWgShareX"     = @("ShareX.ShareX", "ShareX")
+    "btnWgGit"        = @("Git.Git", "Git for Windows")
+}
+foreach ($kv in $wingetApps.GetEnumerator()) {
+    $pkgId = $kv.Value[0]
+    $appLabel = $kv.Value[1]
+    Set-Click $kv.Key { Install-WingetApp -PackageId $pkgId -DisplayName $appLabel }.GetNewClosure()
 }

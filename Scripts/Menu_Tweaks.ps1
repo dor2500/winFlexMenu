@@ -1,4 +1,4 @@
-# ==============================================================================
+﻿# ==============================================================================
 # WinFlexOS - Tweaks & Themes Module
 # ==============================================================================
 
@@ -36,6 +36,21 @@ Set-Click "btnThemeMario" {
 Set-Click "btnThemePS2" {
     $cmb = Get-GuiElement "cmbThemes"
     if ($cmb) { $cmb.SelectedIndex = 17 } # PlayStation 2
+}
+
+Set-Click "btnThemeAppleSwift" {
+    $cmb = Get-GuiElement "cmbThemes"
+    if ($cmb) { $cmb.SelectedIndex = 39 } # Apple Swift
+}
+
+Set-Click "btnThemeGoogleM3E" {
+    $cmb = Get-GuiElement "cmbThemes"
+    if ($cmb) { $cmb.SelectedIndex = 40 } # Google M3E
+}
+
+Set-Click "btnThemeGlassAero" {
+    $cmb = Get-GuiElement "cmbThemes"
+    if ($cmb) { $cmb.SelectedIndex = 37 } # Glass Aero
 }
 
 Set-Click "btnCustomBg" {
@@ -83,6 +98,17 @@ Set-Click "btnDisableBing" {
     Set-ItemProperty -Path $r -Name "DisableSearchBoxSuggestions" -Value $newVal -Force
     Stop-Process -Name explorer -Force
     Show-Toast "Bing Search Suggestions toggled" "success"
+}
+
+Set-Click "btnTaskbarEndTask" {
+    $r = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\TaskbarDeveloperSettings"
+    if (-not (Test-Path $r)) { New-Item -Path $r -Force | Out-Null }
+    $prop = Get-ItemProperty -Path $r -ErrorAction SilentlyContinue
+    $current = if ($prop -and $null -ne $prop.TaskbarEndTask) { $prop.TaskbarEndTask } else { 0 }
+    $newVal = if ($current -eq 1) { 0 } else { 1 }
+    Set-ItemProperty -Path $r -Name "TaskbarEndTask" -Value $newVal -Type DWord -Force
+    $state = if ($newVal -eq 1) { "enabled" } else { "disabled" }
+    Show-Toast "Taskbar right-click 'End Task' $state!" "success"
 }
 
 # --- FILE EXPLORER TWEAKS ---
@@ -156,6 +182,18 @@ Set-Click "btnMouseAccel" {
     Show-Toast "Mouse acceleration disabled (1:1 precision)" "success"
 }
 
+Set-Click "btnDisableStickyKeys" {
+    $r = "HKCU:\Control Panel\Accessibility\StickyKeys"
+    if (-not (Test-Path $r)) { New-Item -Path $r -Force | Out-Null }
+    Set-ItemProperty -Path $r -Name "Flags" -Value "506" -Force
+    Show-Toast "Sticky Keys Shift shortcut disabled!" "success"
+}
+
 Set-Click "btnIconSettings" {
     Start-Process "desk.cpl" -ArgumentList ",,5"
+}
+
+Set-Click "btnRestartExplorer" {
+    Stop-Process -Name explorer -Force -ErrorAction SilentlyContinue
+    Show-Toast "Windows Explorer restarted" "success"
 }

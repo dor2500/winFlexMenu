@@ -1,16 +1,6 @@
+﻿# ==============================================================================
+# WinFlexOS - Beast Control Center Module (uses Test-IsAdmin from Helpers.ps1)
 # ==============================================================================
-# WinFlexOS - Beast Control Center Module
-# ==============================================================================
-
-function Test-IsAdmin {
-    try {
-        $id = [Security.Principal.WindowsIdentity]::GetCurrent()
-        $p = New-Object Security.Principal.WindowsPrincipal($id)
-        return $p.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
-    } catch {
-        return $false
-    }
-}
 
 function Write-BeastLog {
     param([string]$text, [string]$color = "Chartreuse")
@@ -23,6 +13,11 @@ function Write-BeastLog {
             $scroll.ScrollToEnd()
         }
     }
+}
+
+$beastLogInit = Get-GuiElement "txtBeastLog"
+if ($beastLogInit -and [string]::IsNullOrWhiteSpace($beastLogInit.Text)) {
+    $beastLogInit.Text = "WinFlexOS V3.2 System Health Center ready. Select a diagnostic or repair tool below.`n"
 }
 
 Set-Click "btnClearBeastLog" {
@@ -215,12 +210,27 @@ Set-Click "btnBeastPublicIP" {
 Set-Click "btnBeastWiFi" {
     Write-BeastLog "--- Saved Wi-Fi Profiles ---"
     try {
-        $profiles = netsh.exe wlan show profiles 2>&1 | Select-String "All User Profile"
-        foreach ($p in $profiles) {
-            $name = ($p -replace ".*:\s*", "").Trim()
-            Write-BeastLog "[WIFI] $name"
+        $rawProfiles = netsh.exe wlan show profiles 2>&1
+        $names = @()
+        foreach ($line in $rawProfiles) {
+            if ($line -match '^\s+[^:]+:\s+(.+)$') {
+                $n = $Matches[1].Trim()
+                if ($n -and $n -notmatch '^<None>$') { $names += $n }
+            }
         }
-        if (-not $profiles) { Write-BeastLog "No Wi-Fi profiles found." "info" }
+        $names = @($names | Select-Object -Unique)
+        if ($names.Count -eq 0) {
+            Write-BeastLog "No saved Wi-Fi profiles found." "Yellow"
+        } else {
+            foreach ($name in $names) {
+                $keyLine = (netsh.exe wlan show profile name="$name" key=clear 2>&1 | Where-Object { $_ -match 'Key Content|תוכן מפתח' } | Select-Object -First 1)
+                if (-not $keyLine) {
+                    $keyLine = (netsh.exe wlan show profile name="$name" key=clear 2>&1 | Select-String '^\s+(Key Content|[^:]+)\s*:\s*\S+' | Select-Object -Last 1).Line
+                }
+                $keyVal = if ($keyLine -match ':\s+(.+)$') { $Matches[1].Trim() } else { "(Open / Protected)" }
+                Write-BeastLog "[WIFI] $name | Key: $keyVal"
+            }
+        }
     } catch {
         Write-BeastLog "Wi-Fi query unsupported on this adapter." "Yellow"
     }

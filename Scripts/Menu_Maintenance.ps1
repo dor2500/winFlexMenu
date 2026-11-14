@@ -1,6 +1,29 @@
-# ==============================================================================
+﻿# ==============================================================================
 # WinFlexOS - Maintenance & Windows Tools Module
 # ==============================================================================
+
+function Clear-ChromiumCache {
+    param([string]$BrowserName, [string]$UserDataRoot, [bool]$Silent = $false)
+    if (-not (Test-Path $UserDataRoot)) {
+        if (-not $Silent) { Show-Toast "$BrowserName profile not found" "info" }
+        return $false
+    }
+    $profiles = Get-ChildItem -Path $UserDataRoot -Directory -ErrorAction SilentlyContinue | Where-Object { $_.Name -eq "Default" -or $_.Name -like "Profile *" }
+    $cleaned = $false
+    foreach ($prof in $profiles) {
+        foreach ($sub in @("Cache", "Code Cache", "GPUCache")) {
+            $p = Join-Path $prof.FullName $sub
+            if (Test-Path $p) {
+                Remove-Item "$p\*" -Recurse -Force -ErrorAction SilentlyContinue
+                $cleaned = $true
+            }
+        }
+    }
+    if (-not $Silent) {
+        if ($cleaned) { Show-Toast "$BrowserName cache cleaned" "success" } else { Show-Toast "$BrowserName cache is already clean" "info" }
+    }
+    return $cleaned
+}
 
 # --- ONE-CLICK DEEP CLEANUP ---
 Set-Click "btnCleanAll" {
@@ -18,10 +41,9 @@ Set-Click "btnCleanAll" {
             ipconfig.exe /flushdns | Out-Null
             
             # Browser caches
-            $edgeCache = "$env:LOCALAPPDATA\Microsoft\Edge\User Data\Default\Cache"
-            if (Test-Path $edgeCache) { Remove-Item "$edgeCache\*" -Recurse -Force -ErrorAction SilentlyContinue }
-            $chromeCache = "$env:LOCALAPPDATA\Google\Chrome\User Data\Default\Cache"
-            if (Test-Path $chromeCache) { Remove-Item "$chromeCache\*" -Recurse -Force -ErrorAction SilentlyContinue }
+            Clear-ChromiumCache "Microsoft Edge" "$env:LOCALAPPDATA\Microsoft\Edge\User Data" $true | Out-Null
+            Clear-ChromiumCache "Google Chrome" "$env:LOCALAPPDATA\Google\Chrome\User Data" $true | Out-Null
+            Clear-ChromiumCache "Brave Browser" "$env:LOCALAPPDATA\BraveSoftware\Brave-Browser\User Data" $true | Out-Null
             
             [System.GC]::Collect()
             Show-Toast "System cleanup completed successfully!" "success"
@@ -80,30 +102,20 @@ Set-Click "btnClearWindowsLogs" {
 
 # --- BROWSER CACHES ---
 Set-Click "btnClearEdgeCache" {
-    try {
-        $paths = @("$env:LOCALAPPDATA\Microsoft\Edge\User Data\Default\Cache", "$env:LOCALAPPDATA\Microsoft\Edge\User Data\Default\Code Cache")
-        foreach ($p in $paths) { if (Test-Path $p) { Remove-Item "$p\*" -Recurse -Force -ErrorAction SilentlyContinue } }
-        Show-Toast "Microsoft Edge cache cleaned" "success"
-    } catch { Show-Toast "Edge cache cleaned" "info" }
+    try { Clear-ChromiumCache "Microsoft Edge" "$env:LOCALAPPDATA\Microsoft\Edge\User Data" | Out-Null }
+    catch { Show-Toast "Edge cache cleaned" "info" }
 }
 
 Set-Click "btnClearChromeCache" {
-    try {
-        $p = "$env:LOCALAPPDATA\Google\Chrome\User Data\Default\Cache"
-        if (Test-Path $p) {
-            Remove-Item "$p\*" -Recurse -Force -ErrorAction SilentlyContinue
-            Show-Toast "Google Chrome cache cleaned" "success"
-        } else {
-            Show-Toast "Chrome cache not found" "info"
-        }
-    } catch { Show-Toast "Chrome cache cleaned" "info" }
+    try { Clear-ChromiumCache "Google Chrome" "$env:LOCALAPPDATA\Google\Chrome\User Data" | Out-Null }
+    catch { Show-Toast "Chrome cache cleaned" "info" }
 }
 
 Set-Click "btnClearFirefoxCache" {
     try {
         $p = "$env:APPDATA\Mozilla\Firefox\Profiles"
         if (Test-Path $p) {
-            Get-ChildItem "$p\*.default*\cache2" -Recurse -ErrorAction SilentlyContinue | ForEach-Object {
+            Get-ChildItem "$p\*\cache2" -ErrorAction SilentlyContinue | ForEach-Object {
                 Remove-Item "$($_.FullName)\*" -Recurse -Force -ErrorAction SilentlyContinue
             }
             Show-Toast "Mozilla Firefox cache cleaned" "success"
@@ -113,15 +125,19 @@ Set-Click "btnClearFirefoxCache" {
     } catch { Show-Toast "Firefox cache cleaned" "info" }
 }
 
+Set-Click "btnClearBraveCache" {
+    try { Clear-ChromiumCache "Brave Browser" "$env:LOCALAPPDATA\BraveSoftware\Brave-Browser\User Data" | Out-Null }
+    catch { Show-Toast "Brave cache cleaned" "info" }
+}
+
 Set-Click "btnClearAllBrowsers" {
     try {
-        @("$env:LOCALAPPDATA\Microsoft\Edge\User Data\Default\Cache",
-          "$env:LOCALAPPDATA\Google\Chrome\User Data\Default\Cache") | ForEach-Object {
-            if (Test-Path $_) { Remove-Item "$_\*" -Recurse -Force -ErrorAction SilentlyContinue }
-        }
+        Clear-ChromiumCache "Microsoft Edge" "$env:LOCALAPPDATA\Microsoft\Edge\User Data" $true | Out-Null
+        Clear-ChromiumCache "Google Chrome" "$env:LOCALAPPDATA\Google\Chrome\User Data" $true | Out-Null
+        Clear-ChromiumCache "Brave Browser" "$env:LOCALAPPDATA\BraveSoftware\Brave-Browser\User Data" $true | Out-Null
         $ff = "$env:APPDATA\Mozilla\Firefox\Profiles"
         if (Test-Path $ff) {
-            Get-ChildItem "$ff\*.default*\cache2" -Recurse -ErrorAction SilentlyContinue | ForEach-Object {
+            Get-ChildItem "$ff\*\cache2" -ErrorAction SilentlyContinue | ForEach-Object {
                 Remove-Item "$($_.FullName)\*" -Recurse -Force -ErrorAction SilentlyContinue
             }
         }
@@ -226,8 +242,11 @@ Set-Click "btnDiskMgmt" { Start-Process "diskmgmt.msc" }
 Set-Click "btnTaskMgr" { Start-Process "taskmgr.exe" }
 Set-Click "btnDevMgmt" { Start-Process "devmgmt.msc" }
 Set-Click "btnSFC" { Start-Process cmd.exe "/k sfc /scannow" -Verb RunAs }
+Set-Click "btnDISM" { Start-Process cmd.exe "/k Dism /Online /Cleanup-Image /RestoreHealth" -Verb RunAs }
 Set-Click "btnChkdsk" { Start-Process cmd.exe "/k chkdsk" -Verb RunAs }
 Set-Click "btnDefrag" { Start-Process "dfrgui.exe" }
+Set-Click "btnServices" { Start-Process "services.msc" }
+Set-Click "btnTaskSchd" { Start-Process "taskschd.msc" }
 Set-Click "btnRegEdit" { Start-Process "regedit.exe" }
 Set-Click "btnGodMode" {
     $desktop = [Environment]::GetFolderPath('Desktop')
@@ -248,15 +267,35 @@ Set-Click "btnGpEdit" {
         Show-Toast "Group Policy Editor (gpedit.msc) is only available on Pro/Enterprise editions." "warning"
     }
 }
+Set-Click "btnSysProp" { Start-Process "sysdm.cpl" }
+Set-Click "btnNetConn" { Start-Process "ncpa.cpl" }
+Set-Click "btnAppWiz" { Start-Process "appwiz.cpl" }
 Set-Click "btnDiskCleanup" { Start-Process "cleanmgr.exe" }
 
-# Portable Tools Downloads
+# Portable Tools Downloads / Winget Install
+function Launch-OrInstallTool {
+    param([string]$DisplayName, [string[]]$CandidateExes, [string]$WingetId, [string]$FallbackUrl)
+    $existing = $CandidateExes | Where-Object { Test-Path $_ } | Select-Object -First 1
+    if ($existing) {
+        Start-Process $existing
+        return
+    }
+    if (Get-Command winget -ErrorAction SilentlyContinue) {
+        Show-Toast "Installing $DisplayName via Winget..." "info"
+        $cmd = "Write-Host 'Installing $DisplayName via Winget...' -ForegroundColor Cyan; winget install --id $WingetId -e --accept-package-agreements --accept-source-agreements; Write-Host 'Done!' -ForegroundColor Green; Read-Host 'Press Enter to close'"
+        Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -Command `"$cmd`""
+    } else {
+        Show-Toast "Opening official $DisplayName download page..." "info"
+        Start-Process $FallbackUrl
+    }
+}
+
 Set-Click "btnTreeSize" {
     Invoke-OnlineApp -Url "https://downloads.jam-software.de/treesize_free/TreeSizeFree-Portable.zip" -FileName "TreeSize.zip" -ExeToRun "TreeSizeFree.exe" -IsZip $true
 }
 Set-Click "btnCrystalDiskInfo" {
-    Invoke-OnlineApp -Url "https://osdn.net/frs/redir.php?m=gigenet&f=crystaldiskinfo%2F78192%2FCrystalDiskInfo9_2_1.zip" -FileName "CDInfo.zip" -ExeToRun "DiskInfo64.exe" -IsZip $true
+    Launch-OrInstallTool -DisplayName "CrystalDiskInfo" -CandidateExes @("$env:ProgramFiles\CrystalDiskInfo\DiskInfo64.exe", "${env:ProgramFiles(x86)}\CrystalDiskInfo\DiskInfo64.exe") -WingetId "CrystalDewWorld.CrystalDiskInfo" -FallbackUrl "https://crystalmark.info/en/software/crystaldiskinfo/"
 }
 Set-Click "btnCrystalDiskMark" {
-    Invoke-OnlineApp -Url "https://osdn.net/frs/redir.php?m=gigenet&f=crystaldiskmark%2F77936%2FCrystalDiskMark8_0_4c.zip" -FileName "CDMark.zip" -ExeToRun "DiskMark64.exe" -IsZip $true
+    Launch-OrInstallTool -DisplayName "CrystalDiskMark" -CandidateExes @("$env:ProgramFiles\CrystalDiskMark8\DiskMark64.exe", "$env:ProgramFiles\CrystalDiskMark9\DiskMark64.exe", "${env:ProgramFiles(x86)}\CrystalDiskMark8\DiskMark64.exe") -WingetId "CrystalDewWorld.CrystalDiskMark" -FallbackUrl "https://crystalmark.info/en/software/crystaldiskmark/"
 }

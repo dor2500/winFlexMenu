@@ -1,4 +1,4 @@
-# GAMING CENTER - Fully Embedded (no external file dependency)
+﻿# GAMING CENTER - Fully Embedded (no external file dependency)
 # ==============================================================================
 Set-Click "btnGameCenter" { Switch-Panel $pnlGaming }
 Set-Click "btnThemeXP" { $cmbThemes.SelectedIndex = 18 }
@@ -52,8 +52,15 @@ Set-Click "btnGBattleNet" { Launch-GApp @("$env:ProgramFiles\Battle.net\Battle.n
 Set-Click "btnGXbox"      { try { Start-Process "shell:AppsFolder\Microsoft.GamingApp_8wekyb3d8bbwe!Microsoft.Xbox.App" -EA Stop } catch { Show-Toast "Xbox App not installed" -Type "warning" } }
 
 # GPU
-Set-Click "btnGNvidiaCP"  { Launch-GApp @("$env:SystemRoot\System32\nvcplui.exe","$env:ProgramFiles\NVIDIA Corporation\Control Panel Client\nvcplui.exe") }
-Set-Click "btnGGeForce"   { Launch-GApp @("$env:ProgramFiles\NVIDIA Corporation\NVIDIA GeForce Experience\NVIDIA GeForce Experience.exe") }
+Set-Click "btnGNvidiaCP" {
+    $nv = @("$env:SystemRoot\System32\nvcplui.exe","$env:ProgramFiles\NVIDIA Corporation\Control Panel Client\nvcplui.exe") | Where-Object { Test-Path $_ } | Select-Object -First 1
+    if ($nv) { Start-Process $nv }
+    else {
+        try { Start-Process "shell:AppsFolder\NVIDIACorp.NVIDIAControlPanel_56jybvy8sckqj!NVIDIACorp.NVIDIAControlPanel" -ErrorAction Stop }
+        catch { Show-Toast "NVIDIA Control Panel not installed" -Type "warning" }
+    }
+}
+Set-Click "btnGGeForce"   { Launch-GApp @("$env:ProgramFiles\NVIDIA Corporation\NVIDIA App\CEF\NVIDIA App.exe","$env:ProgramFiles\NVIDIA Corporation\NVIDIA GeForce Experience\NVIDIA GeForce Experience.exe") }
 Set-Click "btnGAMD"       { Launch-GApp @("$env:ProgramFiles\AMD\CNext\CNext\RadeonSoftware.exe","${env:ProgramFiles(x86)}\AMD\CNext\CNext\RadeonSoftware.exe") }
 Set-Click "btnGIntelArc"  { Launch-GApp @("$env:ProgramFiles\Intel\Intel(R) Arc Control\arc-control.exe") }
 Set-Click "btnGMSIAB"     { Launch-GApp @("$env:ProgramFiles\MSI Afterburner\MSIAfterburner.exe","${env:ProgramFiles(x86)}\MSI Afterburner\MSIAfterburner.exe") }
@@ -72,6 +79,8 @@ Set-Click "btnGNoXbox" {
     catch { Show-Toast "Error" -Type "error" }
 }
 Set-Click "btnGKillBG" {
+    $res = [System.Windows.MessageBox]::Show("Close OneDrive, Teams, Spotify, Discord, Slack, Chrome, and Edge to free RAM/CPU for gaming?", "Kill Background Apps", [System.Windows.MessageBoxButton]::YesNo, [System.Windows.MessageBoxImage]::Question)
+    if ($res -ne [System.Windows.MessageBoxResult]::Yes) { return }
     $k=0; @("OneDrive","Teams","Spotify","Discord","Slack","chrome","msedge") | ForEach-Object { Get-Process $_ -EA SilentlyContinue | ForEach-Object { try{$_.Kill();$k++}catch{} } }
     Show-Toast "Stopped $k background processes" -Type "success"
 }
@@ -106,9 +115,15 @@ function Scan-GamesNow {
 
     # Steam
     try {
+        $sp = $null
         $sr = @("HKLM:\SOFTWARE\Valve\Steam","HKLM:\SOFTWARE\WOW6432Node\Valve\Steam") | Where-Object { Test-Path $_ } | Select-Object -First 1
-        if ($sr) {
-            $sp = (Get-ItemProperty $sr).InstallPath; $libs = @($sp)
+        if ($sr) { $sp = (Get-ItemProperty $sr -EA SilentlyContinue).InstallPath }
+        if (-not $sp -and (Test-Path "HKCU:\Software\Valve\Steam")) {
+            $sp = (Get-ItemProperty "HKCU:\Software\Valve\Steam" -EA SilentlyContinue).SteamPath
+            if ($sp) { $sp = $sp -replace '/','\' }
+        }
+        if ($sp -and (Test-Path $sp)) {
+            $libs = @($sp)
             $lf = "$sp\steamapps\libraryfolders.vdf"
             if (Test-Path $lf) { Get-Content $lf | Select-String '"path"' | ForEach-Object { $l=(($_ -replace '.*"path"\s+"(.+)".*','$1') -replace '\\\\','\').Trim(); if(Test-Path $l){$libs+=$l} } }
             $libs = @($libs | Select-Object -Unique)
@@ -195,14 +210,17 @@ function Scan-GamesNow {
     # Show only installed GPU/launchers
     function Vis($name,[bool]$show){ $el=Get-GuiElement $name; if($el){$el.Visibility=if($show){"Visible"}else{"Collapsed"}} }
     function HasApp($paths){ $paths|Where-Object{Test-Path $_}|Select-Object -First 1 }
+    $hasNvUwp = !!(Get-AppxPackage -Name "NVIDIACorp.NVIDIAControlPanel" -EA SilentlyContinue)
+    $hasXboxUwp = !!(Get-AppxPackage -Name "Microsoft.GamingApp" -EA SilentlyContinue)
     Vis "btnGSteam"     (!!(HasApp @("$env:ProgramFiles\Steam\steam.exe","${env:ProgramFiles(x86)}\Steam\steam.exe")))
     Vis "btnGEpic"      (!!(HasApp @("$env:ProgramData\Epic\EpicGamesLauncher\Portal\Binaries\Win64\EpicGamesLauncher.exe","${env:ProgramFiles(x86)}\Epic Games\Launcher\Portal\Binaries\Win64\EpicGamesLauncher.exe")))
     Vis "btnGGOG"       (!!(HasApp @("$env:ProgramFiles\GOG Galaxy\GalaxyClient.exe","${env:ProgramFiles(x86)}\GOG Galaxy\GalaxyClient.exe")))
     Vis "btnGEA"        (!!(HasApp @("$env:ProgramFiles\Electronic Arts\EA Desktop\EA Desktop\EADesktop.exe","${env:ProgramFiles(x86)}\Origin\Origin.exe")))
     Vis "btnGUbisoft"   (!!(HasApp @("$env:ProgramFiles\Ubisoft\Ubisoft Game Launcher\UbisoftConnect.exe","${env:ProgramFiles(x86)}\Ubisoft\Ubisoft Game Launcher\UbisoftConnect.exe")))
     Vis "btnGBattleNet" (!!(HasApp @("$env:ProgramFiles\Battle.net\Battle.net.exe","${env:ProgramFiles(x86)}\Battle.net\Battle.net.exe")))
-    Vis "btnGNvidiaCP"  (!!(HasApp @("$env:SystemRoot\System32\nvcplui.exe","$env:ProgramFiles\NVIDIA Corporation\Control Panel Client\nvcplui.exe")))
-    Vis "btnGGeForce"   (!!(HasApp @("$env:ProgramFiles\NVIDIA Corporation\NVIDIA GeForce Experience\NVIDIA GeForce Experience.exe")))
+    Vis "btnGXbox"      $hasXboxUwp
+    Vis "btnGNvidiaCP"  ((!!(HasApp @("$env:SystemRoot\System32\nvcplui.exe","$env:ProgramFiles\NVIDIA Corporation\Control Panel Client\nvcplui.exe"))) -or $hasNvUwp)
+    Vis "btnGGeForce"   (!!(HasApp @("$env:ProgramFiles\NVIDIA Corporation\NVIDIA App\CEF\NVIDIA App.exe","$env:ProgramFiles\NVIDIA Corporation\NVIDIA GeForce Experience\NVIDIA GeForce Experience.exe")))
     Vis "btnGAMD"       (!!(HasApp @("$env:ProgramFiles\AMD\CNext\CNext\RadeonSoftware.exe","${env:ProgramFiles(x86)}\AMD\CNext\CNext\RadeonSoftware.exe")))
     Vis "btnGIntelArc"  (!!(HasApp @("$env:ProgramFiles\Intel\Intel(R) Arc Control\arc-control.exe")))
     Vis "btnGMSIAB"     (!!(HasApp @("$env:ProgramFiles\MSI Afterburner\MSIAfterburner.exe","${env:ProgramFiles(x86)}\MSI Afterburner\MSIAfterburner.exe")))
@@ -220,6 +238,13 @@ function Refresh-GList {
 
 $s = Get-GuiElement "txtGSearch"; if ($s) { $s.Add_TextChanged({ Refresh-GList }) }
 $f = Get-GuiElement "cmbGFilter"; if ($f) { $f.Add_SelectionChanged({ Refresh-GList }) }
+$lstGEl = Get-GuiElement "lstGGames"
+if ($lstGEl) {
+    $lstGEl.Add_MouseDoubleClick({
+        $sel = $lstGEl.SelectedItem
+        if ($sel -and $sel.ExePath -and (Test-Path $sel.ExePath)) { Start-Process $sel.ExePath }
+    })
+}
 
 Set-Click "btnGScan"   { Scan-GamesNow }
 Set-Click "btnGRescan" { Scan-GamesNow }
@@ -228,6 +253,25 @@ Set-Click "btnGLaunch" {
     if ($sel -and $sel.ExePath -and (Test-Path $sel.ExePath)) { Start-Process $sel.ExePath }
     elseif ($sel) { Show-Toast "EXE not found for this game" -Type "warning" }
     else { Show-Toast "Select a game from the list first" -Type "info" }
+}
+Set-Click "btnGOpenFolder" {
+    $sel = (Get-GuiElement "lstGGames").SelectedItem
+    if (-not $sel -or -not $sel.ExePath) { Show-Toast "Select a game from the list first" -Type "info"; return }
+    $folder = if (Test-Path $sel.ExePath -PathType Container) { $sel.ExePath } else { Split-Path $sel.ExePath -Parent }
+    if ($folder -and (Test-Path $folder)) { Start-Process "explorer.exe" $folder }
+    else { Show-Toast "Game folder not found" -Type "warning" }
+}
+Set-Click "btnGRemoveGame" {
+    $sel = (Get-GuiElement "lstGGames").SelectedItem
+    if (-not $sel) { Show-Toast "Select a game from the list first" -Type "info"; return }
+    [void]$script:gGames.Remove($sel)
+    try {
+        $script:gGames | Select-Object Name,Platform,ExePath | ConvertTo-Json -Depth 2 | Set-Content $script:gCacheFile -Encoding UTF8
+    } catch {}
+    Refresh-GList
+    $countLbl = Get-GuiElement "lblGGameCount"
+    if ($countLbl) { $countLbl.Text = "$($script:gGames.Count) games" }
+    Show-Toast "Removed $($sel.Name) from library" "info"
 }
 
 Set-Click "btnGAddManual" {

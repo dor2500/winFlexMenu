@@ -1,4 +1,4 @@
-# Theme background images live in C:\MENU\backgrounds. They used to be shipped as a 7MB base64 script
+﻿# Theme background images live in C:\MENU\backgrounds. They used to be shipped as a 7MB base64 script
 # (Assets.ps1) that had to be downloaded + parsed on every start; now each image is fetched once, on
 # demand, straight from the repo, then decoded once (OnLoad + Freeze) and cached in memory.
 $script:BgDir = "C:\MENU\backgrounds"
@@ -181,6 +181,10 @@ function Show-Toast {
 
 function Open-Url { param($url) try { Start-Process $url } catch { [System.Windows.Forms.MessageBox]::Show("Could not open URL: $url", "Error") } }
 
+function Test-IsAdmin {
+    return ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+}
+
 function Write-Log { param($msg) $script:actionHistory += "[$((Get-Date).ToString('HH:mm:ss'))] $msg"; if ($script:actionHistory.Count -gt 20) { $script:actionHistory = $script:actionHistory[1..20] } }
 
 function Invoke-OnlineApp {
@@ -191,12 +195,21 @@ function Invoke-OnlineApp {
     
     try {
         Show-Toast "Downloading $FileName..." "info"
-        Invoke-WebRequest -Uri $Url -OutFile $outPath -TimeoutSec 15
+        Invoke-WebRequest -Uri $Url -OutFile $outPath -TimeoutSec 20 -UseBasicParsing
         
         if ($IsZip) {
             $zipExtract = "$tempDir\$($FileName -replace '\.zip', '')"
             Expand-Archive -Path $outPath -DestinationPath $zipExtract -Force
-            if ($ExeToRun) { Start-Process "$zipExtract\$ExeToRun" } else { Start-Process "explorer.exe" $zipExtract }
+            if ($ExeToRun) {
+                $targetExe = "$zipExtract\$ExeToRun"
+                if (!(Test-Path $targetExe)) {
+                    $foundExe = Get-ChildItem -Path $zipExtract -Filter $ExeToRun -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
+                    if ($foundExe) { $targetExe = $foundExe.FullName }
+                }
+                if (Test-Path $targetExe) { Start-Process $targetExe } else { Start-Process "explorer.exe" $zipExtract }
+            } else {
+                Start-Process "explorer.exe" $zipExtract
+            }
         } else {
             Start-Process $outPath
         }

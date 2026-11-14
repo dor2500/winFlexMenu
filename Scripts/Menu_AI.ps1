@@ -1,4 +1,4 @@
-# ==============================================================================
+﻿# ==============================================================================
 # WinFlexOS - AI Hub & Quick Bubbles Module
 # ==============================================================================
 
@@ -31,9 +31,10 @@ $script:scenariosHebrew = @("$(([char]0x05E0))$(([char]0x05D5))$(([char]0x05E3))
 $script:scenariosEnglish = @("Futuristic cyberpunk city at night", "A lone knight on a snowy mountain peak", "An astronaut cat floating in deep space", "A magical bioluminescent forest", "An ancient moss-covered robot", "A cozy robot coffee shop in Tokyo", "A giant sea turtle carrying a floating island", "A samurai facing a giant mechanical dragon")
 
 function Send-To-Gemini ($prompt) {
-    if ([string]::IsNullOrWhiteSpace($prompt)) { return }
+    if ([string]::IsNullOrWhiteSpace($prompt)) { Show-Toast "Prompt cannot be empty" "warning"; return }
     try { [System.Windows.Forms.Clipboard]::SetText($prompt) } catch {}
     $enc = [System.Net.WebUtility]::UrlEncode($prompt)
+    Show-Toast "Prompt copied to clipboard! Opening Gemini..." "info"
     Start-Process "https://gemini.google.com/app?prompt=$enc"
 }
 
@@ -90,6 +91,20 @@ Set-Click "btnSpinRoulette" {
     }
 }
 
+Set-Click "btnGenHebrew" {
+    $scn = $script:scenariosHebrew | Get-Random
+    $sty = $script:stylesHebrew | Get-Random
+    $mods = Get-ActiveModifiers "He"
+    Send-To-Gemini "Create an image of $scn, in $sty style$mods."
+}
+
+Set-Click "btnGenEnglish" {
+    $scn = $script:scenariosEnglish | Get-Random
+    $sty = $script:stylesEnglish | Get-Random
+    $mods = Get-ActiveModifiers "En"
+    Send-To-Gemini "Generate an image of $scn, in $sty style$mods."
+}
+
 Set-Click "btnSurpriseMe" {
     $scn = $script:scenariosEnglish | Get-Random
     $sty = $script:stylesEnglish | Get-Random
@@ -99,20 +114,38 @@ Set-Click "btnSurpriseMe" {
 
 Set-Click "btnLaunchCustom" {
     $box = Get-GuiElement "txtCustomInput"
-    $txt = if ($box) { $box.Text } else { "" }
+    $txt = if ($box) { $box.Text.Trim() } else { "" }
     if ($txt) {
         $mods = Get-ActiveModifiers "En"
         Send-To-Gemini "$txt$mods"
+    } else {
+        Show-Toast "Please enter a custom prompt first" "warning"
     }
 }
 
-# --- ALL 100+ AI PLATFORM BUTTON HANDLERS ---
+Set-Click "btnCopyPrompt" {
+    $box = Get-GuiElement "txtCustomInput"
+    $txt = if ($box) { $box.Text.Trim() } else { "" }
+    if ($txt) {
+        $mods = Get-ActiveModifiers "En"
+        try {
+            [System.Windows.Forms.Clipboard]::SetText("$txt$mods")
+            Show-Toast "Full prompt copied to clipboard!" "success"
+        } catch {
+            Show-Toast "Failed to copy prompt" "error"
+        }
+    } else {
+        Show-Toast "Please enter a custom prompt first" "warning"
+    }
+}
+
+# --- AI PLATFORM BUTTON HANDLERS ---
 # Leading LLMs (Chat)
-Set-Click "btnGPT"          { Start-Process "https://chat.openai.com" }
+Set-Click "btnGPT"          { Start-Process "https://chatgpt.com" }
 Set-Click "btnGemini"       { Start-Process "https://gemini.google.com" }
 Set-Click "btnCopilot"      { Start-Process "https://copilot.microsoft.com" }
 Set-Click "btnClaude"       { Start-Process "https://claude.ai" }
-Set-Click "btnGrok"         { Start-Process "https://grok.x.ai" }
+Set-Click "btnGrok"         { Start-Process "https://grok.com" }
 Set-Click "btnMistral"      { Start-Process "https://chat.mistral.ai" }
 Set-Click "btnLlama"        { Start-Process "https://www.meta.ai" }
 Set-Click "btnPoe"          { Start-Process "https://poe.com" }
@@ -125,7 +158,7 @@ Set-Click "btnReplika"      { Start-Process "https://replika.com" }
 Set-Click "btnHuggingChat"  { Start-Process "https://huggingface.co/chat" }
 Set-Click "btnGroq"         { Start-Process "https://groq.com" }
 Set-Click "btnOpenRouter"   { Start-Process "https://openrouter.ai" }
-Set-Click "btnOllama"       { Start-Process "https://ollama.ai" }
+Set-Click "btnOllama"       { Start-Process "https://ollama.com" }
 
 # Search & Research
 Set-Click "btnPerplexity"   { Start-Process "https://perplexity.ai" }
@@ -141,11 +174,11 @@ Set-Click "btnScite"        { Start-Process "https://scite.ai" }
 
 # Coding & Development
 Set-Click "btnGitHubCopilot"{ Start-Process "https://github.com/features/copilot" }
-Set-Click "btnCursor"       { Start-Process "https://cursor.sh" }
+Set-Click "btnCursor"       { Start-Process "https://cursor.com" }
 Set-Click "btnReplit"       { Start-Process "https://replit.com" }
 Set-Click "btnBlackbox"     { Start-Process "https://blackbox.ai" }
 Set-Click "btnDeepSeek"     { Start-Process "https://chat.deepseek.com" }
-Set-Click "btnCodeium"      { Start-Process "https://codeium.com" }
+Set-Click "btnCodeium"      { Start-Process "https://windsurf.com" }
 Set-Click "btnTabnine"      { Start-Process "https://tabnine.com" }
 Set-Click "btnAmazonQ"      { Start-Process "https://aws.amazon.com/q" }
 Set-Click "btnV0"           { Start-Process "https://v0.dev" }
@@ -209,7 +242,6 @@ Set-Click "btnLalal"        { Start-Process "https://lalal.ai" }
 Set-Click "btnVoiceMod"     { Start-Process "https://voicemod.net" }
 Set-Click "btnAdobePodcast" { Start-Process "https://podcast.adobe.com" }
 Set-Click "btnSpeechify"    { Start-Process "https://speechify.com" }
-Set-Click "btnPlay_ht"      { Start-Process "https://play.ht" }
 Set-Click "btnWellSaid"     { Start-Process "https://wellsaidlabs.com" }
 Set-Click "btnResemble"     { Start-Process "https://resemble.ai" }
 
@@ -230,7 +262,6 @@ Set-Click "btnFrase"        { Start-Process "https://frase.io" }
 # Productivity & Business
 Set-Click "btnNotebookLM"   { Start-Process "https://notebooklm.google.com" }
 Set-Click "btnGamma"        { Start-Process "https://gamma.app" }
-Set-Click "btnTome"         { Start-Process "https://tome.app" }
 Set-Click "btnBeautiful"    { Start-Process "https://beautiful.ai" }
 Set-Click "btnNotion"       { Start-Process "https://notion.so" }
 Set-Click "btnClickUp"      { Start-Process "https://clickup.com" }
@@ -248,7 +279,6 @@ Set-Click "btnAirtable"     { Start-Process "https://airtable.com" }
 # 3D & Gaming
 Set-Click "btnMeshy"        { Start-Process "https://meshy.ai" }
 Set-Click "btnTripo"        { Start-Process "https://tripo3d.ai" }
-Set-Click "btnCSM"          { Start-Process "https://csm.ai" }
 Set-Click "btnLuma3D"       { Start-Process "https://lumalabs.ai/genie" }
 Set-Click "btnKaedim"       { Start-Process "https://kaedim3d.com" }
 Set-Click "btnSpline"       { Start-Process "https://spline.design" }
@@ -264,11 +294,9 @@ Set-Click "btnPlanner5D"    { Start-Process "https://planner5d.com" }
 
 # Data & Analytics
 Set-Click "btnJulius"       { Start-Process "https://julius.ai" }
-Set-Click "btnChatCSV"      { Start-Process "https://chatcsv.co" }
 Set-Click "btnRowsAI"       { Start-Process "https://rows.com" }
 Set-Click "btnChannel"      { Start-Process "https://channel.ai" }
 Set-Click "btnOsmo"         { Start-Process "https://osmo.ai" }
-Set-Click "btnMonkeyLearn"  { Start-Process "https://monkeylearn.com" }
 Set-Click "btnObviouslyAI"  { Start-Process "https://obviously.ai" }
 Set-Click "btnAkkio"        { Start-Process "https://akkio.com" }
 Set-Click "btnMindsDB"      { Start-Process "https://mindsdb.com" }
@@ -282,16 +310,13 @@ Set-Click "btnDuolingo"     { Start-Process "https://duolingo.com" }
 Set-Click "btnQuizlet"      { Start-Process "https://quizlet.com" }
 Set-Click "btnSocratic"     { Start-Process "https://socratic.org" }
 Set-Click "btnPhotomath"    { Start-Process "https://photomath.com" }
-Set-Click "btnWolfram"      { Start-Process "https://wolframalpha.com" }
 Set-Click "btnChegg"        { Start-Process "https://chegg.com" }
 Set-Click "btnCourseHero"   { Start-Process "https://coursehero.com" }
 Set-Click "btnMagicSchool"  { Start-Process "https://magicschool.ai" }
-Set-Click "btnEducoAI"      { Start-Process "https://educo.ai" }
 Set-Click "btnQuestionwell" { Start-Process "https://questionwell.org" }
 
 # Science & Research
 Set-Click "btnAlphaFold"    { Start-Process "https://alphafold.ebi.ac.uk" }
-Set-Click "btnGalactica"    { Start-Process "https://galactica.org" }
 Set-Click "btnResearchRabbit"{ Start-Process "https://researchrabbit.ai" }
 Set-Click "btnIris"         { Start-Process "https://iris.ai" }
 Set-Click "btnLitmaps"      { Start-Process "https://litmaps.com" }
@@ -300,7 +325,6 @@ Set-Click "btnOpenRead"     { Start-Process "https://openread.academy" }
 Set-Click "btnChatPDF"      { Start-Process "https://chatpdf.com" }
 Set-Click "btnPDFAI"        { Start-Process "https://pdf.ai" }
 Set-Click "btnExplainpaper" { Start-Process "https://explainpaper.com" }
-Set-Click "btnPaperBrain"   { Start-Process "https://paperbrain.study" }
 
 # Social & Marketing
 Set-Click "btnBuffer"       { Start-Process "https://buffer.com" }
@@ -322,7 +346,6 @@ Set-Click "btnHatchful"     { Start-Process "https://hatchful.shopify.com" }
 
 # Legal & Finance
 Set-Click "btnHarvey"       { Start-Process "https://harvey.ai" }
-Set-Click "btnCasetext"     { Start-Process "https://casetext.com" }
 Set-Click "btnLexMachina"   { Start-Process "https://lexmachina.com" }
 Set-Click "btnDocuSign"     { Start-Process "https://docusign.com" }
 Set-Click "btnIronclad"     { Start-Process "https://ironcladapp.com" }
@@ -338,7 +361,6 @@ Set-Click "btnZest"         { Start-Process "https://zest.ai" }
 Set-Click "btnShopify"      { Start-Process "https://shopify.com/magic" }
 Set-Click "btnAmazonSeller" { Start-Process "https://sell.amazon.com" }
 Set-Click "btnCratejoy"     { Start-Process "https://cratejoy.com" }
-Set-Click "btnOberlo"       { Start-Process "https://oberlo.com" }
 Set-Click "btnSalesforce"   { Start-Process "https://salesforce.com/einstein" }
 Set-Click "btnGong"         { Start-Process "https://gong.io" }
 Set-Click "btnChorus"       { Start-Process "https://chorus.ai" }
@@ -367,7 +389,6 @@ Set-Click "btnAnthropic"    { Start-Process "https://console.anthropic.com" }
 Set-Click "btnGoogleAI"     { Start-Process "https://aistudio.google.com" }
 Set-Click "btnReplicate"    { Start-Process "https://replicate.com" }
 Set-Click "btnModal"        { Start-Process "https://modal.com" }
-Set-Click "btnBananaML"     { Start-Process "https://banana.dev" }
 Set-Click "btnRunpod"       { Start-Process "https://runpod.io" }
 Set-Click "btnVastAI"       { Start-Process "https://vast.ai" }
 Set-Click "btnLambdaLabs"   { Start-Process "https://lambdalabs.com" }
@@ -387,15 +408,12 @@ Set-Click "btnReverso"        { Start-Process "https://reverso.net" }
 Set-Click "btnLinguee"        { Start-Process "https://linguee.com" }
 Set-Click "btnYandex"         { Start-Process "https://translate.yandex.com" }
 Set-Click "btnBaidu"          { Start-Process "https://fanyi.baidu.com" }
-Set-Click "btnInstant"        { Start-Process "https://instanttranslate.com" }
 Set-Click "btnRask"           { Start-Process "https://rask.ai" }
 Set-Click "btnCaption"        { Start-Process "https://captions.ai" }
 Set-Click "btnSubtitle"       { Start-Process "https://subtitle.ai" }
 
 # Creative & Fun
-Set-Click "btnAvatar"         { Start-Process "https://readyplayer.me" }
 Set-Click "btnLensa"          { Start-Process "https://lensa-ai.com" }
-Set-Click "btnDawn"           { Start-Process "https://dawnai.com" }
 Set-Click "btnRemini"         { Start-Process "https://remini.ai" }
 Set-Click "btnFaceApp"        { Start-Process "https://faceapp.com" }
 Set-Click "btnReface"         { Start-Process "https://reface.ai" }
@@ -404,11 +422,22 @@ Set-Click "btnMyHeritage"     { Start-Process "https://myheritage.com/deep-nosta
 Set-Click "btnArtbreeder"     { Start-Process "https://artbreeder.com" }
 Set-Click "btnDeepDream"      { Start-Process "https://deepdreamgenerator.com" }
 Set-Click "btnNeuralStyle"    { Start-Process "https://neuralstyle.art" }
-Set-Click "btnPrisonner"      { Start-Process "https://thisxdoesnotexist.com" }
 
-# Aliases / Duplicates in Layout
-Set-Click "btnDescript2"      { Start-Process "https://descript.com" }
-Set-Click "btnSynthesia2"     { Start-Process "https://synthesia.io" }
-Set-Click "btnConsensus2"     { Start-Process "https://consensus.app" }
-Set-Click "btnDescriptProd"   { Start-Process "https://descript.com" }
-Set-Click "btnHeygen2"        { Start-Process "https://heygen.com" }
+# New AI Platforms (V3.2)
+$v32AiLinks = @{
+    "btnQwen"           = "https://chat.qwen.ai"
+    "btnKimi"           = "https://kimi.com"
+    "btnLMStudio"       = "https://lmstudio.ai"
+    "btnJanAI"          = "https://jan.ai"
+    "btnFirebaseStudio" = "https://firebase.studio"
+    "btnClaudeCode"     = "https://docs.anthropic.com/en/docs/claude-code"
+    "btnDevin"          = "https://devin.ai"
+    "btnRecraft"        = "https://recraft.ai"
+    "btnN8N"            = "https://n8n.io"
+    "btnNapkin"         = "https://napkin.ai"
+    "btnFramerAI"       = "https://framer.com"
+}
+foreach ($kv in $v32AiLinks.GetEnumerator()) {
+    $aiUrl = $kv.Value
+    Set-Click $kv.Key { Start-Process $aiUrl }.GetNewClosure()
+}

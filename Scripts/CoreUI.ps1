@@ -1,4 +1,4 @@
-# Window Logic
+﻿# Window Logic
 $window.Add_MouseLeftButtonDown({ try { $window.DragMove() } catch {} })
 (Get-GuiElement "btnClose").Add_Click({ $window.Close() })
 (Get-GuiElement "btnMin").Add_Click({ $window.WindowState = 'Minimized' })
@@ -168,7 +168,7 @@ function Trigger-Custom-Theme {
     $fd = New-Object System.Windows.Forms.OpenFileDialog
     $fd.Filter = "Image Files|*.jpg;*.jpeg;*.png;*.bmp;*.gif"
     $heTitle = "$([char]0x05D1)$([char]0x05D7)$([char]0x05E8) $([char]0x05EA)$([char]0x05DE)$([char]0x05D5)$([char]0x05E0)$([char]0x05D4) $([char]0x05DC)$([char]0x05E2)$([char]0x05D9)$([char]0x05E6)$([char]0x05D5)$([char]0x05D1) $([char]0x05D0)$([char]0x05D9)$([char]0x05E9)$([char]0x05D9)"
-    $fd.Title = $($(if ($global:CurrentLanguage -eq "He") { $heTitle } else { "Select Image for Custom Theme" }))
+    $fd.Title = $(if ($script:isHebrew) { $heTitle } else { "Select Image for Custom Theme" })
     if ($fd.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) {
         Apply-Theme-From-Image -imagePath $fd.FileName
         return $true
@@ -953,8 +953,8 @@ $langData = @{
     "lblQuickDevSubHeader"   = @{ En = "Devices & Printers"; He = "$([char]1492)$([char]1514)$([char]1511)$([char]1504)$([char]1497)$([char]1501)$([char]32)$([char]1493)$([char]1502)$([char]1491)$([char]1508)$([char]1505)$([char]1493)$([char]1514)" }
     "lblBubblesHeader"       = @{ En = "Category Guide (Click to Navigate)"; He = "$([char]1502)$([char]1491)$([char]1512)$([char]1497)$([char]1498)$([char]32)$([char]1511)$([char]1496)$([char]1490)$([char]1493)$([char]1512)$([char]1497)$([char]1493)$([char]1514)$([char]32)$([char]40)$([char]1500)$([char]1495)$([char]1509)$([char]32)$([char]1500)$([char]1502)$([char]1506)$([char]1489)$([char]1512)$([char]41)" }
     "btnCreateDesktopShortcut" = @{ En = "Desktop Shortcut"; He = "$([char]1511)$([char]1497)$([char]1510)$([char]1493)$([char]1512)$([char]32)$([char]1489)$([char]1513)$([char]1493)$([char]1500)$([char]1495)$([char]1503)$([char]32)$([char]1492)$([char]1506)$([char]1489)$([char]1493)$([char]1491)$([char]1492)" }
-    "lblBubGameTitle"        = @{ En = "Game Center"; He = "$([char]1502)$([char]1512)$([char]1499)$([char]1494)$([char]32)$([char]1502)$([char]1513)$([char]1495)$([char]1511)$([char]1497)$([char]1501)" }
-    "lblBubGameDesc"         = @{ En = "Play classic browser games"; He = "$([char]1502)$([char]1513)$([char]1495)$([char]1511)$([char]1497)$([char]32)$([char]1491)$([char]1508)$([char]1491)$([char]1508)$([char]1503)$([char]32)$([char]1511)$([char]1500)$([char]1488)$([char]1505)$([char]1497)$([char]1497)$([char]1501)" }
+    "lblBubGameTitle"        = @{ En = "Gaming"; He = "$([char]1490)$([char]1497)$([char]1497)$([char]1502)$([char]1497)$([char]1504)$([char]1490)" }
+    "lblBubGameDesc"         = @{ En = "Game scanner, launchers & FPS boost"; He = "$([char]1505)$([char]1493)$([char]1512)$([char]1511)$([char]32)$([char]1502)$([char]1513)$([char]1495)$([char]1511)$([char]1497)$([char]1501)$([char]44)$([char]32)$([char]1502)$([char]1513)$([char]1490)$([char]1512)$([char]1497)$([char]1501)$([char]32)$([char]1493)$([char]1513)$([char]1497)$([char]1508)$([char]1493)$([char]1512)$([char]32)$([char]1489)$([char]1497)$([char]1510)$([char]1493)$([char]1506)$([char]1497)$([char]1501)" }
     "lblCleanupHeader"       = @{ En = "Cleanup & Maintenance"; He = "$([char]1504)$([char]1497)$([char]1511)$([char]1493)$([char]1497)$([char]32)$([char]1493)$([char]1514)$([char]1495)$([char]1494)$([char]1493)$([char]1511)$([char]1492)" }
     "lblMaintQuick"          = @{ En = "Quick Cleanup"; He = "$([char]1504)$([char]1497)$([char]1511)$([char]1493)$([char]1497)$([char]32)$([char]1502)$([char]1492)$([char]1497)$([char]1512)" }
     "lblMaintJunk"           = @{ En = "System Junk"; He = "$([char]1511)$([char]1489)$([char]1510)$([char]1497)$([char]32)$([char]1494)$([char]1489)$([char]1500)$([char]32)$([char]1502)$([char]1506)$([char]1512)$([char]1499)$([char]1514)" }
@@ -963,6 +963,20 @@ $langData = @{
     "btnCleanAll"            = @{ En = "One-Click Clean All (Recommended)"; He = "$([char]1504)$([char]1497)$([char]1511)$([char]1493)$([char]1497)$([char]32)$([char]1502)$([char]1500)$([char]1488)$([char]32)$([char]1489)$([char]1511)$([char]1500)$([char]1497)$([char]1511)$([char]32)$([char]40)$([char]1502)$([char]1493)$([char]1502)$([char]1500)$([char]1509)$([char]41)" }
     "btnEmptyRecycleBin"     = @{ En = "Empty Recycle Bin"; He = "$([char]1512)$([char]1493)$([char]1511)$([char]1503)$([char]32)$([char]1505)$([char]1500)$([char]32)$([char]1502)$([char]1497)$([char]1495)$([char]1494)$([char]1493)$([char]1512)" }
     "btnSystemCleanup"       = @{ En = "Windows Disk Cleanup"; He = "$([char]1504)$([char]1497)$([char]1511)$([char]1493)$([char]1497)$([char]32)$([char]1491)$([char]1497)$([char]1505)$([char]1511)$([char]32)$([char]1502)$([char]1493)$([char]1489)$([char]1504)$([char]1492)" }
+    "lblTVTitle"             = @{ En = "Israel TV Hub"; He = "$([char]1496)$([char]1500)$([char]1493)$([char]1493)$([char]1497)$([char]1494)$([char]1497)$([char]1492)$([char]32)$([char]1497)$([char]1513)$([char]1512)$([char]1488)$([char]1500)$([char]1497)$([char]1514)" }
+    "btnStopTV"              = @{ En = "Stop Stream"; He = "$([char]1506)$([char]1510)$([char]1493)$([char]1512)$([char]32)$([char]1513)$([char]1497)$([char]1491)$([char]1493)$([char]1512)" }
+    "btnRefreshHw"           = @{ En = "Refresh Hardware"; He = "$([char]1512)$([char]1506)$([char]1504)$([char]1503)$([char]32)$([char]1495)$([char]1493)$([char]1502)$([char]1512)$([char]1492)" }
+    "btnUpgradeAllApps"      = @{ En = "Upgrade All Apps"; He = "$([char]1513)$([char]1491)$([char]1512)$([char]1490)$([char]32)$([char]1499)$([char]1500)$([char]32)$([char]1492)$([char]1488)$([char]1508)$([char]1500)$([char]1497)$([char]1511)$([char]1510)$([char]1497)$([char]1493)$([char]1514)" }
+    "btnClearBraveCache"     = @{ En = "Brave Cache"; He = "$([char]1502)$([char]1496)$([char]1502)$([char]1493)$([char]1503)$([char]32)Brave" }
+    "btnDefStatus"           = @{ En = "Defender Status"; He = "$([char]1505)$([char]1496)$([char]1496)$([char]1493)$([char]1505)$([char]32)Defender" }
+    "btnWinSandbox"          = @{ En = "Windows Sandbox"; He = "$([char]1488)$([char]1512)$([char]1490)$([char]1494)$([char]32)$([char]1495)$([char]1493)$([char]1500)$([char]32)(Sandbox)" }
+    "btnTaskbarEndTask"      = @{ En = "Taskbar End Task"; He = "$([char]1505)$([char]1497)$([char]1497)$([char]1501)$([char]32)$([char]1502)$([char]1513)$([char]1497)$([char]1502)$([char]1492)$([char]32)$([char]1489)$([char]1513)$([char]1493)$([char]1512)$([char]1514)$([char]32)$([char]1492)$([char]1502)$([char]1513)$([char]1497)$([char]1502)$([char]1493)$([char]1514)" }
+    "btnDisableStickyKeys"   = @{ En = "Disable Sticky Keys"; He = "$([char]1489)$([char]1496)$([char]1500)$([char]32)$([char]1502)$([char]1511)$([char]1513)$([char]1497)$([char]1501)$([char]32)$([char]1491)$([char]1489)$([char]1497)$([char]1511)$([char]1497)$([char]1501)" }
+    "btnRestartExplorer"     = @{ En = "Restart Explorer"; He = "$([char]1492)$([char]1508)$([char]1506)$([char]1500)$([char]32)$([char]1502)$([char]1495)$([char]1491)$([char]1513)$([char]32)$([char]1505)$([char]1497)$([char]1497)$([char]1512)" }
+    "btnTimer30m"            = @{ En = "Shutdown 30m"; He = "$([char]1499)$([char]1497)$([char]1489)$([char]1493)$([char]1497)$([char]32)30$([char]32)$([char]1491)$([char]1511)$([char]39)" }
+    "btnTimer1h"             = @{ En = "Shutdown 1h"; He = "$([char]1499)$([char]1497)$([char]1489)$([char]1493)$([char]1497)$([char]32)$([char]1513)$([char]1506)$([char]1492)" }
+    "btnTimer2h"             = @{ En = "Shutdown 2h"; He = "$([char]1499)$([char]1497)$([char]1489)$([char]1493)$([char]1497)$([char]32)$([char]1513)$([char]1506)$([char]1514)$([char]1497)$([char]1497)$([char]1501)" }
+    "btnTimerCustom"         = @{ En = "Custom Timer..."; He = "$([char]1496)$([char]1497)$([char]1497)$([char]1502)$([char]1512)$([char]32)$([char]1502)$([char]1493)$([char]1514)$([char]1488)$([char]1501)" }
 
 }
 
@@ -1020,33 +1034,53 @@ function Invoke-SearchChoice {
 
 function Perform-Search {
     $term = $txtSearch.Text; if ([string]::IsNullOrWhiteSpace($term)) { return }
+    $escapedTerm = [regex]::Escape($term.Trim())
     
     # Search mapping: keyword -> panel + button
     $searchMap = @{
         "CTT"           = @{ Panel = $pnlEssentials; Button = "btnEssentials" }
         "Essentials"    = @{ Panel = $pnlEssentials; Button = "btnEssentials" }
+        "Office"        = @{ Panel = $pnlEssentials; Button = "btnEssentials" }
+        "Winget"        = @{ Panel = $pnlEssentials; Button = "btnEssentials" }
+        "Installer"     = @{ Panel = $pnlEssentials; Button = "btnEssentials" }
         "AI"            = @{ Panel = $pnlAIBots; Button = "btnAIBots" }
         "Automation"    = @{ Panel = $pnlAIBots; Button = "btnAIBots" }
         "ChatGPT"       = @{ Panel = $pnlAIBots; Button = "btnAIBots" }
         "Gemini"        = @{ Panel = $pnlAIBots; Button = "btnAIBots" }
+        "Claude"        = @{ Panel = $pnlAIBots; Button = "btnAIBots" }
+        "Nano Banana"   = @{ Panel = $pnlNanoBanana; Button = "btnAIBots" }
         "Windows Tools" = @{ Panel = $pnlWindowsTools; Button = "btnWindowsTools" }
         "Tools"         = @{ Panel = $pnlWindowsTools; Button = "btnWindowsTools" }
+        "Services"      = @{ Panel = $pnlWindowsTools; Button = "btnWindowsTools" }
+        "DISM"          = @{ Panel = $pnlWindowsTools; Button = "btnWindowsTools" }
         "Hardware"      = @{ Panel = $pnlSysInfoTools; Button = "btnSysInfoTools" }
         "Tweaks"        = @{ Panel = $pnlTweaks; Button = "btnTweaks" }
+        "Themes"        = @{ Panel = $pnlTweaks; Button = "btnTweaks" }
         "Cleanup"       = @{ Panel = $pnlMaintenance; Button = "btnMaintenance" }
         "Maintenance"   = @{ Panel = $pnlMaintenance; Button = "btnMaintenance" }
+        "Browser"       = @{ Panel = $pnlMaintenance; Button = "btnMaintenance" }
         "Security"      = @{ Panel = $pnlSecurity; Button = "btnSecurity" }
+        "Defender"      = @{ Panel = $pnlSecurity; Button = "btnSecurity" }
+        "BitLocker"     = @{ Panel = $pnlSecurity; Button = "btnSecurity" }
         "Users"         = @{ Panel = $pnlUserMgmt; Button = "btnUserMgmt" }
         "Music"         = @{ Panel = $pnlMusic; Button = "btnMusic" }
         "Media"         = @{ Panel = $pnlMusic; Button = "btnMusic" }
         "Power"         = @{ Panel = $pnlPower; Button = "btnPower" }
         "Shutdown"      = @{ Panel = $pnlPower; Button = "btnPower" }
         "Restart"       = @{ Panel = $pnlPower; Button = "btnPower" }
+        "Timer"         = @{ Panel = $pnlPower; Button = "btnPower" }
         "Update"        = @{ Panel = $pnlUpdateMgr; Button = "btnUpdateMgr" }
         "System Health" = @{ Panel = $pnlBeast; Button = "btnBeast" }
         "Health"        = @{ Panel = $pnlBeast; Button = "btnBeast" }
+        "Network"       = @{ Panel = $pnlBeast; Button = "btnBeast" }
+        "Wi-Fi"         = @{ Panel = $pnlBeast; Button = "btnBeast" }
         "Keyboard"      = @{ Panel = $pnlKeyboardShortcuts; Button = "btnKeyboardShortcuts" }
         "Shortcuts"     = @{ Panel = $pnlKeyboardShortcuts; Button = "btnKeyboardShortcuts" }
+        "Israel TV"     = @{ Panel = $pnlIsraelTV; Button = "btnIsraelTV" }
+        "TV"            = @{ Panel = $pnlIsraelTV; Button = "btnIsraelTV" }
+        "Radio"         = @{ Panel = $pnlIsraelTV; Button = "btnIsraelTV" }
+        "Gaming"        = @{ Panel = $pnlGaming; Button = "btnGameCenter" }
+        "Games"         = @{ Panel = $pnlGaming; Button = "btnGameCenter" }
         "Dashboard"     = @{ Panel = $pnlHome; Button = "btnHome" }
         "Home"          = @{ Panel = $pnlHome; Button = "btnHome" }
     }
@@ -1054,7 +1088,7 @@ function Perform-Search {
     # Try to find matching panel
     $found = $false
     foreach ($key in $searchMap.Keys) {
-        if ($key -match $term -or $term -match $key) {
+        if ($key -imatch $escapedTerm -or $term -imatch [regex]::Escape($key)) {
             $panelInfo = $searchMap[$key]
             Switch-Panel $panelInfo.Panel
             $txtSearch.Text = ""
@@ -1065,13 +1099,13 @@ function Perform-Search {
     
     # If no panel found, try old button search
     if (-not $found) {
-        $searchableButtons = @("btnHome", "btnAIBots", "btnEssentials", "btnWindowsTools", "btnSysInfoTools", "btnTweaks", "btnMaintenance", "btnSecurity", "btnUserMgmt", "btnMusic", "btnPower", "btnQuickCTT", "btnQuickCP", "btnQuickUpdate", "btnQuickClean", "btnQuickDevices", "btnDiskMgmt", "btnTaskMgr", "btnDevMgmt", "btnRegEdit", "btnDiskCleanup", "btnNanoBanana")
+        $searchableButtons = @("btnHome", "btnAIBots", "btnEssentials", "btnWindowsTools", "btnSysInfoTools", "btnTweaks", "btnMaintenance", "btnSecurity", "btnUserMgmt", "btnMusic", "btnPower", "btnUpdateMgr", "btnBeast", "btnIsraelTV", "btnGameCenter", "btnQuickCTT", "btnQuickCP", "btnQuickUpdate", "btnQuickClean", "btnQuickSettings", "btnQuickDevMgr", "btnQuickUpdateMgr", "btnDiskMgmt", "btnTaskMgr", "btnDevMgmt", "btnRegEdit", "btnDiskCleanup", "btnNanoBanana")
         $foundButton = $null
         foreach ($btnName in $searchableButtons) {
             $originalBtn = Get-GuiElement $btnName
             if ($originalBtn) {
-                $contentStr = $originalBtn.Content.ToString()
-                if ($contentStr -match "$term" -or $btnName -match "$term") { $foundButton = $originalBtn; break }
+                $contentStr = if ($originalBtn.Content) { $originalBtn.Content.ToString() } else { "" }
+                if ($contentStr -imatch $escapedTerm -or $btnName -imatch $escapedTerm) { $foundButton = $originalBtn; break }
             }
         }
         if ($foundButton) { $foundButton.RaiseEvent((New-Object System.Windows.RoutedEventArgs([System.Windows.Controls.Button]::ClickEvent))); $txtSearch.Text = "" } else { Invoke-SearchChoice $term }
@@ -1080,25 +1114,7 @@ function Perform-Search {
 (Get-GuiElement "btnSearch").Add_Click({ Perform-Search })
 $txtSearch.Add_KeyDown({ param($s, $e) if ($e.Key -eq 'Enter') { Perform-Search } })
 
-# --- LOGIC IMPLEMENTATION ---
-function Write-Log { param($Msg) Write-Host "[$(Get-Date -Format 'HH:mm')] $Msg" -ForegroundColor Cyan }
-function Open-Url { param($U) Start-Process $U }
-
-function Invoke-OnlineApp {
-    param([string]$Url, [string]$FileName, [string]$ExeToRun, [bool]$IsZip = $false)
-    $tempDir = "$env:TEMP\WinFlexApps"; if (-not (Test-Path $tempDir)) { New-Item -ItemType Directory -Path $tempDir -Force | Out-Null }
-    $localFile = "$tempDir\$FileName"; [System.Windows.Forms.Cursor]::Current = [System.Windows.Forms.Cursors]::WaitCursor
-    try {
-        if (-not (Test-Path $localFile)) { Write-Host "Downloading $FileName..." -ForegroundColor Cyan; Start-BitsTransfer -Source $Url -Destination $localFile -DisplayName "Downloading $FileName" -ErrorAction Stop }
-        $runPath = $localFile
-        if ($IsZip) {
-            $extractDir = "$tempDir\$($FileName)_extracted"; if (-not (Test-Path $extractDir)) { Expand-Archive -Path $localFile -DestinationPath $extractDir -Force }
-            if ($ExeToRun) { $runPath = (Get-ChildItem -Path $extractDir -Filter $ExeToRun -Recurse | Select -First 1).FullName } else { Start-Process $extractDir; return }
-        }
-        Start-Process $runPath
-    }
-    catch { [System.Windows.Forms.MessageBox]::Show("Download failed via script. Opening browser.", "Error"); Start-Process $Url } finally { [System.Windows.Forms.Cursor]::Current = [System.Windows.Forms.Cursors]::Default }
-}
+# --- CTT QUICK TOOLS ---
 
 Set-Click "btnRunCTT" { Start-Process powershell "-NoProfile -ExecutionPolicy Bypass -Command `"irm https://christitus.com/win | iex`"" -Verb RunAs }
 Set-Click "btnCTTExplain" { [System.Windows.MessageBox]::Show("Chris Titus Tech Windows Utility (WinUtil):`n`nAutomates software installation, debloats Windows, configures performance tweaks, and fixes common issues.", "Chris Titus Tech Toolkit", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Information) }

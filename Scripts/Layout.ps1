@@ -1,8 +1,8 @@
-$xaml = @"
+﻿$xaml = @"
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:wfi="clr-namespace:System.Windows.Forms.Integration;assembly=WindowsFormsIntegration"
-        Title="WinFlexOS V3.0" Height="950" Width="1450"
+        Title="WinFlexOS V3.2" Height="950" Width="1450"
         WindowStartupLocation="CenterScreen" 
         WindowStyle="None" AllowsTransparency="True" Background="Transparent"
         FontFamily="{DynamicResource ThemeFont}" Name="MainWindow">
@@ -471,7 +471,7 @@ $xaml = @"
                             <TextBlock Name="LogoIcon" Text="&#xE7F4;" FontFamily="Segoe MDL2 Assets" FontSize="22" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <TextBlock Name="AppTitle" Text="WinFlexOS" FontSize="20" FontWeight="Bold" Foreground="{DynamicResource ThemeFg}" HorizontalAlignment="Center"/>
-                        <TextBlock Text="V3.0 Ultimate" FontSize="10" Foreground="{DynamicResource ThemeSubText}" HorizontalAlignment="Center"/>
+                        <TextBlock Text="V3.2 Ultimate" FontSize="10" Foreground="{DynamicResource ThemeSubText}" HorizontalAlignment="Center"/>
                     </StackPanel>
 
                     <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="10,0">
@@ -931,6 +931,10 @@ $xaml = @"
                                             <Button Name="btnGroq" Content="Groq" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Groq"/>
                                             <Button Name="btnOpenRouter" Content="OpenRouter" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch OpenRouter"/>
                                             <Button Name="btnOllama" Content="Ollama" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Ollama"/>
+                                            <Button Name="btnQwen" Content="Qwen Chat" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Qwen Chat"/>
+                                            <Button Name="btnKimi" Content="Kimi AI" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Kimi AI"/>
+                                            <Button Name="btnLMStudio" Content="LM Studio" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch LM Studio"/>
+                                            <Button Name="btnJanAI" Content="Jan AI" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Jan AI"/>
                                         </WrapPanel>
                                     </StackPanel>
                                 </Border>
@@ -962,7 +966,7 @@ $xaml = @"
                                             <Button Name="btnReplit" Content="Replit AI" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Replit AI"/>
                                             <Button Name="btnBlackbox" Content="Blackbox AI" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Blackbox AI"/>
                                             <Button Name="btnDeepSeek" Content="DeepSeek" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch DeepSeek"/>
-                                            <Button Name="btnCodeium" Content="Codeium" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Codeium"/>
+                                            <Button Name="btnCodeium" Content="Windsurf (Codeium)" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Windsurf (Codeium)"/>
                                             <Button Name="btnTabnine" Content="Tabnine" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Tabnine"/>
                                             <Button Name="btnAmazonQ" Content="Amazon Q" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Amazon Q"/>
                                             <Button Name="btnV0" Content="v0.dev (UI)" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch v0.dev (UI)"/>
@@ -973,6 +977,9 @@ $xaml = @"
                                             <Button Name="btnStackBlitz" Content="StackBlitz" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch StackBlitz"/>
                                             <Button Name="btnSourceGraph" Content="Sourcegraph Cody" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Sourcegraph Cody"/>
                                             <Button Name="btnAider" Content="Aider" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Aider"/>
+                                            <Button Name="btnFirebaseStudio" Content="Firebase Studio" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Firebase Studio"/>
+                                            <Button Name="btnClaudeCode" Content="Claude Code" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Claude Code"/>
+                                            <Button Name="btnDevin" Content="Devin AI" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Devin AI"/>
                                         </WrapPanel>
                                     </StackPanel>
                                 </Border>
@@ -981,7 +988,7 @@ $xaml = @"
                                     <StackPanel>
                                         <TextBlock Text=" Image Generation" FontSize="18" FontWeight="SemiBold" Foreground="{DynamicResource ThemeAccent}" Margin="0,0,0,10"/>
                                         <WrapPanel>
-                                            <Button Name="btnNanoBanana" Content=" Nano Banana Prompter" Width="220" Background="{DynamicResource ThemeAccent}" Foreground="White" Style="{StaticResource ActionBtn}" ToolTip="  !      AI.      ."/>
+                                            <Button Name="btnNanoBanana" Content=" Nano Banana Prompter" Width="220" Background="{DynamicResource ThemeAccent}" Foreground="White" Style="{StaticResource ActionBtn}" ToolTip="Open Nano Banana Image Prompter Studio"/>
                                             <Button Name="btnMidjourney" Content="Midjourney" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Midjourney"/>
                                             <Button Name="btnDALLE" Content="DALL-E 3" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch DALL-E 3"/>
                                             <Button Name="btnBingImage" Content="Bing Create" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Bing Create"/>
@@ -1001,6 +1008,7 @@ $xaml = @"
                                             <Button Name="btnClipDrop" Content="ClipDrop" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch ClipDrop"/>
                                             <Button Name="btnPhotoRoom" Content="PhotoRoom" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch PhotoRoom"/>
                                             <Button Name="btnMagnific" Content="Magnific" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Magnific"/>
+                                            <Button Name="btnRecraft" Content="Recraft AI" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Recraft AI"/>
                                         </WrapPanel>
                                     </StackPanel>
                                 </Border>
@@ -1044,9 +1052,7 @@ $xaml = @"
                                             <Button Name="btnLalal" Content="LALAL.AI" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch LALAL.AI"/>
                                             <Button Name="btnVoiceMod" Content="Voicemod" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Voicemod"/>
                                             <Button Name="btnAdobePodcast" Content="Adobe Podcast" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Adobe Podcast"/>
-                                            <Button Name="btnDescript2" Content="Descript Audio" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Descript Audio"/>
                                             <Button Name="btnSpeechify" Content="Speechify" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Speechify"/>
-                                            <Button Name="btnPlay_ht" Content="Play.ht" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Play.ht"/>
                                             <Button Name="btnWellSaid" Content="WellSaid Labs" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch WellSaid Labs"/>
                                             <Button Name="btnResemble" Content="Resemble AI" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Resemble AI"/>
                                         </WrapPanel>
@@ -1079,7 +1085,6 @@ $xaml = @"
                                         <WrapPanel>
                                             <Button Name="btnNotebookLM" Content="NotebookLM" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch NotebookLM"/>
                                             <Button Name="btnGamma" Content="Gamma" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Gamma"/>
-                                            <Button Name="btnTome" Content="Tome" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Tome"/>
                                             <Button Name="btnBeautiful" Content="Beautiful.ai" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Beautiful.ai"/>
                                             <Button Name="btnNotion" Content="Notion AI" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Notion AI"/>
                                             <Button Name="btnClickUp" Content="ClickUp AI" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch ClickUp AI"/>
@@ -1093,6 +1098,9 @@ $xaml = @"
                                             <Button Name="btnCraft" Content="Craft" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Craft"/>
                                             <Button Name="btnCoda" Content="Coda AI" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Coda AI"/>
                                             <Button Name="btnAirtable" Content="Airtable AI" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Airtable AI"/>
+                                            <Button Name="btnN8N" Content="n8n Workflows" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch n8n Workflows"/>
+                                            <Button Name="btnNapkin" Content="Napkin AI" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Napkin AI"/>
+                                            <Button Name="btnFramerAI" Content="Framer AI" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Framer AI"/>
                                         </WrapPanel>
                                     </StackPanel>
                                 </Border>
@@ -1103,7 +1111,6 @@ $xaml = @"
                                         <WrapPanel>
                                             <Button Name="btnMeshy" Content="Meshy" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Meshy"/>
                                             <Button Name="btnTripo" Content="Tripo AI" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Tripo AI"/>
-                                            <Button Name="btnCSM" Content="CSM (Cube)" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch CSM (Cube)"/>
                                             <Button Name="btnLuma3D" Content="Luma Genie" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Luma Genie"/>
                                             <Button Name="btnKaedim" Content="Kaedim" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Kaedim"/>
                                             <Button Name="btnSpline" Content="Spline AI" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Spline AI"/>
@@ -1125,11 +1132,9 @@ $xaml = @"
                                         <TextBlock Text=" Data &amp; Analytics" FontSize="18" FontWeight="SemiBold" Foreground="{DynamicResource ThemeAccent}" Margin="0,0,0,10"/>
                                         <WrapPanel>
                                             <Button Name="btnJulius" Content="Julius AI" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Julius AI"/>
-                                            <Button Name="btnChatCSV" Content="ChatCSV" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch ChatCSV"/>
                                             <Button Name="btnRowsAI" Content="Rows AI" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Rows AI"/>
                                             <Button Name="btnChannel" Content="Channel" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Channel"/>
                                             <Button Name="btnOsmo" Content="Osmo" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Osmo"/>
-                                            <Button Name="btnMonkeyLearn" Content="MonkeyLearn" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch MonkeyLearn"/>
                                             <Button Name="btnObviouslyAI" Content="Obviously AI" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Obviously AI"/>
                                             <Button Name="btnAkkio" Content="Akkio" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Akkio"/>
                                             <Button Name="btnMindsDB" Content="MindsDB" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch MindsDB"/>
@@ -1149,12 +1154,9 @@ $xaml = @"
                                             <Button Name="btnQuizlet" Content="Quizlet AI" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Quizlet AI"/>
                                             <Button Name="btnSocratic" Content="Socratic" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Socratic"/>
                                             <Button Name="btnPhotomath" Content="Photomath" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Photomath"/>
-                                            <Button Name="btnWolfram" Content="Wolfram Alpha" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Wolfram Alpha"/>
                                             <Button Name="btnChegg" Content="Chegg AI" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Chegg AI"/>
                                             <Button Name="btnCourseHero" Content="Course Hero" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Course Hero"/>
-                                            <Button Name="btnSynthesia2" Content="Synthesia Edu" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Synthesia Edu"/>
                                             <Button Name="btnMagicSchool" Content="MagicSchool" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch MagicSchool"/>
-                                            <Button Name="btnEducoAI" Content="Educo AI" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Educo AI"/>
                                             <Button Name="btnQuestionwell" Content="Questionwell" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Questionwell"/>
                                         </WrapPanel>
                                     </StackPanel>
@@ -1165,8 +1167,6 @@ $xaml = @"
                                         <TextBlock Text=" Science &amp; Research" FontSize="18" FontWeight="SemiBold" Foreground="{DynamicResource ThemeAccent}" Margin="0,0,0,10"/>
                                         <WrapPanel>
                                             <Button Name="btnAlphaFold" Content="AlphaFold" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch AlphaFold"/>
-                                            <Button Name="btnGalactica" Content="Galactica" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Galactica"/>
-                                            <Button Name="btnConsensus2" Content="Consensus" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Consensus"/>
                                             <Button Name="btnResearchRabbit" Content="ResearchRabbit" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch ResearchRabbit"/>
                                             <Button Name="btnIris" Content="Iris.ai" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Iris.ai"/>
                                             <Button Name="btnLitmaps" Content="Litmaps" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Litmaps"/>
@@ -1175,7 +1175,6 @@ $xaml = @"
                                             <Button Name="btnChatPDF" Content="ChatPDF" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch ChatPDF"/>
                                             <Button Name="btnPDFAI" Content="PDF.ai" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch PDF.ai"/>
                                             <Button Name="btnExplainpaper" Content="Explainpaper" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Explainpaper"/>
-                                            <Button Name="btnPaperBrain" Content="PaperBrain" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch PaperBrain"/>
                                         </WrapPanel>
                                     </StackPanel>
                                 </Border>
@@ -1209,7 +1208,6 @@ $xaml = @"
                                         <TextBlock Text=" Legal &amp; Finance" FontSize="18" FontWeight="SemiBold" Foreground="{DynamicResource ThemeAccent}" Margin="0,0,0,10"/>
                                         <WrapPanel>
                                             <Button Name="btnHarvey" Content="Harvey AI" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Harvey AI"/>
-                                            <Button Name="btnCasetext" Content="Casetext" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Casetext"/>
                                             <Button Name="btnLexMachina" Content="Lex Machina" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Lex Machina"/>
                                             <Button Name="btnDocuSign" Content="DocuSign AI" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch DocuSign AI"/>
                                             <Button Name="btnIronclad" Content="Ironclad" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Ironclad"/>
@@ -1230,9 +1228,7 @@ $xaml = @"
                                         <WrapPanel>
                                             <Button Name="btnShopify" Content="Shopify Magic" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Shopify Magic"/>
                                             <Button Name="btnAmazonSeller" Content="Amazon Seller AI" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Amazon Seller AI"/>
-                                            <Button Name="btnDescriptProd" Content="Descript Prod" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Descript Prod"/>
                                             <Button Name="btnCratejoy" Content="Cratejoy" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Cratejoy"/>
-                                            <Button Name="btnOberlo" Content="Oberlo" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Oberlo"/>
                                             <Button Name="btnSalesforce" Content="Salesforce AI" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Salesforce AI"/>
                                             <Button Name="btnGong" Content="Gong.io" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Gong.io"/>
                                             <Button Name="btnChorus" Content="Chorus" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Chorus"/>
@@ -1273,7 +1269,6 @@ $xaml = @"
                                             <Button Name="btnGoogleAI" Content="Google AI Studio" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Google AI Studio"/>
                                             <Button Name="btnReplicate" Content="Replicate" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Replicate"/>
                                             <Button Name="btnModal" Content="Modal" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Modal"/>
-                                            <Button Name="btnBananaML" Content="Banana" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Banana"/>
                                             <Button Name="btnRunpod" Content="RunPod" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch RunPod"/>
                                             <Button Name="btnVastAI" Content="Vast.ai" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Vast.ai"/>
                                             <Button Name="btnLambdaLabs" Content="Lambda Labs" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Lambda Labs"/>
@@ -1299,8 +1294,6 @@ $xaml = @"
                                             <Button Name="btnLinguee" Content="Linguee" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Linguee"/>
                                             <Button Name="btnYandex" Content="Yandex Translate" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Yandex Translate"/>
                                             <Button Name="btnBaidu" Content="Baidu Translate" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Baidu Translate"/>
-                                            <Button Name="btnInstant" Content="Instant" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Instant"/>
-                                            <Button Name="btnHeygen2" Content="HeyGen Translate" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch HeyGen Translate"/>
                                             <Button Name="btnRask" Content="Rask.ai" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Rask.ai"/>
                                             <Button Name="btnCaption" Content="Captions" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Captions"/>
                                             <Button Name="btnSubtitle" Content="Subtitle.ai" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Subtitle.ai"/>
@@ -1312,9 +1305,7 @@ $xaml = @"
                                     <StackPanel>
                                         <TextBlock Text=" Fun &amp; Creative" FontSize="18" FontWeight="SemiBold" Foreground="{DynamicResource ThemeAccent}" Margin="0,0,0,10"/>
                                         <WrapPanel>
-                                            <Button Name="btnAvatar" Content="Ready Player Me" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Ready Player Me"/>
                                             <Button Name="btnLensa" Content="Lensa" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Lensa"/>
-                                            <Button Name="btnDawn" Content="Dawn AI" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Dawn AI"/>
                                             <Button Name="btnRemini" Content="Remini" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Remini"/>
                                             <Button Name="btnFaceApp" Content="FaceApp" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch FaceApp"/>
                                             <Button Name="btnReface" Content="Reface" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Reface"/>
@@ -1323,7 +1314,6 @@ $xaml = @"
                                             <Button Name="btnArtbreeder" Content="Artbreeder" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Artbreeder"/>
                                             <Button Name="btnDeepDream" Content="Deep Dream" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Deep Dream"/>
                                             <Button Name="btnNeuralStyle" Content="Neural Style" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch Neural Style"/>
-                                            <Button Name="btnPrisonner" Content="This X Does Not Exist" Width="150" Style="{StaticResource ActionBtn}" ToolTip="Launch This X Does Not Exist"/>
                                         </WrapPanel>
                                     </StackPanel>
                                 </Border>
@@ -1380,7 +1370,10 @@ $xaml = @"
                                             <StackPanel>
                                                 <TextBlock Text="Custom Request" FontSize="18" Foreground="{DynamicResource ThemeAccent}" Margin="0,0,0,10"/>
                                                 <TextBox Name="txtCustomInput" Height="60" TextWrapping="Wrap" Background="#111" Foreground="White" BorderBrush="{DynamicResource ThemeBorder}" BorderThickness="1" Padding="10" FontSize="14" AcceptsReturn="True"/>
-                                                <Button Name="btnLaunchCustom" Content="Launch Gemini" Width="200" HorizontalAlignment="Left" Margin="0,15,0,0" Style="{StaticResource ActionBtn}" Background="{DynamicResource ThemeAccent}" Foreground="White" FontWeight="Bold"/>
+                                                <WrapPanel Margin="0,15,0,0">
+                                                    <Button Name="btnLaunchCustom" Content="Launch Gemini" Width="200" Style="{StaticResource ActionBtn}" Background="{DynamicResource ThemeAccent}" Foreground="White" FontWeight="Bold"/>
+                                                    <Button Name="btnCopyPrompt" Content="Copy Full Prompt" Width="180" Style="{StaticResource ActionBtn}"/>
+                                                </WrapPanel>
                                             </StackPanel>
                                         </Border>
                                     </StackPanel>
@@ -1457,6 +1450,27 @@ $xaml = @"
                                               </Button>
                                               <Button Name="btnRemoveOffice" Content="Remove Office" Width="180" Style="{StaticResource ActionBtn}" Background="#C42B1C" Foreground="White" FontWeight="Bold" Margin="0,0,10,10"/>
                                           </WrapPanel>
+                                     </StackPanel>
+                                 </Border>
+
+                                 <Border Style="{StaticResource CardStyle}" Padding="25" Margin="0,15,0,0">
+                                     <StackPanel>
+                                         <TextBlock Text="Quick App Installer (Winget)" FontSize="20" FontWeight="Bold" Foreground="{DynamicResource ThemeAccent}"/>
+                                         <TextBlock Text="One-click silent install of essential Windows software via Microsoft Winget." Foreground="{DynamicResource ThemeSubText}" Margin="0,5,0,15" TextWrapping="Wrap"/>
+                                         <WrapPanel>
+                                             <Button Name="btnWgChrome" Content="Google Chrome" Width="155" Style="{StaticResource ActionBtn}"/>
+                                             <Button Name="btnWgFirefox" Content="Mozilla Firefox" Width="155" Style="{StaticResource ActionBtn}"/>
+                                             <Button Name="btnWgBrave" Content="Brave Browser" Width="155" Style="{StaticResource ActionBtn}"/>
+                                             <Button Name="btnWg7Zip" Content="7-Zip" Width="155" Style="{StaticResource ActionBtn}"/>
+                                             <Button Name="btnWgVLC" Content="VLC Media Player" Width="155" Style="{StaticResource ActionBtn}"/>
+                                             <Button Name="btnWgVSCode" Content="VS Code" Width="155" Style="{StaticResource ActionBtn}"/>
+                                             <Button Name="btnWgNotepadPP" Content="Notepad++" Width="155" Style="{StaticResource ActionBtn}"/>
+                                             <Button Name="btnWgPowerToys" Content="PowerToys" Width="155" Style="{StaticResource ActionBtn}"/>
+                                             <Button Name="btnWgDiscord" Content="Discord" Width="155" Style="{StaticResource ActionBtn}"/>
+                                             <Button Name="btnWgEverything" Content="Everything Search" Width="155" Style="{StaticResource ActionBtn}"/>
+                                             <Button Name="btnWgShareX" Content="ShareX" Width="155" Style="{StaticResource ActionBtn}"/>
+                                             <Button Name="btnWgGit" Content="Git for Windows" Width="155" Style="{StaticResource ActionBtn}"/>
+                                         </WrapPanel>
                                      </StackPanel>
                                  </Border>
                             </StackPanel>
@@ -1618,8 +1632,11 @@ $xaml = @"
                                             <Button Name="btnTaskMgr" Content="Task Manager" Style="{StaticResource ActionBtn}"/>
                                             <Button Name="btnDevMgmt" Content="Device Mgmt" Style="{StaticResource ActionBtn}"/>
                                             <Button Name="btnSFC" Content="System File Checker" Style="{StaticResource ActionBtn}"/>
+                                            <Button Name="btnDISM" Content="DISM Image Repair" Style="{StaticResource ActionBtn}"/>
                                             <Button Name="btnChkdsk" Content="Check Disk" Style="{StaticResource ActionBtn}"/>
                                             <Button Name="btnDefrag" Content="Optimize Drives" Style="{StaticResource ActionBtn}"/>
+                                            <Button Name="btnServices" Content="Services" Style="{StaticResource ActionBtn}"/>
+                                            <Button Name="btnTaskSchd" Content="Task Scheduler" Style="{StaticResource ActionBtn}"/>
                                         </StackPanel>
                                     </Border>
                                     <Border Style="{StaticResource CardStyle}" Width="350" Margin="5" Padding="25">
@@ -1630,6 +1647,9 @@ $xaml = @"
                                             <Button Name="btnMsConfig" Content="MsConfig" Style="{StaticResource ActionBtn}"/>
                                             <Button Name="btnEventVwr" Content="Event Viewer" Style="{StaticResource ActionBtn}"/>
                                             <Button Name="btnGpEdit" Content="Group Policy" Style="{StaticResource ActionBtn}"/>
+                                            <Button Name="btnSysProp" Content="System Properties" Style="{StaticResource ActionBtn}"/>
+                                            <Button Name="btnNetConn" Content="Network Connections" Style="{StaticResource ActionBtn}"/>
+                                            <Button Name="btnAppWiz" Content="Programs &amp; Features" Style="{StaticResource ActionBtn}"/>
                                         </StackPanel>
                                     </Border>
                                     <Border Style="{StaticResource CardStyle}" Width="350" Margin="5" Padding="25">
@@ -1687,6 +1707,7 @@ $xaml = @"
                                                     <Button Name="btnClearEdgeCache" Content="Edge Cache" Width="160" Style="{StaticResource ActionBtn}"/>
                                                     <Button Name="btnClearChromeCache" Content="Chrome Cache" Width="160" Style="{StaticResource ActionBtn}"/>
                                                     <Button Name="btnClearFirefoxCache" Content="Firefox Cache" Width="160" Style="{StaticResource ActionBtn}"/>
+                                                    <Button Name="btnClearBraveCache" Content="Brave Cache" Width="160" Style="{StaticResource ActionBtn}"/>
                                                     <Button Name="btnClearAllBrowsers" Content="Clean All Browsers" Width="160" Style="{StaticResource ActionBtn}"/>
                                                 </WrapPanel>
                                             </StackPanel>
@@ -1761,6 +1782,7 @@ $xaml = @"
                                                     <Button Name="btnDefQuickScan" Content=" Quick Scan" Width="160" Style="{StaticResource ActionBtn}"/>
                                                     <Button Name="btnDefFullScan" Content=" Full Scan" Width="160" Style="{StaticResource ActionBtn}"/>
                                                     <Button Name="btnDefUpdate" Content=" Update Signatures" Width="160" Style="{StaticResource ActionBtn}"/>
+                                                    <Button Name="btnDefStatus" Content="Defender Status" Width="160" Style="{StaticResource ActionBtn}"/>
                                                 </WrapPanel>
                                             </StackPanel>
                                         </Border>
@@ -1798,6 +1820,8 @@ $xaml = @"
                                                 <WrapPanel>
                                                     <Button Name="btnBitLocker" Content="BitLocker" Width="160" Style="{StaticResource ActionBtn}"/>
                                                     <Button Name="btnTpm" Content="TPM Mgmt" Width="160" Style="{StaticResource ActionBtn}"/>
+                                                    <Button Name="btnWinSandbox" Content="Windows Sandbox" Width="160" Style="{StaticResource ActionBtn}"/>
+                                                    <Button Name="btnSmartScreen" Content="SmartScreen" Width="160" Style="{StaticResource ActionBtn}"/>
                                                 </WrapPanel>
                                             </StackPanel>
                                         </Border>
@@ -2155,10 +2179,19 @@ $xaml = @"
                                             <TextBlock Name="txtHwBio" Text="Loading..." Foreground="{DynamicResource ThemeFg}" FontSize="14" TextWrapping="Wrap"/>
                                         </StackPanel>
                                     </Border>
+
+                                    <!-- OS & Network Card -->
+                                    <Border Grid.Column="2" Grid.Row="1" Style="{StaticResource CardStyle}" Padding="15" Margin="5">
+                                        <StackPanel>
+                                            <TextBlock Text="OS &amp; Network" FontWeight="Bold" Foreground="{DynamicResource ThemeAccent}" FontSize="16" Margin="0,0,0,10"/>
+                                            <TextBlock Name="txtHwOSNet" Text="Loading..." Foreground="{DynamicResource ThemeFg}" FontSize="14" TextWrapping="Wrap"/>
+                                        </StackPanel>
+                                    </Border>
                                  </Grid>
 
                                  <TextBlock Name="lblExtTools" Text="System Utilities (Built-in)" FontSize="20" FontWeight="Bold" Foreground="{DynamicResource ThemeSubText}" Margin="0,10,0,10"/>
                                  <WrapPanel>
+                                     <Button Name="btnRefreshHw" Content="Refresh Hardware" Width="180" Style="{StaticResource ActionBtn}" ToolTip="Re-scan CPU, RAM, GPU, Storage, BIOS &amp; Network info."/>
                                      <Button Name="btnResMon" Content="Resource Monitor" Width="180" Style="{StaticResource ActionBtn}" ToolTip="View real-time CPU, Disk, Network &amp; Memory usage."/>
                                      <Button Name="btnMsInfo" Content="System Info (MsInfo32)" Width="180" Style="{StaticResource ActionBtn}" ToolTip="Detailed system information."/>
                                      <Button Name="btnDxDiag" Content="DirectX Diag" Width="180" Style="{StaticResource ActionBtn}" ToolTip="Video and Sound diagnostics."/>
@@ -2184,6 +2217,9 @@ $xaml = @"
                                                                                            <Button Name="btnThemeNordic" Content=" Nordic" Style="{StaticResource ActionBtn}"/>
                                               <Button Name="btnThemeMario" Content=" Super Mario" Style="{StaticResource ActionBtn}"/>
                                               <Button Name="btnThemePS2" Content=" PlayStation 2" Style="{StaticResource ActionBtn}"/>
+                                              <Button Name="btnThemeAppleSwift" Content="Apple Swift" Style="{StaticResource ActionBtn}"/>
+                                              <Button Name="btnThemeGoogleM3E" Content="Google M3E" Style="{StaticResource ActionBtn}"/>
+                                              <Button Name="btnThemeGlassAero" Content="Glass Aero" Style="{StaticResource ActionBtn}"/>
                                               <Button Name="btnCustomBg" Content=" Custom Background" Style="{StaticResource ActionBtn}"/>
                                           </StackPanel>
                                      </Border>
@@ -2194,6 +2230,7 @@ $xaml = @"
                                              <Button Name="btnApplyTaskbar" Content="Toggle Center/Left Align" Style="{StaticResource ActionBtn}"/>
                                              <Button Name="btnSecondsClock" Content="Toggle Seconds in Clock" Style="{StaticResource ActionBtn}"/>
                                              <Button Name="btnDisableBing" Content="Disable Bing Search" Style="{StaticResource ActionBtn}"/>
+                                             <Button Name="btnTaskbarEndTask" Content="Taskbar End Task" Style="{StaticResource ActionBtn}"/>
                                          </StackPanel>
                                      </Border>
 
@@ -2215,7 +2252,9 @@ $xaml = @"
                                              <Button Name="btnDarkMode" Content="Toggle Dark/Light Mode" Style="{StaticResource ActionBtn}"/>
                                              <Button Name="btnGameMode" Content="Enable Game Mode" Style="{StaticResource ActionBtn}"/>
                                              <Button Name="btnMouseAccel" Content="Disable Mouse Accel" Style="{StaticResource ActionBtn}"/>
+                                             <Button Name="btnDisableStickyKeys" Content="Disable Sticky Keys" Style="{StaticResource ActionBtn}"/>
                                              <Button Name="btnIconSettings" Content="Desktop Icon Settings" Style="{StaticResource ActionBtn}"/>
+                                             <Button Name="btnRestartExplorer" Content="Restart Explorer" Style="{StaticResource ActionBtn}"/>
                                          </StackPanel>
                                      </Border>
                                  </WrapPanel>
@@ -2339,6 +2378,8 @@ $xaml = @"
                                                 <TextBlock Text="Game Library" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource ThemeAccent}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                                                     <Button Name="btnGAddManual" Content="+ Add Game" Style="{StaticResource ActionBtn}" Width="90" Height="28" Margin="0,0,5,0"/>
+                                                    <Button Name="btnGOpenFolder" Content="Open Folder" Style="{StaticResource ActionBtn}" Width="90" Height="28" Margin="0,0,5,0"/>
+                                                    <Button Name="btnGRemoveGame" Content="Remove" Style="{StaticResource ActionBtn}" Width="75" Height="28" Margin="0,0,5,0"/>
                                                     <Button Name="btnGLaunch" Content="Launch" Style="{StaticResource ActionBtn}" Width="90" Height="28"/>
                                                 </StackPanel>
                                             </Grid>
@@ -2356,6 +2397,7 @@ $xaml = @"
                                                     <ComboBoxItem Content="EA"/>
                                                     <ComboBoxItem Content="Ubisoft"/>
                                                     <ComboBoxItem Content="Xbox/MS"/>
+                                                    <ComboBoxItem Content="Custom"/>
                                                 </ComboBox>
                                             </Grid>
                                             <ScrollViewer Height="280" VerticalScrollBarVisibility="Auto">
@@ -2402,7 +2444,7 @@ $xaml = @"
                                             <StackPanel>
                                                 <TextBlock Text="GPU Software" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource ThemeAccent}" Margin="0,0,0,8"/>
                                                 <Button Name="btnGNvidiaCP"  Content="NVIDIA Control Panel" Style="{StaticResource ActionBtn}" HorizontalAlignment="Stretch" Margin="0,0,0,4"/>
-                                                <Button Name="btnGGeForce"   Content="GeForce Experience"   Style="{StaticResource ActionBtn}" HorizontalAlignment="Stretch" Margin="0,0,0,4"/>
+                                                <Button Name="btnGGeForce"   Content="NVIDIA App / GFE"     Style="{StaticResource ActionBtn}" HorizontalAlignment="Stretch" Margin="0,0,0,4"/>
                                                 <Button Name="btnGAMD"       Content="AMD Radeon"           Style="{StaticResource ActionBtn}" HorizontalAlignment="Stretch" Margin="0,0,0,4"/>
                                                 <Button Name="btnGIntelArc"  Content="Intel Arc"            Style="{StaticResource ActionBtn}" HorizontalAlignment="Stretch" Margin="0,0,0,4"/>
                                                 <Button Name="btnGMSIAB"     Content="MSI Afterburner"      Style="{StaticResource ActionBtn}" HorizontalAlignment="Stretch"/>
@@ -2603,7 +2645,10 @@ $xaml = @"
                                     <Border Grid.Column="2" Style="{StaticResource CardStyle}" Padding="20">
                                         <StackPanel>
                                             <TextBlock Text=" App Updates (Winget)" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource ThemeAccent}" Margin="0,0,0,10"/>
-                                            <Button Name="btnCheckAppUpdates" Content="Check for App Updates" Style="{StaticResource ActionBtn}" Margin="0,0,0,15"/>
+                                            <WrapPanel Margin="0,0,0,15">
+                                                <Button Name="btnCheckAppUpdates" Content="Check App Updates" Width="175" Style="{StaticResource ActionBtn}" Margin="0,0,10,0"/>
+                                                <Button Name="btnUpgradeAllApps" Content="Upgrade All Apps" Width="175" Style="{StaticResource ActionBtn}" Background="#217346" Foreground="White"/>
+                                            </WrapPanel>
                                             <ScrollViewer Height="200" VerticalScrollBarVisibility="Auto">
                                                 <TextBlock Name="txtAppUpdates" TextWrapping="Wrap" Foreground="{DynamicResource ThemeFg}" FontSize="12" FontFamily="Consolas" Text="Click button to check for application updates via Winget..."/>
                                             </ScrollViewer>
@@ -2654,14 +2699,18 @@ $xaml = @"
                                                 <Button Name="btnCh14" Content="Now 14" Style="{StaticResource ActionBtn}" Margin="0,2" HorizontalContentAlignment="Left" Padding="10,0"/>
                                                 <Button Name="btnCh23" Content="Kan 23 (Educational)" Style="{StaticResource ActionBtn}" Margin="0,2" HorizontalContentAlignment="Left" Padding="10,0"/>
                                                 <Button Name="btnCh99" Content="Knesset Channel" Style="{StaticResource ActionBtn}" Margin="0,2" HorizontalContentAlignment="Left" Padding="10,0"/>
+                                                <Button Name="btnChI24" Content="i24NEWS (IL)" Style="{StaticResource ActionBtn}" Margin="0,2" HorizontalContentAlignment="Left" Padding="10,0"/>
                                                 
                                                 <TextBlock Text="Radio Stations" FontWeight="Bold" Foreground="{DynamicResource ThemeAccent}" Margin="0,15,0,5"/>
                                                 <Button Name="btnRadGlz" Content="Galatz" Style="{StaticResource ActionBtn}" Margin="0,2" HorizontalContentAlignment="Left" Padding="10,0"/>
                                                 <Button Name="btnRadGlglz" Content="Galgalatz" Style="{StaticResource ActionBtn}" Margin="0,2" HorizontalContentAlignment="Left" Padding="10,0"/>
                                                 <Button Name="btnRadKan88" Content="Kan 88" Style="{StaticResource ActionBtn}" Margin="0,2" HorizontalContentAlignment="Left" Padding="10,0"/>
                                                 <Button Name="btnRadReshetB" Content="Kan Reshet B" Style="{StaticResource ActionBtn}" Margin="0,2" HorizontalContentAlignment="Left" Padding="10,0"/>
+                                                <Button Name="btnRad103" Content="103FM" Style="{StaticResource ActionBtn}" Margin="0,2" HorizontalContentAlignment="Left" Padding="10,0"/>
+                                                <Button Name="btnRadEco99" Content="Eco 99FM" Style="{StaticResource ActionBtn}" Margin="0,2" HorizontalContentAlignment="Left" Padding="10,0"/>
                                                 
                                                 <Separator Background="{DynamicResource ThemeBorder}" Margin="0,15"/>
+                                                <Button Name="btnStopTV" Content="Stop Stream" Background="#8B0000" Foreground="White" FontWeight="Bold" Margin="0,5" ToolTip="Stop current TV or radio playback"/>
                                                 <Button Name="btnCinemaMode" Content=" Cinema Mode" Background="#007ACC" Foreground="White" FontWeight="Bold" Margin="0,5" ToolTip="Maximize Player Area"/>
                                                 <Button Name="btnLaunchExternal" Content=" Launch External Player" Background="#333333" Foreground="#AAAAAA"  FontSize="11" Margin="0,5" ToolTip="Open in separate window if player fails"/>
                                             </StackPanel>
@@ -2702,7 +2751,19 @@ $xaml = @"
                                     <Button Name="btnHibernate" Content=" Hibernate" Width="200" Height="120" FontSize="20" Margin="10" Style="{StaticResource ActionBtn}"/>
                                 </WrapPanel>
                                 
-                                <Border Style="{StaticResource CardStyle}" Margin="0,50,0,0" Padding="20" HorizontalAlignment="Center" Width="600">
+                                <Border Style="{StaticResource CardStyle}" Margin="0,30,0,0" Padding="20" HorizontalAlignment="Center" Width="620">
+                                    <StackPanel>
+                                        <TextBlock Text="Scheduled Shutdown Timer" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource ThemeAccent}" Margin="0,0,0,15"/>
+                                        <WrapPanel HorizontalAlignment="Center">
+                                            <Button Name="btnTimer30m" Content="Shutdown 30m" Width="135" Style="{StaticResource ActionBtn}"/>
+                                            <Button Name="btnTimer1h" Content="Shutdown 1h" Width="135" Style="{StaticResource ActionBtn}"/>
+                                            <Button Name="btnTimer2h" Content="Shutdown 2h" Width="135" Style="{StaticResource ActionBtn}"/>
+                                            <Button Name="btnTimerCustom" Content="Custom Timer..." Width="140" Style="{StaticResource ActionBtn}"/>
+                                        </WrapPanel>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Style="{StaticResource CardStyle}" Margin="0,20,0,0" Padding="20" HorizontalAlignment="Center" Width="620">
                                     <StackPanel>
                                         <TextBlock Text="Advanced Power Options" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource ThemeAccent}" Margin="0,0,0,15"/>
                                         <WrapPanel HorizontalAlignment="Center">
