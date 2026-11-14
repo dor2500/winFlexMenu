@@ -1,7 +1,6 @@
-﻿# ==============================================================================
+# ==============================================================================
 # WinFlexOS V3.0 - Windows Management & Productivity Suite (Hybrid Loader)
 # ==============================================================================
-param([switch]$Restart, [switch]$Shutdown, [string]$Message)
 
 # Progress bars make Invoke-WebRequest / Invoke-RestMethod up to 10x slower in Windows PowerShell 5.1
 $ProgressPreference = 'SilentlyContinue'

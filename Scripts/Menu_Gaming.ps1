@@ -1,4 +1,4 @@
-﻿# GAMING CENTER - Fully Embedded (no external file dependency)
+# GAMING CENTER - Fully Embedded (no external file dependency)
 # ==============================================================================
 Set-Click "btnGameCenter" { Switch-Panel $pnlGaming }
 Set-Click "btnThemeXP" { $cmbThemes.SelectedIndex = 18 }
