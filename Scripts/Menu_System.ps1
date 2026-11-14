@@ -1,4 +1,4 @@
-# Get-GuiElement / Set-Click come from Helpers.ps1 (cached lookups). They used to be redefined here with an
+﻿# Get-GuiElement / Set-Click come from Helpers.ps1 (cached lookups). They used to be redefined here with an
 # uncached FindName version, which silently disabled the element cache for every module loaded afterwards.
 
 function Invoke-WpfDialog {

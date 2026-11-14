@@ -1,4 +1,4 @@
-if (-not $global:LibPath) { $global:LibPath = "C:\MENU\Lib" }
+﻿if (-not $global:LibPath) { $global:LibPath = "C:\MENU\Lib" }
 
 function Install-WebView2-Libs {
     try {

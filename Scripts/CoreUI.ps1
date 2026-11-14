@@ -1,4 +1,4 @@
-# Window Logic
+﻿# Window Logic
 $window.Add_MouseLeftButtonDown({ try { $window.DragMove() } catch {} })
 (Get-GuiElement "btnClose").Add_Click({ $window.Close() })
 (Get-GuiElement "btnMin").Add_Click({ $window.WindowState = 'Minimized' })

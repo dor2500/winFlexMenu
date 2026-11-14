@@ -1,4 +1,4 @@
-# Theme background images live in C:\MENU\backgrounds. They used to be shipped as a 7MB base64 script
+﻿# Theme background images live in C:\MENU\backgrounds. They used to be shipped as a 7MB base64 script
 # (Assets.ps1) that had to be downloaded + parsed on every start; now each image is fetched once, on
 # demand, straight from the repo, then decoded once (OnLoad + Freeze) and cached in memory.
 $script:BgDir = "C:\MENU\backgrounds"
