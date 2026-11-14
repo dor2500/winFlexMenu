@@ -1,3 +1,5 @@
+if (-not $global:LibPath) { $global:LibPath = "C:\MENU\Lib" }
+
 function Install-WebView2-Libs {
     try {
         if (-not (Test-Path $global:LibPath)) { New-Item -ItemType Directory -Force -Path $global:LibPath | Out-Null }

@@ -29,17 +29,45 @@ if ($btnInstallOffice) {
         elseif ($typeStr -match "Full") { $xmlSuffix = "_Full.xml" }
         
         $targetXml = "$xmlPrefix$xmlSuffix"
-        $xmlPath = "C:\MENU\Tools\OfficeSetup\$targetXml"
-        
+        $officeDir = "C:\MENU\Tools\OfficeSetup"
+        if (!(Test-Path $officeDir)) { New-Item $officeDir -ItemType Directory -Force | Out-Null }
+        $xmlPath = "$officeDir\$targetXml"
+        $setupExe = "$officeDir\setup.exe"
+        $repoRaw = "https://raw.githubusercontent.com/dor2500/winFlexMenu/main"
+
         if (!(Test-Path $xmlPath)) {
-            $msg = "XML file not found: $targetXml`n`nLooking in: C:\MENU\Tools\OfficeSetup"
-            [System.Windows.Forms.MessageBox]::Show($msg, "Error", "OK", "Error")
-            return
+            $localRepoXml = Join-Path (Split-Path $PSScriptRoot -Parent) "OfficeSetup\OfficeSetup\$targetXml"
+            if (Test-Path $localRepoXml) {
+                Copy-Item $localRepoXml $xmlPath -Force
+            } else {
+                try {
+                    Show-Toast "Downloading Office configuration ($targetXml)..." "info"
+                    Invoke-WebRequest -Uri "$repoRaw/OfficeSetup/OfficeSetup/$targetXml" -OutFile $xmlPath -UseBasicParsing -TimeoutSec 15 -ErrorAction Stop
+                } catch {
+                    [System.Windows.Forms.MessageBox]::Show("XML file not found and download failed: $targetXml", "Error", "OK", "Error")
+                    return
+                }
+            }
         }
-        
-        $setupExe = "C:\MENU\Tools\OfficeSetup\setup.exe"
+
+        if (!(Test-Path $setupExe)) {
+            $localSetup = Join-Path (Split-Path $PSScriptRoot -Parent) "OfficeSetup\Remove Office\setup.exe"
+            if (Test-Path $localSetup) {
+                Copy-Item $localSetup $setupExe -Force
+            } else {
+                try {
+                    Show-Toast "Downloading Office Deployment Tool (setup.exe)..." "info"
+                    Invoke-WebRequest -Uri "$repoRaw/OfficeSetup/Remove%20Office/setup.exe" -OutFile $setupExe -UseBasicParsing -TimeoutSec 30 -ErrorAction Stop
+                } catch {
+                    [System.Windows.Forms.MessageBox]::Show("Office setup.exe could not be downloaded: $_", "Error", "OK", "Error")
+                    return
+                }
+            }
+        }
+
         if (Test-Path $setupExe) {
-            Start-Process -FilePath $setupExe -ArgumentList "/configure `"$xmlPath`""
+            Show-Toast "Starting Office installation..." "success"
+            Start-Process -FilePath $setupExe -ArgumentList "/configure `"$xmlPath`"" -Verb RunAs
         }
     }
 }

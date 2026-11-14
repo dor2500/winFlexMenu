@@ -68,6 +68,17 @@ $isLocalRepo = $PSScriptRoot -and (Test-Path "$PSScriptRoot\Scripts\Layout.ps1")
 if ($isLocalRepo) {
     Copy-Item "$PSScriptRoot\Scripts\*.ps1" -Destination $ModuleDir -Force
     Remove-Item "$ModuleDir\Assets.ps1" -Force -ErrorAction SilentlyContinue
+    if (Test-Path "$PSScriptRoot\backgrounds") {
+        $bgDest = "C:\MENU\backgrounds"
+        if (!(Test-Path $bgDest)) { New-Item $bgDest -ItemType Directory -Force | Out-Null }
+        Copy-Item "$PSScriptRoot\backgrounds\*.png" -Destination $bgDest -Force -ErrorAction SilentlyContinue
+    }
+    if (Test-Path "$PSScriptRoot\OfficeSetup\OfficeSetup") {
+        Copy-Item "$PSScriptRoot\OfficeSetup\OfficeSetup\*.xml" -Destination $OfficeDir -Force -ErrorAction SilentlyContinue
+    }
+    if (Test-Path "$PSScriptRoot\OfficeSetup\Remove Office\setup.exe") {
+        Copy-Item "$PSScriptRoot\OfficeSetup\Remove Office\setup.exe" -Destination $OfficeDir -Force -ErrorAction SilentlyContinue
+    }
 } else {
     $hasLocal = (Test-Path "$ModuleDir\Layout.ps1") -and (Test-Path "$ModuleDir\CoreUI.ps1") -and (Test-Path "$ModuleDir\Helpers.ps1")
     $apiWaitMs = if ($hasLocal) { 2500 } else { 20000 }   # first run has nothing local, so we must wait

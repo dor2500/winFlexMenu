@@ -11,11 +11,32 @@
 ## ✨ Key Features
 
 * **⚡ Ultra-Fast & Non-Blocking:** Instant sub-second startup, background asynchronous execution for zero UI freezing, and parallel delta sync.
-* **🛠 Complete Maintenance & Repair:** One-click deep cleaning, RAM garbage collection, icon & font cache repair, WSUS/Windows Update reset.
+* **🛠 Complete Maintenance & Repair:** One-click deep cleaning, RAM garbage collection, icon & font cache repair, WSUS/Windows Update reset, and automated Office Deployment Toolkit setup.
 * **🛡 Security & Diagnostics:** Real-time hardware health (CPU, RAM, SMART, Battery), network diagnostic tools, Windows Defender & Firewall management.
-* **🎨 35+ Dynamic Themes:** Instant switching between Dark, Light, Cyberpunk, Tokyo Night, Retro, and custom image themes.
-* **🤖 AI & Prompt Studio:** Built-in NanoBanana studio and instant access to 100+ top AI platforms.
-* **🌐 Dual-Language Support:** Full dynamic localization in both Hebrew (עברית) and English.
+* **🎨 40 Dynamic Themes:** Instant switching between Dracula, Pitch Black, Glass Aero, Cyber Noir, Cyberpunk 2077, Tokyo Night, The Matrix, Windows XP Bliss, Nintendo Wii, Van Gogh, Hokusai's Great Wave, and custom image themes.
+* **🤖 AI & Prompt Studio:** Built-in NanoBanana prompt generator and instant access to 100+ top AI platforms.
+* **🌐 Dual-Language Support:** Full dynamic RTL/LTR localization in both Hebrew (עברית) and English.
+
+---
+
+## 📸 Interface Showcase
+
+### 🖥️ Main Dashboard (English & Hebrew RTL)
+<p align="center">
+  <img src="assets/dashboard.png" alt="WinFlexMenu Main Dashboard (Dracula Theme)" width="49%" />
+  <img src="assets/dashboard_he.png" alt="WinFlexMenu Hebrew RTL Dashboard (Glass Aero Theme)" width="49%" />
+</p>
+
+### 🎨 40 Dynamic Themes (Gaming, Retro, Modern & Art)
+<p align="center">
+  <img src="assets/themes_showcase.png" alt="WinFlexMenu Dynamic Themes Showcase" width="100%" />
+</p>
+
+### 🛡️ System Health Center & 🤖 AI Hub
+<p align="center">
+  <img src="assets/beast_center.png" alt="WinFlexMenu System Health Center" width="49%" />
+  <img src="assets/ai_hub.png" alt="WinFlexMenu AI and Automation Hub" width="49%" />
+</p>
 
 ---
 

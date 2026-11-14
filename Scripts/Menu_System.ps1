@@ -111,13 +111,7 @@ function Update-Ring {
     }
 }
 
-# --- MAIN UI TIMER ---
-# (the clock/date labels are owned by the 1-second clock timer in CoreUI.ps1 - this timer used to fight it)
-$timer = New-Object System.Windows.Threading.DispatcherTimer
-$timer.Interval = [TimeSpan]::FromMilliseconds(400)   # first tick is quick so the dashboard fills immediately, then every 2s
-$timer.Add_Tick({
-    if ($timer.Interval.TotalSeconds -lt 2) { $timer.Interval = [TimeSpan]::FromSeconds(2) }
-    if ($window.WindowState -eq "Minimized") { return }
+function Update-DashboardTelemetry {
     try {
         $now = Get-Date
         Update-Greeting-Smart
@@ -178,6 +172,19 @@ $timer.Add_Tick({
             $txtSys.Text = "User: $env:USERNAME`n$($staticInfo.WindowsVer)`n$($staticInfo.WinFlexVer)`nCPU: $($staticInfo.CPU)`nRAM: $usedRam / $($staticInfo.TotalRAM) GB ($ramPerc%)`nGPU: $($staticInfo.GPU)`nUptime: $upStr`nLocal IP: $($staticInfo.LocalIP)`nDisk C: $($script:cachedDiskFreeGB) GB Free"
         }
     } catch {}
+}
+
+# Initial synchronous pass for instant first-frame RAM/Disk/Greeting
+Update-DashboardTelemetry
+
+# --- MAIN UI TIMER ---
+# (the clock/date labels are owned by the 1-second clock timer in CoreUI.ps1 - this timer used to fight it)
+$timer = New-Object System.Windows.Threading.DispatcherTimer
+$timer.Interval = [TimeSpan]::FromMilliseconds(400)   # first tick is quick so the dashboard fills immediately, then every 2s
+$timer.Add_Tick({
+    if ($timer.Interval.TotalSeconds -lt 2) { $timer.Interval = [TimeSpan]::FromSeconds(2) }
+    if ($window.WindowState -eq "Minimized") { return }
+    Update-DashboardTelemetry
 })
 $timer.Start()
 

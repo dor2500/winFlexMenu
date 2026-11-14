@@ -9,7 +9,7 @@ function Toggle-TV-CinemaMode {
         $listCol = Get-GuiElement "colTVSidebar"
         $spacerCol = Get-GuiElement "colTVSpacer"
         $exitBtn = Get-GuiElement "btnExitCinema"
-        $sidebar = Get-GuiElement "sidebar" # Main dashboard sidebar
+        $sidebar = Get-GuiElement "SidebarBorder" # Main dashboard sidebar
         
         if (-not $global:IsCinemaMode) {
             # ENTER CINEMA MODE

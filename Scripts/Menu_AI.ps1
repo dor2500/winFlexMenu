@@ -1,4 +1,4 @@
-# ==============================================================================
+﻿# ==============================================================================
 # WinFlexOS - AI Hub & Quick Bubbles Module
 # ==============================================================================
 
@@ -12,8 +12,9 @@ Set-Click "btnBubWin" { Switch-Panel "pnlWindowsTools" }
 Set-Click "btnBubTwk" { Switch-Panel "pnlTweaks" }
 Set-Click "btnBubCln" { Switch-Panel "pnlMaintenance" }
 Set-Click "btnBubSec" { Switch-Panel "pnlSecurity" }
-Set-Click "btnBubMus" { Switch-Panel "pnlMusic" }
-Set-Click "btnBubBst" { Switch-Panel "pnlBeast" }
+Set-Click "btnBubMus"  { Switch-Panel "pnlMusic" }
+Set-Click "btnBubGame" { Switch-Panel "pnlGaming" }
+Set-Click "btnBubBst"  { Switch-Panel "pnlBeast" }
 
 Set-Click "btnAIInfo" {
     $info = "WinFlexOS AI Hub:`n`nAccess over 100 top AI models and services directly in your browser, categorized by workflow: LLMs, Coding, Image, Video, Audio, Writing, 3D, and Research."

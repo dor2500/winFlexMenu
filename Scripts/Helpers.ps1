@@ -3,10 +3,13 @@
 # demand, straight from the repo, then decoded once (OnLoad + Freeze) and cached in memory.
 $script:BgDir = "C:\MENU\backgrounds"
 $script:BgRaw = "https://raw.githubusercontent.com/dor2500/winFlexMenu/main/backgrounds"
+$script:RepoBgDir = if ($PSScriptRoot) { Join-Path (Split-Path $PSScriptRoot -Parent) "backgrounds" } else { "" }
 
 function Test-AssetLocal {
     param([string]$Name)
-    return (Test-Path (Join-Path $script:BgDir $Name))
+    if (Test-Path (Join-Path $script:BgDir $Name)) { return $true }
+    if ($script:RepoBgDir -and (Test-Path (Join-Path $script:RepoBgDir $Name))) { return $true }
+    return $false
 }
 
 function Get-AssetBitmap {
@@ -18,9 +21,14 @@ function Get-AssetBitmap {
         $path = Join-Path $script:BgDir $Name
         if (-not (Test-Path $path)) {
             if (-not (Test-Path $script:BgDir)) { New-Item -ItemType Directory -Path $script:BgDir -Force | Out-Null }
-            $tmp = "$path.download"
-            Invoke-WebRequest -Uri "$script:BgRaw/$Name" -OutFile $tmp -UseBasicParsing -TimeoutSec 15 -ErrorAction Stop
-            Move-Item $tmp $path -Force
+            $repoFile = if ($script:RepoBgDir) { Join-Path $script:RepoBgDir $Name } else { "" }
+            if ($repoFile -and (Test-Path $repoFile)) {
+                Copy-Item $repoFile $path -Force
+            } else {
+                $tmp = "$path.download"
+                Invoke-WebRequest -Uri "$script:BgRaw/$Name" -OutFile $tmp -UseBasicParsing -TimeoutSec 15 -ErrorAction Stop
+                Move-Item $tmp $path -Force
+            }
         }
         $bitmap = New-Object System.Windows.Media.Imaging.BitmapImage
         $bitmap.BeginInit()
@@ -195,26 +203,6 @@ function Invoke-OnlineApp {
         Show-Toast "App launched successfully!" "success"
     } catch {
         Show-Toast "Download failed: $($_.Exception.Message)" "error"
-    }
-}
-
-function Switch-Panel {
-    param($TargetName)
-    $panels = @("pnlHome", "pnlAIBots", "pnlEssentials", "pnlWindowsTools", "pnlSysInfoTools", "pnlTweaks", "pnlMaintenance", "pnlSecurity", "pnlUserMgmt", "pnlMusic", "pnlPower", "pnlBeast", "pnlGaming", "pnlUpdateMgr", "pnlIsraelTV", "pnlKeyboardShortcuts")
-    foreach ($p in $panels) {
-        $el = Get-GuiElement $p
-        if ($el) { $el.Visibility = "Collapsed" }
-    }
-    $target = if ($TargetName -is [string]) { Get-GuiElement $TargetName } else { $TargetName }
-    if ($target) {
-        $target.Visibility = "Visible"
-        # Fade in the new panel (GPU-accelerated, zero CPU cost)
-        try {
-            $da = New-Object System.Windows.Media.Animation.DoubleAnimation(0.0, 1.0, [System.Windows.Duration]::new([TimeSpan]::FromMilliseconds(200)))
-            $da.EasingFunction = New-Object System.Windows.Media.Animation.ExponentialEase
-            $da.EasingFunction.EasingMode = "EaseOut"
-            $target.BeginAnimation([System.Windows.UIElement]::OpacityProperty, $da)
-        } catch {}
     }
 }
 
