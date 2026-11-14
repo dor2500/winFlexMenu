@@ -86,7 +86,7 @@ Set-Click "btnGHAGS" {
 
 # Game data
 $script:gGames = [System.Collections.Generic.List[PSCustomObject]]::new()
-$script:gCacheFile = "$PSScriptRoot\games_cache.json"
+$script:gCacheFile = "C:\MENU\games_cache.json"
 
 function Scan-GamesNow {
     $script:gGames.Clear()
@@ -110,15 +110,18 @@ function Scan-GamesNow {
         if ($sr) {
             $sp = (Get-ItemProperty $sr).InstallPath; $libs = @($sp)
             $lf = "$sp\steamapps\libraryfolders.vdf"
-            if (Test-Path $lf) { Get-Content $lf | Select-String '"path"' | ForEach-Object { $l=($_ -replace '.*"path"\s+"(.+)".*','$1').Trim(); if(Test-Path $l){$libs+=$l} } }
+            if (Test-Path $lf) { Get-Content $lf | Select-String '"path"' | ForEach-Object { $l=(($_ -replace '.*"path"\s+"(.+)".*','$1') -replace '\\\\','\').Trim(); if(Test-Path $l){$libs+=$l} } }
+            $libs = @($libs | Select-Object -Unique)
             foreach ($lib in $libs) {
                 Get-ChildItem "$lib\steamapps" -Filter "appmanifest_*.acf" -EA SilentlyContinue | ForEach-Object {
                     $c = Get-Content $_.FullName -Raw -EA SilentlyContinue
                     $n = $(if ($c -match '"name"\s+"([^"]+)"') { $Matches[1] } else { "Unknown Steam Game" })
-                    $d = $(if ($c -match '"installdir"\s+"([^"]+)"') { $Matches[1] } else { "" })
-                    $gp = "$lib\steamapps\common\$d"
-                    $exe = Get-ChildItem $gp -Filter "*.exe" -Depth 1 -EA SilentlyContinue | Where-Object { $_.Name -notmatch "unins|setup|crash|redist" } | Sort-Object Length -Descending | Select-Object -First 1
-                    AddG $n "Steam" ($(if ($exe) { $exe.FullName } else { $gp }))
+                    if ($n -notmatch 'Steamworks Common Redistributables') {
+                        $d = $(if ($c -match '"installdir"\s+"([^"]+)"') { $Matches[1] } else { "" })
+                        $gp = "$lib\steamapps\common\$d"
+                        $exe = Get-ChildItem $gp -Filter "*.exe" -Depth 1 -EA SilentlyContinue | Where-Object { $_.Name -notmatch "unins|setup|crash|redist" } | Sort-Object Length -Descending | Select-Object -First 1
+                        AddG $n "Steam" ($(if ($exe) { $exe.FullName } else { $gp }))
+                    }
                 }
             }
 

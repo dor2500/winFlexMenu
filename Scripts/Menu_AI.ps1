@@ -25,13 +25,14 @@ Set-Click "btnAIInfo" {
 Set-Click "btnNanoBanana" { Switch-Panel "pnlNanoBanana" }
 Set-Click "btnBackToAI"   { Switch-Panel "pnlAIBots" }
 
-$script:stylesHebrew = @("ריאליסטי", "אנימה", "סייברפאנק", "ציור שמן", "פנטזיה", "מינימליסטי", "פיקסל ארט", "קומיקס")
-$script:stylesEnglish = @("Photorealistic", "Anime", "Cyberpunk", "Oil Painting", "Fantasy Art", "Minimalist", "Pixel Art", "Comic Book")
+$script:stylesHebrew = @("ריאליסטי", "אנימה", "סייברפאנק", "ציור שמן", "פנטזיה", "מינימליסטי", "פיקסל ארט", "קומיקס", "צבעי מים", "פופ ארט")
+$script:stylesEnglish = @("Photorealistic", "Anime", "Cyberpunk", "Oil Painting", "Fantasy Art", "Minimalist", "Pixel Art", "Comic Book", "Watercolor", "Pop Art", "Claymation", "3D Octane Render", "Origami", "Street Graffiti", "Stained Glass")
 $script:scenariosHebrew = @("נוף עתידני של עיר בלילה", "אביר עומד על פסגת הר מושלג", "חתול אסטרונאוט מרחף בחלל", "יער קסום עם פטריות זוהרות", "רובוט עתיק מוקף צמחייה")
-$script:scenariosEnglish = @("Futuristic cyberpunk city at night", "A lone knight on a snowy mountain peak", "An astronaut cat floating in deep space", "A magical bioluminescent forest", "An ancient moss-covered robot")
+$script:scenariosEnglish = @("Futuristic cyberpunk city at night", "A lone knight on a snowy mountain peak", "An astronaut cat floating in deep space", "A magical bioluminescent forest", "An ancient moss-covered robot", "A cozy robot coffee shop in Tokyo", "A giant sea turtle carrying a floating island", "A samurai facing a giant mechanical dragon")
 
 function Send-To-Gemini ($prompt) {
     if ([string]::IsNullOrWhiteSpace($prompt)) { return }
+    try { [System.Windows.Forms.Clipboard]::SetText($prompt) } catch {}
     $enc = [System.Net.WebUtility]::UrlEncode($prompt)
     Start-Process "https://gemini.google.com/app?prompt=$enc"
 }
@@ -53,12 +54,18 @@ function Get-ActiveModifiers ($lang) {
     return $m
 }
 
-# Populate NanoBanana controls
-$cmbStyles = Get-GuiElement "cmbStyles"
-if ($cmbStyles -and $cmbStyles.Items.Count -eq 0) {
-    $script:stylesEnglish | ForEach-Object { [void]$cmbStyles.Items.Add($_) }
+function Update-StyleList {
+    $cmbStyles = Get-GuiElement "cmbStyles"
+    if (-not $cmbStyles) { return }
+    $cmbStyles.Items.Clear()
+    $rbHe = Get-GuiElement "rbHebrew"
+    if ($rbHe -and $rbHe.IsChecked) { $script:stylesHebrew | ForEach-Object { [void]$cmbStyles.Items.Add($_) } }
+    else { $script:stylesEnglish | ForEach-Object { [void]$cmbStyles.Items.Add($_) } }
     $cmbStyles.SelectedIndex = 0
 }
+$rbHe = Get-GuiElement "rbHebrew"; if ($rbHe) { $rbHe.Add_Checked({ Update-StyleList }) }
+$rbEn = Get-GuiElement "rbEnglish"; if ($rbEn) { $rbEn.Add_Checked({ Update-StyleList }) }
+Update-StyleList
 
 $cmbRatio = Get-GuiElement "cmbRatio"
 if ($cmbRatio -and $cmbRatio.Items.Count -eq 0) {
@@ -67,9 +74,25 @@ if ($cmbRatio -and $cmbRatio.Items.Count -eq 0) {
 }
 
 Set-Click "btnSpinRoulette" {
+    $cmbStyles = Get-GuiElement "cmbStyles"
     $idx = if ($cmbStyles -and $cmbStyles.SelectedIndex -ge 0) { $cmbStyles.SelectedIndex } else { 0 }
-    $sty = $script:stylesEnglish[$idx]
+    $rbHe = Get-GuiElement "rbHebrew"
+    if ($rbHe -and $rbHe.IsChecked) {
+        $sty = $script:stylesHebrew[$idx]
+        $scn = $script:scenariosHebrew | Get-Random
+        $mods = Get-ActiveModifiers "He"
+        Send-To-Gemini "Generate an image of $scn, in $sty style$mods."
+    } else {
+        $sty = $script:stylesEnglish[$idx]
+        $scn = $script:scenariosEnglish | Get-Random
+        $mods = Get-ActiveModifiers "En"
+        Send-To-Gemini "Generate an image of $scn, in $sty style$mods."
+    }
+}
+
+Set-Click "btnSurpriseMe" {
     $scn = $script:scenariosEnglish | Get-Random
+    $sty = $script:stylesEnglish | Get-Random
     $mods = Get-ActiveModifiers "En"
     Send-To-Gemini "Generate an image of $scn, in $sty style$mods."
 }

@@ -204,24 +204,32 @@ Set-Click "btnLaunchExternal" {
     }
 }
 
-# --- UNIFIED AI BUTTON INFO SYSTEM ---
-$script:ToolInfoMap = @{
-    "btnGPT"          = @{ En = "Leading AI by OpenAI for chat, coding, and analysis. Supports GPT-4o."; He = "Advanced AI by OpenAI" }
-    "btnGemini"       = @{ En = "Google's powerful AI for creative tasks, information, and multimodal understanding."; He = "Google AI Assistant" }
-    "btnCopilot"      = @{ En = "Microsoft's AI companion integrated with Windows and Bing Search."; He = "Microsoft AI Companion" }
-    "btnClaude"       = @{ En = "Anthropic's AI specializing in long context and advanced technical writing."; He = "Anthropic AI" }
-    "btnGrok"         = @{ En = "xAI's conversational assistant with real-time access to X platform data."; He = "xAI Assistant" }
-    "btnPerplexity"   = @{ En = "AI search engine that provides direct answers with cited sources."; He = "AI Search Engine" }
-    "btnGitHubCopilot"= @{ En = "AI pair programmer that helps you write code faster inside your IDE."; He = "GitHub AI Copilot" }
-    "btnCursor"       = @{ En = "AI-powered code editor designed for pair programming with Large Language Models."; He = "AI Code Editor" }
-    "btnMidjourney"   = @{ En = "High-quality AI image generation model, accessed primarily through Discord."; He = "AI Image Model" }
-    "btnDALLE"        = @{ En = "OpenAI's DALL-E 3 for generating creative and realistic images from text."; He = "DALL-E 3" }
-    "btnLeonardo"     = @{ En = "Creative platform for AI image generation with advanced style controls."; He = "Leonardo AI" }
-    "btnIdeogram"     = @{ En = "AI image generator specializing in typography and design layouts."; He = "Ideogram AI" }
-    "btnFlux"         = @{ En = "State-of-the-art image generation model focusing on detail and realism."; He = "Flux AI" }
-    "btnDeepSeek"     = @{ En = "High-performance AI model specializing in coding and mathematics."; He = "DeepSeek AI" }
-    "btnMistral"      = @{ En = "Efficient and powerful open-source AI models from Mistral AI."; He = "Mistral AI" }
-    "btnV0"           = @{ En = "Vercel's AI tool for generating UI components and frontend code."; He = "Vercel v0" }
-    "btnBolt"         = @{ En = "AI-powered full-stack web development platform for rapid prototyping."; He = "Bolt AI" }
-    "btnHuggingFace"  = @{ En = "The community platform for open-source AI models, datasets, and apps."; He = "HuggingFace" }
+# --- CINEMA MODE HANDLERS ---
+function Toggle-TV-CinemaMode {
+    try {
+        $title = Get-GuiElement "lblTVTitle"
+        $listCol = Get-GuiElement "colTVSidebar"
+        $spacerCol = Get-GuiElement "colTVSpacer"
+        $exitBtn = Get-GuiElement "btnExitCinema"
+        $sidebar = Get-GuiElement "SidebarBorder"
+        
+        if (-not $global:IsCinemaMode) {
+            if ($title) { $title.Visibility = "Collapsed" }
+            if ($listCol) { $listCol.Width = New-Object System.Windows.GridLength(0) }
+            if ($spacerCol) { $spacerCol.Width = New-Object System.Windows.GridLength(0) }
+            if ($exitBtn) { $exitBtn.Visibility = "Visible" }
+            if ($sidebar) { $sidebar.Visibility = "Collapsed" }
+            $global:IsCinemaMode = $true
+        } else {
+            if ($title) { $title.Visibility = "Visible" }
+            if ($listCol) { $listCol.Width = New-Object System.Windows.GridLength(220) }
+            if ($spacerCol) { $spacerCol.Width = New-Object System.Windows.GridLength(10) }
+            if ($exitBtn) { $exitBtn.Visibility = "Collapsed" }
+            if ($sidebar) { $sidebar.Visibility = "Visible" }
+            $global:IsCinemaMode = $false
+        }
+    } catch {}
 }
+
+Set-Click "btnCinemaMode" { Toggle-TV-CinemaMode }
+Set-Click "btnExitCinema" { Toggle-TV-CinemaMode }

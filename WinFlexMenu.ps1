@@ -155,13 +155,7 @@ if (Test-Path "$ModuleDir\CoreUI.ps1") { . "$ModuleDir\CoreUI.ps1" }
 # 6. Load Menu Modules
 Get-ChildItem -Path $ModuleDir -Filter "Menu_*.ps1" | ForEach-Object { . $_.FullName }
 
-# 7. Post-Load Startup Logic
-#    (user list is loaded lazily when the Users panel is opened - see btnUserMgmt)
-try {
-    if (Get-Command Toggle-Language -ErrorAction SilentlyContinue) { Toggle-Language; Toggle-Language }
-} catch {}
-
-# 8. Show Application
+# 7. Show Application
 if ($global:splashScreen) { try { $global:splashScreen.Close() } catch {} }
 if ($window) {
     $window.ShowDialog()
