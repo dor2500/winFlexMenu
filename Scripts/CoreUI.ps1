@@ -94,11 +94,11 @@ Set-Click "btnCreateDesktopShortcut" {
 
 # --- THEME ENGINE ---
 $cmbThemes = Get-GuiElement "cmbThemes"
-$themeNames = @("Dracula", "Pitch Black", "Dark Gray", "Light Mode", "Midnight Blue", "Nordic Frost", "Tokyo Night", "Gruvbox", "Windows 98 Classic", "Windows 98 Dark", "Van Gogh", "The Great Wave", "Windows 95 Teal", "Abstract Mode", "Material You", "Nintendo Wii", "Super Mario", "Sony PlayStation 2", "Windows XP Bliss", "Windows 7 Aero", "Xbox Original", "Xbox 360", "GTA San Andreas", "Cyberpunk 2077", "Fallout Pip-Boy", "Goat Simulator", "Minecraft", "Halo 3", "Counter-Strike 1.6", "Half-Life 2", "Doom Classic", "Portal", "PS5 Dashboard", "Netflix Red", "Deep Space", "The Matrix", "NFS Underground 2", "Glass Aero", "Cyber Noir", "Custom Image")
+$themeNames = @("Dracula", "Pitch Black", "Dark Gray", "Light Mode", "Midnight Blue", "Nordic Frost", "Tokyo Night", "Gruvbox", "Windows 98 Classic", "Windows 98 Dark", "Van Gogh", "The Great Wave", "Windows 95 Teal", "Abstract Mode", "Material You", "Nintendo Wii", "Super Mario", "Sony PlayStation 2", "Windows XP Bliss", "Windows 7 Aero", "Xbox Original", "Xbox 360", "GTA San Andreas", "Cyberpunk 2077", "Fallout Pip-Boy", "Goat Simulator", "Minecraft", "Halo 3", "Counter-Strike 1.6", "Half-Life 2", "Doom Classic", "Portal", "PS5 Dashboard", "Netflix Red", "Deep Space", "The Matrix", "NFS Underground 2", "Glass Aero", "Cyber Noir", "Apple Swift", "Google M3E", "Custom Image")
 $themeNames | ForEach-Object { [void]$cmbThemes.Items.Add($_) }
 
 # Which theme index uses which background file (all of them live in the repo's /backgrounds folder)
-$script:themeBgFile = @{ 10 = "vangogh.png"; 11 = "greatwave.png"; 13 = "abstract.png"; 15 = "wii.png"; 16 = "mario.png"; 17 = "ps2.png"; 18 = "winxp.png"; 19 = "vista7.png"; 20 = "xbox_orig.png"; 21 = "xbox_360.png"; 22 = "gta_sa.png"; 23 = "cyberpunk.png"; 24 = "pipboy.png"; 25 = "goat.png"; 26 = "minecraft.png"; 27 = "halo3.png"; 28 = "cs16.png"; 29 = "hl2.png"; 30 = "doom.png"; 31 = "portal.png"; 32 = "ps5.png"; 33 = "netflix.png"; 34 = "space.png"; 35 = "matrix.png"; 36 = "nfsug2.png"; 37 = "glass.png"; 38 = "cyber.png" }
+$script:themeBgFile = @{ 10 = "vangogh.png"; 11 = "greatwave.png"; 13 = "abstract.png"; 15 = "wii.png"; 16 = "mario.png"; 17 = "ps2.png"; 18 = "winxp.png"; 19 = "vista7.png"; 20 = "xbox_orig.png"; 21 = "xbox_360.png"; 22 = "gta_sa.png"; 23 = "cyberpunk.png"; 24 = "pipboy.png"; 25 = "goat.png"; 26 = "minecraft.png"; 27 = "halo3.png"; 28 = "cs16.png"; 29 = "hl2.png"; 30 = "doom.png"; 31 = "portal.png"; 32 = "ps5.png"; 33 = "netflix.png"; 34 = "space.png"; 35 = "matrix.png"; 36 = "nfsug2.png"; 37 = "glass.png"; 38 = "cyber.png"; 39 = "apple_swift.png"; 40 = "google_m3e.png" }
 
 # STARTUP: Set a Random Theme by default.
 # Only themes that can render instantly are eligible: no empty "Custom Image" slot (last),
@@ -593,7 +593,35 @@ $cmbThemes.Add_SelectionChanged({
                 Set-ResourceColor "ThemeBorder" "#4400F0FF"
                 Set-Resource "ThemeCornerRadius" (New-Object System.Windows.CornerRadius(10))
             }
-            39 { # Custom Background
+            39 { # Apple Swift (macOS Sequoia & Swift UI)
+                Set-ThemeImage "apple_swift.png"
+                Set-ResourceColor "ThemeSidebar" "#D911131F"
+                Set-ResourceColor "ThemeCardBg" "#CC1B1E2E"
+                Set-ResourceColor "ThemeFg" "#F5F5F7"
+                Set-ResourceColor "ThemeAccent" "#F05138"
+                Set-ResourceColor "ThemeSidebarFg" "#E5E5EA"
+                Set-ResourceColor "ThemeWinCtrl" "#FF9F0A"
+                Set-ResourceColor "ThemeSubText" "#A1A1AA"
+                Set-ResourceColor "ThemeTitleFg" "#FF693C"
+                Set-ResourceColor "ThemeBorder" "#44FF693C"
+                Set-Resource "ThemeCornerRadius" (New-Object System.Windows.CornerRadius(22))
+                Set-Resource "ThemeFont" (New-Object System.Windows.Media.FontFamily("Segoe UI Variable Display, Segoe UI, sans-serif"))
+            }
+            40 { # Google M3E (Material 3 Expressive)
+                Set-ThemeImage "google_m3e.png"
+                Set-ResourceColor "ThemeSidebar" "#E61D1B20"
+                Set-ResourceColor "ThemeCardBg" "#D92B2930"
+                Set-ResourceColor "ThemeFg" "#F5EFF7"
+                Set-ResourceColor "ThemeAccent" "#D0BCFF"
+                Set-ResourceColor "ThemeSidebarFg" "#E6E0E9"
+                Set-ResourceColor "ThemeWinCtrl" "#EFB8C8"
+                Set-ResourceColor "ThemeSubText" "#CAC4D0"
+                Set-ResourceColor "ThemeTitleFg" "#D0BCFF"
+                Set-ResourceColor "ThemeBorder" "#55D0BCFF"
+                Set-Resource "ThemeCornerRadius" (New-Object System.Windows.CornerRadius(28))
+                Set-Resource "ThemeFont" (New-Object System.Windows.Media.FontFamily("Segoe UI Variable Display, Segoe UI, sans-serif"))
+            }
+            41 { # Custom Background
                 if ($global:customImagePath -and (Test-Path $global:customImagePath)) {
                     Apply-Theme-From-Image -imagePath $global:customImagePath
                 }

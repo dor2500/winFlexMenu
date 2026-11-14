@@ -13,7 +13,7 @@
 * **⚡ Ultra-Fast & Non-Blocking:** Instant sub-second startup, background asynchronous execution for zero UI freezing, and parallel delta sync.
 * **🛠 Complete Maintenance & Repair:** One-click deep cleaning, RAM garbage collection, icon & font cache repair, WSUS/Windows Update reset, and automated Office Deployment Toolkit setup.
 * **🛡 Security & Diagnostics:** Real-time hardware health (CPU, RAM, SMART, Battery), network diagnostic tools, Windows Defender & Firewall management.
-* **🎨 40 Dynamic Themes:** Instant switching between Dracula, Pitch Black, Glass Aero, Cyber Noir, Cyberpunk 2077, Tokyo Night, The Matrix, Windows XP Bliss, Nintendo Wii, Van Gogh, Hokusai's Great Wave, and custom image themes.
+* **🎨 42 Dynamic Themes:** Instant switching between Apple Swift, Google M3E (Material 3 Expressive), Dracula, Pitch Black, Glass Aero, Cyber Noir, Cyberpunk 2077, Tokyo Night, The Matrix, Windows XP Bliss, Nintendo Wii, Van Gogh, Hokusai's Great Wave, and custom image themes.
 * **🤖 AI & Prompt Studio:** Built-in NanoBanana prompt generator and instant access to 100+ top AI platforms.
 * **🌐 Dual-Language Support:** Full dynamic RTL/LTR localization in both Hebrew (עברית) and English.
 
@@ -27,7 +27,7 @@
   <img src="assets/dashboard_he.png" alt="WinFlexMenu Hebrew RTL Dashboard (Glass Aero Theme)" width="49%" />
 </p>
 
-### 🎨 40 Dynamic Themes (Gaming, Retro, Modern & Art)
+### 🎨 42 Dynamic Themes (Apple Swift, Google M3E, Gaming, Retro & Art)
 <p align="center">
   <img src="assets/themes_showcase.png" alt="WinFlexMenu Dynamic Themes Showcase" width="100%" />
 </p>
