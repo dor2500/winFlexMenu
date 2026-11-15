@@ -1,4 +1,4 @@
-﻿# ==============================================================================
+# ==============================================================================
 # WinFlexOS - Beast Control Center Module (uses Test-IsAdmin from Helpers.ps1)
 # ==============================================================================
 
@@ -223,7 +223,7 @@ Set-Click "btnBeastWiFi" {
             Write-BeastLog "No saved Wi-Fi profiles found." "Yellow"
         } else {
             foreach ($name in $names) {
-                $keyLine = (netsh.exe wlan show profile name="$name" key=clear 2>&1 | Where-Object { $_ -match 'Key Content|תוכן מפתח' } | Select-Object -First 1)
+                $keyLine = (netsh.exe wlan show profile name="$name" key=clear 2>&1 | Where-Object { $_ -match 'Key Content|\u05EA\u05D5\u05DB\u05DF \u05DE\u05E4\u05EA\u05D7' } | Select-Object -First 1)
                 if (-not $keyLine) {
                     $keyLine = (netsh.exe wlan show profile name="$name" key=clear 2>&1 | Select-String '^\s+(Key Content|[^:]+)\s*:\s*\S+' | Select-Object -Last 1).Line
                 }

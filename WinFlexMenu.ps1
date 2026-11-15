@@ -1,5 +1,5 @@
 # ==============================================================================
-# WinFlexOS V3.2 - Windows Management & Productivity Suite (Hybrid Loader)
+# WinFlexOS V3.3 - Windows Management & Productivity Suite (Hybrid Loader)
 # ==============================================================================
 
 # Progress bars make Invoke-WebRequest / Invoke-RestMethod up to 10x slower in Windows PowerShell 5.1
@@ -42,14 +42,21 @@ try {
     $splashXaml = @"
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         WindowStyle="None" AllowsTransparency="True" Background="Transparent"
-        WindowStartupLocation="CenterScreen" Width="300" Height="120" Topmost="True" ShowInTaskbar="False">
-    <Border Background="#1E1E1E" CornerRadius="12" BorderBrush="#00BFFF" BorderThickness="1">
+        WindowStartupLocation="CenterScreen" Width="360" Height="140" Topmost="True" ShowInTaskbar="False"
+        FontFamily="Segoe UI Variable Display, Segoe UI, sans-serif">
+    <Border CornerRadius="16" BorderBrush="#38BDF8" BorderThickness="1">
+        <Border.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#090D16" Offset="0"/>
+                <GradientStop Color="#131C2E" Offset="1"/>
+            </LinearGradientBrush>
+        </Border.Background>
         <Border.Effect>
-            <DropShadowEffect BlurRadius="20" ShadowDepth="0" Color="Black" Opacity="0.5"/>
+            <DropShadowEffect BlurRadius="24" ShadowDepth="0" Color="#38BDF8" Opacity="0.35"/>
         </Border.Effect>
         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-            <TextBlock Text="WinFlexOS V3.2" FontSize="26" FontWeight="Bold" Foreground="#FFFFFF" HorizontalAlignment="Center"/>
-            <TextBlock Text="Syncing System Modules..." FontSize="12" Foreground="#8AB4F8" HorizontalAlignment="Center" Margin="0,5,0,0"/>
+            <TextBlock Text="WinFlexOS V3.3" FontSize="26" FontWeight="Bold" Foreground="#F8FAFC" HorizontalAlignment="Center"/>
+            <TextBlock Text="Loading Fluent UI &amp; System Modules..." FontSize="12" Foreground="#38BDF8" HorizontalAlignment="Center" Margin="0,6,0,0"/>
         </StackPanel>
     </Border>
 </Window>

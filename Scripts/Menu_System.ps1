@@ -1,4 +1,4 @@
-﻿# Get-GuiElement / Set-Click come from Helpers.ps1 (cached lookups). They used to be redefined here with an
+# Get-GuiElement / Set-Click come from Helpers.ps1 (cached lookups). They used to be redefined here with an
 # uncached FindName version, which silently disabled the element cache for every module loaded afterwards.
 
 function Invoke-WpfDialog {
@@ -50,7 +50,7 @@ $tickMs = [double][Environment]::TickCount; if ($tickMs -lt 0) { $tickMs += 4294
 $staticInfo = @{
     CPU = "Loading..."; GPU = "Loading..."; TotalRAM = 0; LocalIP = "Offline"; PublicIP = "Loading..."; 
     WindowsVer = "Windows $winNum Pro - $winVer"; 
-    WinFlexVer = "WinFlexOS V3.2"; BootTime = (Get-Date).AddMilliseconds(-$tickMs)   # exact value arrives from the background query
+    WinFlexVer = "WinFlexOS V3.3"; BootTime = (Get-Date).AddMilliseconds(-$tickMs)   # exact value arrives from the background query
 }
 
 # Total/available RAM straight from GlobalMemoryStatusEx (a few ms) instead of WMI + a PerformanceCounter

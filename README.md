@@ -8,8 +8,9 @@
 
 ---
 
-## ✨ Key Features (V3.2)
+## ✨ Key Features (V3.3)
 
+* **✨ Modern Fluent Glass & Bento UI Design:** Flagship **Fluent Obsidian** slate-blue aesthetic (`Segoe UI Variable Display`), soft depth shadows, crisp pill tabs, responsive Bento category cards with hover lift & press feedback, and a sleek gradient Splash Screen.
 * **⚡ Ultra-Fast & Non-Blocking:** Instant sub-second startup, asynchronous background hardware/update scans for zero UI freezing, and parallel delta sync.
 * **📦 Winget Quick App Installer Hub:** One-click installation for essentials including 7-Zip, VLC, Chrome, Firefox, Notepad++, VS Code, Discord, Everything, PowerToys, Git, Python 3, and ShareX — plus Winget "Upgrade All Apps".
 * **🛠 Deep Maintenance & Windows Tools:** Multi-profile Chromium cache cleaning (Edge, Chrome, Brave) & Firefox, DISM image repair, Services, Task Scheduler, Firewall & Defender status checks, Windows Sandbox, SmartScreen, and automated Office ODT removal/installation.

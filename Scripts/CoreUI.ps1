@@ -1,4 +1,4 @@
-﻿# Window Logic
+# Window Logic
 $window.Add_MouseLeftButtonDown({ try { $window.DragMove() } catch {} })
 (Get-GuiElement "btnClose").Add_Click({ $window.Close() })
 (Get-GuiElement "btnMin").Add_Click({ $window.WindowState = 'Minimized' })
@@ -86,7 +86,8 @@ Set-Click "btnCreateDesktopShortcut" {
         $filePath = Join-Path $desktopPath "WinFlexMenu.cmd"
         $cmdContent | Out-File -FilePath $filePath -Encoding ascii
         [System.Windows.Forms.MessageBox]::Show("Shortcut 'WinFlexMenu.cmd' created on Desktop!`n`nIt will run: irm https://did.li/WinFlexOS11 | iex", "Success", "OK", "Information")
-    } catch {
+    }
+    catch {
         [System.Windows.Forms.MessageBox]::Show("Error creating shortcut: $_", "Error", "OK", "Error")
     }
 }
@@ -94,7 +95,7 @@ Set-Click "btnCreateDesktopShortcut" {
 
 # --- THEME ENGINE ---
 $cmbThemes = Get-GuiElement "cmbThemes"
-$themeNames = @("Dracula", "Pitch Black", "Dark Gray", "Light Mode", "Midnight Blue", "Nordic Frost", "Tokyo Night", "Gruvbox", "Windows 98 Classic", "Windows 98 Dark", "Van Gogh", "The Great Wave", "Windows 95 Teal", "Abstract Mode", "Material You", "Nintendo Wii", "Super Mario", "Sony PlayStation 2", "Windows XP Bliss", "Windows 7 Aero", "Xbox Original", "Xbox 360", "GTA San Andreas", "Cyberpunk 2077", "Fallout Pip-Boy", "Goat Simulator", "Minecraft", "Halo 3", "Counter-Strike 1.6", "Half-Life 2", "Doom Classic", "Portal", "PS5 Dashboard", "Netflix Red", "Deep Space", "The Matrix", "NFS Underground 2", "Glass Aero", "Cyber Noir", "Apple Swift", "Google M3E", "Custom Image")
+$themeNames = @("Fluent Obsidian", "Pitch Black", "Dark Gray", "Light Mode", "Midnight Blue", "Nordic Frost", "Tokyo Night", "Gruvbox", "Windows 98 Classic", "Windows 98 Dark", "Van Gogh", "The Great Wave", "Windows 95 Teal", "Abstract Mode", "Material You", "Nintendo Wii", "Super Mario", "Sony PlayStation 2", "Windows XP Bliss", "Windows 7 Aero", "Xbox Original", "Xbox 360", "GTA San Andreas", "Cyberpunk 2077", "Fallout Pip-Boy", "Goat Simulator", "Minecraft", "Halo 3", "Counter-Strike 1.6", "Half-Life 2", "Doom Classic", "Portal", "PS5 Dashboard", "Netflix Red", "Deep Space", "The Matrix", "NFS Underground 2", "Glass Aero", "Cyber Noir", "Apple Swift", "Google M3E", "Custom Image")
 $themeNames | ForEach-Object { [void]$cmbThemes.Items.Add($_) }
 
 # Which theme index uses which background file (all of them live in the repo's /backgrounds folder)
@@ -158,7 +159,8 @@ function Apply-Theme-From-Image {
         $window.Resources.Add("ThemeBg", $imgBrush)
         
         $bmp.Dispose(); $thumb.Dispose(); $g.Dispose()
-    } catch {
+    }
+    catch {
         Write-Host "Error generating theme: $($_.Exception.Message)"
     }
 }
@@ -195,7 +197,8 @@ function Set-ThemeImage {
         $bg.ImageSource = $img
         $bg.Stretch = "UniformToFill"
         $bg.Freeze()
-    } else {
+    }
+    else {
         $bg = New-Object System.Windows.Media.SolidColorBrush([System.Windows.Media.ColorConverter]::ConvertFromString("#0F0F0F"))
     }
     $window.Resources.Remove("ThemeBg")
@@ -206,12 +209,12 @@ $cmbThemes.Add_SelectionChanged({
         $i = $cmbThemes.SelectedIndex
         $btnC = Get-GuiElement "btnThemeCustom"
         if ($btnC) { $btnC.Visibility = if ($i -eq ($themeNames.Count - 1)) { [System.Windows.Visibility]::Visible } else { [System.Windows.Visibility]::Collapsed } }
-        Set-Resource "ThemeCornerRadius" (New-Object System.Windows.CornerRadius(16))
-        Set-Resource "ThemeFont" (New-Object System.Windows.Media.FontFamily("Bahnschrift, Segoe UI, sans-serif"))
+        Set-Resource "ThemeCornerRadius" (New-Object System.Windows.CornerRadius(14))
+        Set-Resource "ThemeFont" (New-Object System.Windows.Media.FontFamily("Segoe UI Variable Display, Segoe UI, sans-serif"))
         Set-ResourceColor "ThemeTitleBg" "Transparent"
-        Set-ResourceColor "ThemeBorder" "#2A2A2A"
+        Set-ResourceColor "ThemeBorder" "#1E293B"
         Set-Resource "ThemeBorderThickness" (New-Object System.Windows.Thickness(1))
-        $el = Get-GuiElement "lblTimeClock"; if ($el) { $el.FontSize = 72; $el.SetResourceReference([System.Windows.Controls.TextBlock]::ForegroundProperty, "ThemeFg") }
+        $el = Get-GuiElement "lblTimeClock"; if ($el) { $el.FontSize = 64; $el.SetResourceReference([System.Windows.Controls.TextBlock]::ForegroundProperty, "ThemeFg") }
         $el = Get-GuiElement "lblDateClock"; if ($el) { $el.SetResourceReference([System.Windows.Controls.TextBlock]::ForegroundProperty, "ThemeSubText") }
         (Get-GuiElement "LogoIcon").Text = [char]0xE7F4
     
@@ -219,7 +222,7 @@ $cmbThemes.Add_SelectionChanged({
         Set-Resource "VisRetro" ([System.Windows.Visibility]::Collapsed)
 
         switch ($i) {
-            0 { Set-ResourceColor "ThemeBg" "#0F0F0F"; Set-ResourceColor "ThemeSidebar" "#141414"; Set-ResourceColor "ThemeCardBg" "#1E1E1E"; Set-ResourceColor "ThemeFg" "#FFFFFF"; Set-ResourceColor "ThemeAccent" "#00BFFF"; Set-ResourceColor "ThemeSidebarFg" "#B0B0B0"; Set-ResourceColor "ThemeWinCtrl" "#AAAAAA"; Set-ResourceColor "ThemeSubText" "#B0B0B0"; Set-ResourceColor "ThemeTitleFg" "#00BFFF" }
+            0 { Set-ResourceColor "ThemeBg" "#090D16"; Set-ResourceColor "ThemeSidebar" "#0D1322"; Set-ResourceColor "ThemeCardBg" "#131C2E"; Set-ResourceColor "ThemeFg" "#F8FAFC"; Set-ResourceColor "ThemeAccent" "#38BDF8"; Set-ResourceColor "ThemeSidebarFg" "#CBD5E1"; Set-ResourceColor "ThemeWinCtrl" "#94A3B8"; Set-ResourceColor "ThemeSubText" "#94A3B8"; Set-ResourceColor "ThemeTitleFg" "#38BDF8"; Set-ResourceColor "ThemeBorder" "#1E293B" }
             1 { Set-ResourceColor "ThemeBg" "#000000"; Set-ResourceColor "ThemeSidebar" "#000000"; Set-ResourceColor "ThemeCardBg" "#151515"; Set-ResourceColor "ThemeFg" "#FFFFFF"; Set-ResourceColor "ThemeAccent" "#00AAFF"; Set-ResourceColor "ThemeSidebarFg" "#DDDDDD"; Set-ResourceColor "ThemeWinCtrl" "#AAAAAA"; Set-ResourceColor "ThemeSubText" "#CCCCCC"; Set-ResourceColor "ThemeTitleFg" "#00AAFF" }
             2 { Set-ResourceColor "ThemeBg" "#202020"; Set-ResourceColor "ThemeSidebar" "#181818"; Set-ResourceColor "ThemeCardBg" "#2D2D2D"; Set-ResourceColor "ThemeFg" "#EEEEEE"; Set-ResourceColor "ThemeAccent" "#4CAF50"; Set-ResourceColor "ThemeSidebarFg" "#CCCCCC"; Set-ResourceColor "ThemeWinCtrl" "#AAAAAA"; Set-ResourceColor "ThemeSubText" "#AAAAAA"; Set-ResourceColor "ThemeTitleFg" "#4CAF50" }
             3 { Set-ResourceColor "ThemeBg" "#F0F2F5"; Set-ResourceColor "ThemeSidebar" "#FFFFFF"; Set-ResourceColor "ThemeCardBg" "#FFFFFF"; Set-ResourceColor "ThemeFg" "#000000"; Set-ResourceColor "ThemeAccent" "#0078D7"; Set-ResourceColor "ThemeSidebarFg" "#000000"; Set-ResourceColor "ThemeWinCtrl" "#333333"; Set-ResourceColor "ThemeSubText" "#444444"; Set-ResourceColor "ThemeTitleFg" "#0078D7" }
@@ -256,7 +259,8 @@ $cmbThemes.Add_SelectionChanged({
                 $date = Get-GuiElement "lblDateClock"
                 if ($date) { $date.Foreground = $wiiBlue }
             }
-            16 { # Super Mario
+            16 {
+                # Super Mario
                 Set-ThemeImage "mario.png"
                 Set-ResourceColor "ThemeSidebar" "#B01E1A"
                 Set-ResourceColor "ThemeCardBg" "#049CD8"
@@ -268,7 +272,8 @@ $cmbThemes.Add_SelectionChanged({
                 Set-ResourceColor "ThemeTitleFg" "#FBD000"
                 Set-ResourceColor "ThemeBorder" "#FFFFFF"
             }
-            17 { # PS2
+            17 {
+                # PS2
                 Set-ThemeImage "ps2.png"
                 Set-ResourceColor "ThemeSidebar" "#000000"
                 Set-ResourceColor "ThemeCardBg" "#001A4D"
@@ -280,7 +285,8 @@ $cmbThemes.Add_SelectionChanged({
                 Set-ResourceColor "ThemeTitleFg" "#00A4FF"
                 Set-ResourceColor "ThemeBorder" "#004080"
             }
-            18 { # Windows XP Bliss
+            18 {
+                # Windows XP Bliss
                 Set-ThemeImage "winxp.png"
                 Set-ResourceColor "ThemeSidebar" "#FF245EDB"
                 Set-ResourceColor "ThemeCardBg" "#E0F0F0F0"
@@ -295,7 +301,8 @@ $cmbThemes.Add_SelectionChanged({
                 Set-Resource "ThemeCornerRadius" (New-Object System.Windows.CornerRadius(15))
                 Set-Resource "ThemeBorderThickness" (New-Object System.Windows.Thickness(3))
             }
-            19 { # Windows 7 Official Harmony
+            19 {
+                # Windows 7 Official Harmony
                 Set-ThemeImage "vista7.png"
                 Set-ResourceColor "ThemeFg" "#001A33"
                 Set-ResourceColor "ThemeAccent" "#00A2E8"
@@ -318,7 +325,8 @@ $cmbThemes.Add_SelectionChanged({
                 $cardGrad.GradientStops.Add((New-Object System.Windows.Media.GradientStop([System.Windows.Media.ColorConverter]::ConvertFromString("#B3EEF5FF"), 1.0)))
                 Set-Resource "ThemeCardBg" $cardGrad
             }
-            20 { # Xbox Original
+            20 {
+                # Xbox Original
                 Set-ThemeImage "xbox_orig.png"
                 Set-ResourceColor "ThemeSidebar" "#CC051005"
                 Set-ResourceColor "ThemeCardBg" "#990A200A"
@@ -330,7 +338,8 @@ $cmbThemes.Add_SelectionChanged({
                 Set-ResourceColor "ThemeTitleFg" "#00FF00"
                 Set-ResourceColor "ThemeBorder" "#00AA00"
             }
-            21 { # Xbox 360
+            21 {
+                # Xbox 360
                 Set-ThemeImage "xbox_360.png"
                 Set-ResourceColor "ThemeSidebar" "#CCF0F0F0"
                 Set-ResourceColor "ThemeCardBg" "#EEFFFFFF"
@@ -343,7 +352,8 @@ $cmbThemes.Add_SelectionChanged({
                 Set-ResourceColor "ThemeBorder" "#E0E0E0"
                 Set-Resource "ThemeCornerRadius" (New-Object System.Windows.CornerRadius(10))
             }
-            22 { # GTA San Andreas
+            22 {
+                # GTA San Andreas
                 Set-ThemeImage "gta_sa.png"
                 
                 Set-ResourceColor "ThemeSidebar" "#CC103010"
@@ -359,7 +369,8 @@ $cmbThemes.Add_SelectionChanged({
                 Set-Resource "ThemeCornerRadius" (New-Object System.Windows.CornerRadius(0))
                 Set-Resource "ThemeBorderThickness" (New-Object System.Windows.Thickness(3))
             }
-            23 { # Cyberpunk 2077
+            23 {
+                # Cyberpunk 2077
                 Set-ThemeImage "cyberpunk.png"
                 
                 Set-ResourceColor "ThemeSidebar" "#CC0F0F0F"
@@ -373,7 +384,8 @@ $cmbThemes.Add_SelectionChanged({
                 Set-ResourceColor "ThemeBorder" "#00FFFF"
                 Set-Resource "ThemeCornerRadius" (New-Object System.Windows.CornerRadius(0))
             }
-            24 { # Fallout Pip-Boy
+            24 {
+                # Fallout Pip-Boy
                 Set-ThemeImage "pipboy.png"
                 
                 Set-ResourceColor "ThemeSidebar" "#EE0A140A"
@@ -388,7 +400,8 @@ $cmbThemes.Add_SelectionChanged({
                 Set-Resource "ThemeFont" (New-Object System.Windows.Media.FontFamily("Consolas, Courier New, monospace"))
                 Set-Resource "ThemeCornerRadius" (New-Object System.Windows.CornerRadius(10))
             }
-            25 { # Goat Simulator
+            25 {
+                # Goat Simulator
                 Set-ThemeImage "goat.png"
                 
                 Set-ResourceColor "ThemeSidebar" "#B34A3018"
@@ -404,7 +417,8 @@ $cmbThemes.Add_SelectionChanged({
                 Set-Resource "ThemeCornerRadius" (New-Object System.Windows.CornerRadius(20))
                 Set-Resource "ThemeBorderThickness" (New-Object System.Windows.Thickness(4))
             }
-            26 { # Minecraft
+            26 {
+                # Minecraft
                 Set-ThemeImage "minecraft.png"
                 
                 Set-ResourceColor "ThemeSidebar" "#995C3A21"
@@ -420,7 +434,8 @@ $cmbThemes.Add_SelectionChanged({
                 Set-Resource "ThemeCornerRadius" (New-Object System.Windows.CornerRadius(0))
                 Set-Resource "ThemeBorderThickness" (New-Object System.Windows.Thickness(2))
             }
-            27 { # Halo 3
+            27 {
+                # Halo 3
                 Set-ThemeImage "halo3.png"
                 
                 Set-ResourceColor "ThemeSidebar" "#CC15202B"
@@ -435,7 +450,8 @@ $cmbThemes.Add_SelectionChanged({
                 Set-Resource "ThemeFont" (New-Object System.Windows.Media.FontFamily("Impact, sans-serif"))
                 Set-Resource "ThemeCornerRadius" (New-Object System.Windows.CornerRadius(8))
             }
-            28 { # Counter-Strike 1.6
+            28 {
+                # Counter-Strike 1.6
                 Set-ThemeImage "cs16.png"
                 
                 Set-ResourceColor "ThemeSidebar" "#CC434839"
@@ -450,7 +466,8 @@ $cmbThemes.Add_SelectionChanged({
                 Set-Resource "ThemeFont" (New-Object System.Windows.Media.FontFamily("Tahoma, Arial, sans-serif"))
                 Set-Resource "ThemeCornerRadius" (New-Object System.Windows.CornerRadius(0))
             }
-            29 { # Half-Life 2
+            29 {
+                # Half-Life 2
                 Set-ThemeImage "hl2.png"
                 
                 Set-ResourceColor "ThemeSidebar" "#CC292E31"
@@ -465,7 +482,8 @@ $cmbThemes.Add_SelectionChanged({
                 Set-Resource "ThemeFont" (New-Object System.Windows.Media.FontFamily("Trebuchet MS, sans-serif"))
                 Set-Resource "ThemeCornerRadius" (New-Object System.Windows.CornerRadius(2))
             }
-            30 { # Doom Classic
+            30 {
+                # Doom Classic
                 Set-ThemeImage "doom.png"
                 
                 Set-ResourceColor "ThemeSidebar" "#CC220000"
@@ -480,7 +498,8 @@ $cmbThemes.Add_SelectionChanged({
                 Set-Resource "ThemeFont" (New-Object System.Windows.Media.FontFamily("Impact, sans-serif"))
                 Set-Resource "ThemeCornerRadius" (New-Object System.Windows.CornerRadius(0))
             }
-            31 { # Portal
+            31 {
+                # Portal
                 Set-ThemeImage "portal.png"
                 
                 Set-ResourceColor "ThemeSidebar" "#CCEEEEEE"
@@ -495,7 +514,8 @@ $cmbThemes.Add_SelectionChanged({
                 Set-Resource "ThemeFont" (New-Object System.Windows.Media.FontFamily("Arial, sans-serif"))
                 Set-Resource "ThemeCornerRadius" (New-Object System.Windows.CornerRadius(10))
             }
-            32 { # PS5 Dashboard
+            32 {
+                # PS5 Dashboard
                 Set-ThemeImage "ps5.png"
                 
                 Set-ResourceColor "ThemeSidebar" "#99000C24"
@@ -510,7 +530,8 @@ $cmbThemes.Add_SelectionChanged({
                 Set-Resource "ThemeFont" (New-Object System.Windows.Media.FontFamily("Segoe UI, sans-serif"))
                 Set-Resource "ThemeCornerRadius" (New-Object System.Windows.CornerRadius(14))
             }
-            33 { # Netflix Red
+            33 {
+                # Netflix Red
                 Set-ThemeImage "netflix.png"
                 
                 Set-ResourceColor "ThemeSidebar" "#E6000000"
@@ -525,7 +546,8 @@ $cmbThemes.Add_SelectionChanged({
                 Set-Resource "ThemeFont" (New-Object System.Windows.Media.FontFamily("Helvetica Neue, Segoe UI, sans-serif"))
                 Set-Resource "ThemeCornerRadius" (New-Object System.Windows.CornerRadius(4))
             }
-            34 { # Deep Space
+            34 {
+                # Deep Space
                 Set-ThemeImage "space.png"
                 
                 Set-ResourceColor "ThemeSidebar" "#99020012"
@@ -540,7 +562,8 @@ $cmbThemes.Add_SelectionChanged({
                 Set-Resource "ThemeFont" (New-Object System.Windows.Media.FontFamily("Consolas, sans-serif"))
                 Set-Resource "ThemeCornerRadius" (New-Object System.Windows.CornerRadius(10))
             }
-            35 { # The Matrix
+            35 {
+                # The Matrix
                 Set-ThemeImage "matrix.png"
                 Set-ResourceColor "ThemeSidebar" "#DD000800"
                 Set-ResourceColor "ThemeCardBg" "#CC001400"
@@ -554,7 +577,8 @@ $cmbThemes.Add_SelectionChanged({
                 Set-Resource "ThemeFont" (New-Object System.Windows.Media.FontFamily("Consolas, Courier New, monospace"))
                 Set-Resource "ThemeCornerRadius" (New-Object System.Windows.CornerRadius(4))
             }
-            36 { # NFS Underground 2
+            36 {
+                # NFS Underground 2
                 Set-ThemeImage "nfsug2.png"
                 Set-ResourceColor "ThemeSidebar" "#CC050814"
                 Set-ResourceColor "ThemeCardBg" "#CC0A1228"
@@ -567,7 +591,8 @@ $cmbThemes.Add_SelectionChanged({
                 Set-ResourceColor "ThemeBorder" "#5500E5FF"
                 Set-Resource "ThemeCornerRadius" (New-Object System.Windows.CornerRadius(12))
             }
-            37 { # Glass Aero
+            37 {
+                # Glass Aero
                 Set-ThemeImage "glass.png"
                 Set-ResourceColor "ThemeSidebar" "#CCEDF4FC"
                 Set-ResourceColor "ThemeCardBg" "#D9FFFFFF"
@@ -580,7 +605,8 @@ $cmbThemes.Add_SelectionChanged({
                 Set-ResourceColor "ThemeBorder" "#99BAE6FD"
                 Set-Resource "ThemeCornerRadius" (New-Object System.Windows.CornerRadius(20))
             }
-            38 { # Cyber Noir
+            38 {
+                # Cyber Noir
                 Set-ThemeImage "cyber.png"
                 Set-ResourceColor "ThemeSidebar" "#CC080B12"
                 Set-ResourceColor "ThemeCardBg" "#CC101726"
@@ -593,7 +619,8 @@ $cmbThemes.Add_SelectionChanged({
                 Set-ResourceColor "ThemeBorder" "#4400F0FF"
                 Set-Resource "ThemeCornerRadius" (New-Object System.Windows.CornerRadius(10))
             }
-            39 { # Apple Swift (macOS Sequoia & Swift UI)
+            39 {
+                # Apple Swift (macOS Sequoia & Swift UI)
                 Set-ThemeImage "apple_swift.png"
                 Set-ResourceColor "ThemeSidebar" "#D911131F"
                 Set-ResourceColor "ThemeCardBg" "#CC1B1E2E"
@@ -607,7 +634,8 @@ $cmbThemes.Add_SelectionChanged({
                 Set-Resource "ThemeCornerRadius" (New-Object System.Windows.CornerRadius(22))
                 Set-Resource "ThemeFont" (New-Object System.Windows.Media.FontFamily("Segoe UI Variable Display, Segoe UI, sans-serif"))
             }
-            40 { # Google M3E (Material 3 Expressive)
+            40 {
+                # Google M3E (Material 3 Expressive)
                 Set-ThemeImage "google_m3e.png"
                 Set-ResourceColor "ThemeSidebar" "#E61D1B20"
                 Set-ResourceColor "ThemeCardBg" "#D92B2930"
@@ -621,7 +649,8 @@ $cmbThemes.Add_SelectionChanged({
                 Set-Resource "ThemeCornerRadius" (New-Object System.Windows.CornerRadius(28))
                 Set-Resource "ThemeFont" (New-Object System.Windows.Media.FontFamily("Segoe UI Variable Display, Segoe UI, sans-serif"))
             }
-            41 { # Custom Background
+            41 {
+                # Custom Background
                 if ($global:customImagePath -and (Test-Path $global:customImagePath)) {
                     Apply-Theme-From-Image -imagePath $global:customImagePath
                 }
@@ -636,7 +665,7 @@ $cmbThemes.Add_SelectionChanged({
 # Handler for the dedicated Custom Theme button
 Set-Click "btnThemeCustom" { Trigger-Custom-Theme | Out-Null }
 
-$cmbThemes.SelectedIndex = $randomIndex
+$cmbThemes.SelectedIndex = 0
 
 # --- NAVIGATION (OPTIMIZED FOR INSTANT SWITCHING) ---
 # Cache all panel references ONCE for better performance
@@ -720,9 +749,11 @@ function Set-SidebarActive {
     if ($script:ActiveSidebarBtn) {
         try {
             $script:ActiveSidebarBtn.Background = [System.Windows.Media.Brushes]::Transparent
+            $script:ActiveSidebarBtn.FontWeight = [System.Windows.FontWeights]::Normal
             $ind = $script:ActiveSidebarBtn.Template.FindName("Indicator", $script:ActiveSidebarBtn)
             if ($ind) { $ind.Background = [System.Windows.Media.Brushes]::Transparent }
-        } catch {}
+        }
+        catch {}
     }
     $panelName = $Panel.Name
     if ($script:PanelBtnMap.ContainsKey($panelName)) {
@@ -732,12 +763,14 @@ function Set-SidebarActive {
                 [void]$btn.ApplyTemplate()
                 $accentBrush = $window.Resources["ThemeAccent"]
                 $btn.Background = New-Object System.Windows.Media.SolidColorBrush(
-                    [System.Windows.Media.Color]::FromArgb(40,
+                    [System.Windows.Media.Color]::FromArgb(45,
                         $accentBrush.Color.R, $accentBrush.Color.G, $accentBrush.Color.B))
+                $btn.FontWeight = [System.Windows.FontWeights]::SemiBold
                 $ind = $btn.Template.FindName("Indicator", $btn)
                 if ($ind) { $ind.Background = $accentBrush }
                 $script:ActiveSidebarBtn = $btn
-            } catch {}
+            }
+            catch {}
         }
     }
 }
@@ -757,193 +790,194 @@ Set-SidebarActive $pnlHome
 (Get-GuiElement "btnBeast").Add_Click({ Switch-Panel $pnlBeast })
 (Get-GuiElement "btnUpdateMgr").Add_Click({ Switch-Panel $pnlUpdateMgr })
 (Get-GuiElement "btnKeyboardShortcuts").Add_Click({ Switch-Panel $pnlKeyboardShortcuts })
+(Get-GuiElement "btnIsraelTV").Add_Click({ Switch-Panel $pnlTV })
 
 # --- LANGUAGE ENGINE (Hebrew/English) ---
 $script:isHebrew = $false
 $langData = @{
-    "btnHome"                = @{ En = "Dashboard"; He = "$([char]1500)$([char]1493)$([char]1495)$([char]32)$([char]1489)$([char]1511)$([char]1512)$([char]1492)" }
-    "btnAIBots"              = @{ En = "AI and Automation"; He = "$([char]1489)$([char]1497)$([char]1504)$([char]1492)$([char]32)$([char]1502)$([char]1500)$([char]1488)$([char]1499)$([char]1493)$([char]1514)$([char]1497)$([char]1514)" }
-    "btnEssentials"          = @{ En = "Essentials (CTT)"; He = "$([char]1499)$([char]1500)$([char]1497)$([char]1501)$([char]32)$([char]1495)$([char]1497)$([char]1493)$([char]1504)$([char]1497)$([char]1497)$([char]1501)" }
-    "btnWindowsTools"        = @{ En = "Win Tools"; He = "$([char]1499)$([char]1500)$([char]1497)$([char]32)$([char]1493)$([char]1493)$([char]1497)$([char]1504)$([char]1491)$([char]1493)$([char]1505)" }
-    "btnSysInfoTools"        = @{ En = "Hardware"; He = "$([char]1495)$([char]1493)$([char]1502)$([char]1512)$([char]1492)" }
-    "btnTweaks"              = @{ En = "Tweaks"; He = "$([char]1513)$([char]1497)$([char]1508)$([char]1493)$([char]1512)$([char]1497)$([char]1501)" }
-    "btnMaintenance"         = @{ En = "Cleanup"; He = "$([char]1504)$([char]1497)$([char]1511)$([char]1493)$([char]1497)" }
-    "btnUpdateMgr"           = @{ En = "Update Manager"; He = "$([char]1502)$([char]1504)$([char]1492)$([char]1500)$([char]32)$([char]1506)$([char]1491)$([char]1499)$([char]1493)$([char]1504)$([char]1497)$([char]1501)" }
-    "btnSecurity"            = @{ En = "Security"; He = "$([char]1488)$([char]1489)$([char]1496)$([char]1495)$([char]1492)" }
-    "btnUserMgmt"            = @{ En = "Users"; He = "$([char]1502)$([char]1513)$([char]1514)$([char]1502)$([char]1513)$([char]1497)$([char]1501)" }
-    "btnMusic"               = @{ En = "Media Hub"; He = "$([char]1502)$([char]1491)$([char]1497)$([char]1492)" }
-    "btnPower"               = @{ En = "Power"; He = "$([char]1504)$([char]1497)$([char]1492)$([char]1493)$([char]1500)$([char]32)$([char]1510)$([char]1512)$([char]1497)$([char]1499)$([char]1514)$([char]32)$([char]1495)$([char]1513)$([char]1502)$([char]1500)" }
-    "btnBeast"               = @{ En = "System Health"; He = "$([char]1489)$([char]1512)$([char]1497)$([char]1488)$([char]1493)$([char]1514)$([char]32)$([char]1492)$([char]1502)$([char]1506)$([char]1512)$([char]1499)$([char]1514)" }
-    "lblGen"                 = @{ En = "GENERAL"; He = "$([char]1499)$([char]1500)$([char]1500)$([char]1497)" }
-    "lblSys"                 = @{ En = "SYSTEM"; He = "$([char]1502)$([char]1506)$([char]1512)$([char]1499)$([char]1514)" }
-    "lblAdv"                 = @{ En = "ADVANCED"; He = "$([char]1502)$([char]1514)$([char]1511)$([char]1491)$([char]1501)" }
-    "lblOverview"            = @{ En = "Overview"; He = "$([char]1505)$([char]1511)$([char]1497)$([char]1512)$([char]1514)$([char]32)$([char]1500)$([char]1493)$([char]1495)$([char]32)$([char]1492)$([char]1489)$([char]1511)$([char]1512)$([char]1492)" }
-    "lblSysStatus"           = @{ En = "System Status"; He = "$([char]1505)$([char]1496)$([char]1496)$([char]1493)$([char]1505)$([char]32)$([char]1502)$([char]1506)$([char]1512)$([char]1499)$([char]1514)" }
-    "lblClockTxt"            = @{ En = "Clock"; He = "$([char]32)$([char]1513)$([char]1506)$([char]1493)$([char]1503)" }
-    "lblQuickActions"        = @{ En = "Quick Actions"; He = "$([char]1508)$([char]1506)$([char]1493)$([char]1500)$([char]1493)$([char]1514)$([char]32)$([char]1502)$([char]1492)$([char]1497)$([char]1512)$([char]1493)$([char]1514)" }
-    "lblThemeTxt"            = @{ En = "Theme:"; He = "$([char]1506)$([char]1512)$([char]1499)$([char]1514)$([char]32)$([char]1504)$([char]1493)$([char]1513)$([char]1488)$([char]58)" }
-    "lblRamTxt"              = @{ En = "RAM Usage"; He = "$([char]1513)$([char]1497)$([char]1502)$([char]1493)$([char]1513)$([char]32)$([char]1489)$([char]1512)$([char]1488)$([char]1501)" }
-    "lblDiskTxt"             = @{ En = "Disk (C:)"; He = "$([char]1491)$([char]1497)$([char]1505)$([char]1511)$([char]32)$([char]67)$([char]58)" }
+    "btnHome"                   = @{ En = "Dashboard"; He = "$([char]1500)$([char]1493)$([char]1495)$([char]32)$([char]1489)$([char]1511)$([char]1512)$([char]1492)" }
+    "btnAIBots"                 = @{ En = "AI and Automation"; He = "$([char]1489)$([char]1497)$([char]1504)$([char]1492)$([char]32)$([char]1502)$([char]1500)$([char]1488)$([char]1499)$([char]1493)$([char]1514)$([char]1497)$([char]1514)" }
+    "btnEssentials"             = @{ En = "Essentials (CTT)"; He = "$([char]1499)$([char]1500)$([char]1497)$([char]1501)$([char]32)$([char]1495)$([char]1497)$([char]1493)$([char]1504)$([char]1497)$([char]1497)$([char]1501)" }
+    "btnWindowsTools"           = @{ En = "Win Tools"; He = "$([char]1499)$([char]1500)$([char]1497)$([char]32)$([char]1493)$([char]1493)$([char]1497)$([char]1504)$([char]1491)$([char]1493)$([char]1505)" }
+    "btnSysInfoTools"           = @{ En = "Hardware"; He = "$([char]1495)$([char]1493)$([char]1502)$([char]1512)$([char]1492)" }
+    "btnTweaks"                 = @{ En = "Tweaks"; He = "$([char]1513)$([char]1497)$([char]1508)$([char]1493)$([char]1512)$([char]1497)$([char]1501)" }
+    "btnMaintenance"            = @{ En = "Cleanup"; He = "$([char]1504)$([char]1497)$([char]1511)$([char]1493)$([char]1497)" }
+    "btnUpdateMgr"              = @{ En = "Update Manager"; He = "$([char]1502)$([char]1504)$([char]1492)$([char]1500)$([char]32)$([char]1506)$([char]1491)$([char]1499)$([char]1493)$([char]1504)$([char]1497)$([char]1501)" }
+    "btnSecurity"               = @{ En = "Security"; He = "$([char]1488)$([char]1489)$([char]1496)$([char]1495)$([char]1492)" }
+    "btnUserMgmt"               = @{ En = "Users"; He = "$([char]1502)$([char]1513)$([char]1514)$([char]1502)$([char]1513)$([char]1497)$([char]1501)" }
+    "btnMusic"                  = @{ En = "Media Hub"; He = "$([char]1502)$([char]1491)$([char]1497)$([char]1492)" }
+    "btnPower"                  = @{ En = "Power"; He = "$([char]1504)$([char]1497)$([char]1492)$([char]1493)$([char]1500)$([char]32)$([char]1510)$([char]1512)$([char]1497)$([char]1499)$([char]1514)$([char]32)$([char]1495)$([char]1513)$([char]1502)$([char]1500)" }
+    "btnBeast"                  = @{ En = "System Health"; He = "$([char]1489)$([char]1512)$([char]1497)$([char]1488)$([char]1493)$([char]1514)$([char]32)$([char]1492)$([char]1502)$([char]1506)$([char]1512)$([char]1499)$([char]1514)" }
+    "lblGen"                    = @{ En = "GENERAL"; He = "$([char]1499)$([char]1500)$([char]1500)$([char]1497)" }
+    "lblSys"                    = @{ En = "SYSTEM"; He = "$([char]1502)$([char]1506)$([char]1512)$([char]1499)$([char]1514)" }
+    "lblAdv"                    = @{ En = "ADVANCED"; He = "$([char]1502)$([char]1514)$([char]1511)$([char]1491)$([char]1501)" }
+    "lblOverview"               = @{ En = "Overview"; He = "$([char]1505)$([char]1511)$([char]1497)$([char]1512)$([char]1514)$([char]32)$([char]1500)$([char]1493)$([char]1495)$([char]32)$([char]1492)$([char]1489)$([char]1511)$([char]1512)$([char]1492)" }
+    "lblSysStatus"              = @{ En = "System Status"; He = "$([char]1505)$([char]1496)$([char]1496)$([char]1493)$([char]1505)$([char]32)$([char]1502)$([char]1506)$([char]1512)$([char]1499)$([char]1514)" }
+    "lblClockTxt"               = @{ En = "Clock"; He = "$([char]32)$([char]1513)$([char]1506)$([char]1493)$([char]1503)" }
+    "lblQuickActions"           = @{ En = "Quick Actions"; He = "$([char]1508)$([char]1506)$([char]1493)$([char]1500)$([char]1493)$([char]1514)$([char]32)$([char]1502)$([char]1492)$([char]1497)$([char]1512)$([char]1493)$([char]1514)" }
+    "lblThemeTxt"               = @{ En = "Theme:"; He = "$([char]1506)$([char]1512)$([char]1499)$([char]1514)$([char]32)$([char]1504)$([char]1493)$([char]1513)$([char]1488)$([char]58)" }
+    "lblRamTxt"                 = @{ En = "RAM Usage"; He = "$([char]1513)$([char]1497)$([char]1502)$([char]1493)$([char]1513)$([char]32)$([char]1489)$([char]1512)$([char]1488)$([char]1501)" }
+    "lblDiskTxt"                = @{ En = "Disk (C:)"; He = "$([char]1491)$([char]1497)$([char]1505)$([char]1511)$([char]32)$([char]67)$([char]58)" }
     
     # Headers
-    "lblAIHeader"            = @{ En = "AI and Automation Hub"; He = "$([char]1502)$([char]1512)$([char]1499)$([char]1494)$([char]32)$([char]1489)$([char]1497)$([char]1504)$([char]1492)$([char]32)$([char]1502)$([char]1500)$([char]1488)$([char]1499)$([char]1493)$([char]1514)$([char]1497)$([char]1514)$([char]32)$([char]1493)$([char]1488)$([char]1493)$([char]1496)$([char]1493)$([char]1502)$([char]1510)$([char]1497)$([char]1492)" }
-    "lblEssentials"          = @{ En = "Essentials"; He = "$([char]1495)$([char]1497)$([char]1493)$([char]1504)$([char]1497)$([char]1497)$([char]1501)" }
-    "lblWinTools"            = @{ En = "Windows Tools"; He = "$([char]1499)$([char]1500)$([char]1497)$([char]32)$([char]87)$([char]105)$([char]110)$([char]100)$([char]111)$([char]119)$([char]115)" }
-    "lblMusicHeader"         = @{ En = "Music Hub"; He = "$([char]1502)$([char]1512)$([char]1499)$([char]1494)$([char]32)$([char]1502)$([char]1493)$([char]1494)$([char]1497)$([char]1511)$([char]1492)" }
-    "lblMaintHeader"         = @{ En = "Maintenance"; He = "$([char]1514)$([char]1495)$([char]1494)$([char]1493)$([char]1511)$([char]1492)" }
-    "lblUpdateMgrHeader"     = @{ En = "Update Manager"; He = "$([char]1502)$([char]1504)$([char]1492)$([char]1500)$([char]32)$([char]1506)$([char]1491)$([char]1499)$([char]1493)$([char]1504)$([char]1497)$([char]1501)" }
-    "lblPowerHeader"         = @{ En = "Power Menu"; He = "$([char]1514)$([char]1508)$([char]1512)$([char]1497)$([char]1496)$([char]32)$([char]1499)$([char]1497)$([char]1489)$([char]1493)$([char]1497)" }
-    "lblUserHeader"          = @{ En = "User Management"; He = "$([char]1504)$([char]1497)$([char]1492)$([char]1493)$([char]1500)$([char]32)$([char]1502)$([char]1513)$([char]1514)$([char]1502)$([char]1513)$([char]1497)$([char]1501)" }
-    "lblHwHeader"            = @{ En = "Hardware Tools"; He = "$([char]1499)$([char]1500)$([char]1497)$([char]32)$([char]1495)$([char]1493)$([char]1502)$([char]1512)$([char]1492)" }
-    "lblSecHeader"           = @{ En = "Security"; He = "$([char]1488)$([char]1489)$([char]1496)$([char]1495)$([char]1492)" }
-    "lblTweakHeader"         = @{ En = "UI Tweaks"; He = "$([char]1513)$([char]1497)$([char]1508)$([char]1493)$([char]1512)$([char]1497)$([char]32)$([char]1502)$([char]1502)$([char]1513)$([char]1511)" }
+    "lblAIHeader"               = @{ En = "AI and Automation Hub"; He = "$([char]1502)$([char]1512)$([char]1499)$([char]1494)$([char]32)$([char]1489)$([char]1497)$([char]1504)$([char]1492)$([char]32)$([char]1502)$([char]1500)$([char]1488)$([char]1499)$([char]1493)$([char]1514)$([char]1497)$([char]1514)$([char]32)$([char]1493)$([char]1488)$([char]1493)$([char]1496)$([char]1493)$([char]1502)$([char]1510)$([char]1497)$([char]1492)" }
+    "lblEssentials"             = @{ En = "Essentials"; He = "$([char]1495)$([char]1497)$([char]1493)$([char]1504)$([char]1497)$([char]1497)$([char]1501)" }
+    "lblWinTools"               = @{ En = "Windows Tools"; He = "$([char]1499)$([char]1500)$([char]1497)$([char]32)$([char]87)$([char]105)$([char]110)$([char]100)$([char]111)$([char]119)$([char]115)" }
+    "lblMusicHeader"            = @{ En = "Music Hub"; He = "$([char]1502)$([char]1512)$([char]1499)$([char]1494)$([char]32)$([char]1502)$([char]1493)$([char]1494)$([char]1497)$([char]1511)$([char]1492)" }
+    "lblMaintHeader"            = @{ En = "Maintenance"; He = "$([char]1514)$([char]1495)$([char]1494)$([char]1493)$([char]1511)$([char]1492)" }
+    "lblUpdateMgrHeader"        = @{ En = "Update Manager"; He = "$([char]1502)$([char]1504)$([char]1492)$([char]1500)$([char]32)$([char]1506)$([char]1491)$([char]1499)$([char]1493)$([char]1504)$([char]1497)$([char]1501)" }
+    "lblPowerHeader"            = @{ En = "Power Menu"; He = "$([char]1514)$([char]1508)$([char]1512)$([char]1497)$([char]1496)$([char]32)$([char]1499)$([char]1497)$([char]1489)$([char]1493)$([char]1497)" }
+    "lblUserHeader"             = @{ En = "User Management"; He = "$([char]1504)$([char]1497)$([char]1492)$([char]1493)$([char]1500)$([char]32)$([char]1502)$([char]1513)$([char]1514)$([char]1502)$([char]1513)$([char]1497)$([char]1501)" }
+    "lblHwHeader"               = @{ En = "Hardware Tools"; He = "$([char]1499)$([char]1500)$([char]1497)$([char]32)$([char]1495)$([char]1493)$([char]1502)$([char]1512)$([char]1492)" }
+    "lblSecHeader"              = @{ En = "Security"; He = "$([char]1488)$([char]1489)$([char]1496)$([char]1495)$([char]1492)" }
+    "lblTweakHeader"            = @{ En = "UI Tweaks"; He = "$([char]1513)$([char]1497)$([char]1508)$([char]1493)$([char]1512)$([char]1497)$([char]32)$([char]1502)$([char]1502)$([char]1513)$([char]1511)" }
     
     # Quick Actions
-    "btnQuickUpdateMgr"      = @{ En = "Update Manager"; He = "$([char]1502)$([char]1504)$([char]1492)$([char]1500)$([char]32)$([char]1506)$([char]1491)$([char]1499)$([char]1493)$([char]1504)$([char]1497)$([char]1501)" }
+    "btnQuickUpdateMgr"         = @{ En = "Update Manager"; He = "$([char]1502)$([char]1504)$([char]1492)$([char]1500)$([char]32)$([char]1506)$([char]1491)$([char]1499)$([char]1493)$([char]1504)$([char]1497)$([char]1501)" }
 
     # User Management
-    "lblLocalUsers"          = @{ En = "Local Users"; He = "$([char]1502)$([char]1513)$([char]1514)$([char]1502)$([char]1513)$([char]1497)$([char]1501)$([char]32)$([char]1502)$([char]1511)$([char]1493)$([char]1502)$([char]1497)$([char]1497)$([char]1501)" }
-    "lblUserActions"         = @{ En = "User Actions"; He = "$([char]1508)$([char]1506)$([char]1493)$([char]1500)$([char]1493)$([char]1514)$([char]32)$([char]1502)$([char]1513)$([char]1514)$([char]1502)$([char]1513)" }
-    "lblAdvTools"            = @{ En = "Advanced Tools"; He = "$([char]1499)$([char]1500)$([char]1497)$([char]1501)$([char]32)$([char]1502)$([char]1514)$([char]1511)$([char]1491)$([char]1502)$([char]1497)$([char]1501)" }
-    "btnRefreshUsers"        = @{ En = "Refresh List"; He = "$([char]1512)$([char]1506)$([char]1504)$([char]1503)$([char]32)$([char]1512)$([char]1513)$([char]1497)$([char]1502)$([char]1492)" }
-    "btnCreateUser"          = @{ En = "Create New User"; He = "$([char]1510)$([char]1493)$([char]1512)$([char]32)$([char]1502)$([char]1513)$([char]1514)$([char]1502)$([char]1513)$([char]32)$([char]1495)$([char]1491)$([char]1513)" }
-    "btnResetPass"           = @{ En = "Reset Password"; He = "$([char]1488)$([char]1497)$([char]1508)$([char]1493)$([char]1505)$([char]32)$([char]1505)$([char]1497)$([char]1505)$([char]1502)$([char]1492)" }
-    "btnToggleActive"        = @{ En = "Enable/Disable"; He = "$([char]1492)$([char]1508)$([char]1506)$([char]1500)$([char]1492)$([char]47)$([char]1489)$([char]1497)$([char]1496)$([char]1493)$([char]1500)" }
-    "btnToggleAdmin"         = @{ En = "Toggle Admin"; He = "$([char]1513)$([char]1504)$([char]1492)$([char]32)$([char]1492)$([char]1512)$([char]1513)$([char]1488)$([char]1493)$([char]1514)$([char]32)$([char]1502)$([char]1504)$([char]1492)$([char]1500)" }
-    "btnDeleteUser"          = @{ En = "Delete User"; He = "$([char]1502)$([char]1495)$([char]1497)$([char]1511)$([char]1514)$([char]32)$([char]1502)$([char]1513)$([char]1514)$([char]1502)$([char]1513)" }
+    "lblLocalUsers"             = @{ En = "Local Users"; He = "$([char]1502)$([char]1513)$([char]1514)$([char]1502)$([char]1513)$([char]1497)$([char]1501)$([char]32)$([char]1502)$([char]1511)$([char]1493)$([char]1502)$([char]1497)$([char]1497)$([char]1501)" }
+    "lblUserActions"            = @{ En = "User Actions"; He = "$([char]1508)$([char]1506)$([char]1493)$([char]1500)$([char]1493)$([char]1514)$([char]32)$([char]1502)$([char]1513)$([char]1514)$([char]1502)$([char]1513)" }
+    "lblAdvTools"               = @{ En = "Advanced Tools"; He = "$([char]1499)$([char]1500)$([char]1497)$([char]1501)$([char]32)$([char]1502)$([char]1514)$([char]1511)$([char]1491)$([char]1502)$([char]1497)$([char]1501)" }
+    "btnRefreshUsers"           = @{ En = "Refresh List"; He = "$([char]1512)$([char]1506)$([char]1504)$([char]1503)$([char]32)$([char]1512)$([char]1513)$([char]1497)$([char]1502)$([char]1492)" }
+    "btnCreateUser"             = @{ En = "Create New User"; He = "$([char]1510)$([char]1493)$([char]1512)$([char]32)$([char]1502)$([char]1513)$([char]1514)$([char]1502)$([char]1513)$([char]32)$([char]1495)$([char]1491)$([char]1513)" }
+    "btnResetPass"              = @{ En = "Reset Password"; He = "$([char]1488)$([char]1497)$([char]1508)$([char]1493)$([char]1505)$([char]32)$([char]1505)$([char]1497)$([char]1505)$([char]1502)$([char]1492)" }
+    "btnToggleActive"           = @{ En = "Enable/Disable"; He = "$([char]1492)$([char]1508)$([char]1506)$([char]1500)$([char]1492)$([char]47)$([char]1489)$([char]1497)$([char]1496)$([char]1493)$([char]1500)" }
+    "btnToggleAdmin"            = @{ En = "Toggle Admin"; He = "$([char]1513)$([char]1504)$([char]1492)$([char]32)$([char]1492)$([char]1512)$([char]1513)$([char]1488)$([char]1493)$([char]1514)$([char]32)$([char]1502)$([char]1504)$([char]1492)$([char]1500)" }
+    "btnDeleteUser"             = @{ En = "Delete User"; He = "$([char]1502)$([char]1495)$([char]1497)$([char]1511)$([char]1514)$([char]32)$([char]1502)$([char]1513)$([char]1514)$([char]1502)$([char]1513)" }
 
     # Music Tabs
-    "tabIsr"                 = @{ En = "Israeli"; He = "$([char]1497)$([char]1513)$([char]1512)$([char]1488)$([char]1500)$([char]1497)" }
-    "tabRock"                = @{ En = "Rock and Metal"; He = "$([char]1512)$([char]1493)$([char]1511)$([char]32)$([char]1493)$([char]1502)$([char]1496)$([char]1488)$([char]1500)" }
-    "tabPop"                 = @{ En = "Pop"; He = "$([char]1508)$([char]1493)$([char]1508)" }
-    "tabJazz"                = @{ En = "Jazz/Soul"; He = "$([char]1490)$([char]39)$([char]1488)$([char]1494)$([char]47)$([char]1505)$([char]1493)$([char]1500)" }
-    "tabOst"                 = @{ En = "OST and Classic"; He = "$([char]1508)$([char]1505)$([char]1511)$([char]1493)$([char]1500)$([char]32)$([char]1493)$([char]1511)$([char]1500)$([char]1488)$([char]1505)$([char]1497)" }
-    "tabElec"                = @{ En = "Electronic"; He = "$([char]1488)$([char]1500)$([char]1511)$([char]1496)$([char]1512)$([char]1493)$([char]1504)$([char]1497)" }
-    "tabWorld"               = @{ En = "World/Urban"; He = "$([char]1506)$([char]1493)$([char]1500)$([char]1501)$([char]47)$([char]1488)$([char]1493)$([char]1512)$([char]1489)$([char]1504)$([char]1497)" }
-    "tabArtists"             = @{ En = "Artists"; He = "$([char]1488)$([char]1502)$([char]1504)$([char]1497)$([char]1501)" }
-    "tabMoods"               = @{ En = "Moods"; He = "$([char]1502)$([char]1510)$([char]1489)$([char]1497)$([char]32)$([char]1512)$([char]1493)$([char]1495)" }
+    "tabIsr"                    = @{ En = "Israeli"; He = "$([char]1497)$([char]1513)$([char]1512)$([char]1488)$([char]1500)$([char]1497)" }
+    "tabRock"                   = @{ En = "Rock and Metal"; He = "$([char]1512)$([char]1493)$([char]1511)$([char]32)$([char]1493)$([char]1502)$([char]1496)$([char]1488)$([char]1500)" }
+    "tabPop"                    = @{ En = "Pop"; He = "$([char]1508)$([char]1493)$([char]1508)" }
+    "tabJazz"                   = @{ En = "Jazz/Soul"; He = "$([char]1490)$([char]39)$([char]1488)$([char]1494)$([char]47)$([char]1505)$([char]1493)$([char]1500)" }
+    "tabOst"                    = @{ En = "OST and Classic"; He = "$([char]1508)$([char]1505)$([char]1511)$([char]1493)$([char]1500)$([char]32)$([char]1493)$([char]1511)$([char]1500)$([char]1488)$([char]1505)$([char]1497)" }
+    "tabElec"                   = @{ En = "Electronic"; He = "$([char]1488)$([char]1500)$([char]1511)$([char]1496)$([char]1512)$([char]1493)$([char]1504)$([char]1497)" }
+    "tabWorld"                  = @{ En = "World/Urban"; He = "$([char]1506)$([char]1493)$([char]1500)$([char]1501)$([char]47)$([char]1488)$([char]1493)$([char]1512)$([char]1489)$([char]1504)$([char]1497)" }
+    "tabArtists"                = @{ En = "Artists"; He = "$([char]1488)$([char]1502)$([char]1504)$([char]1497)$([char]1501)" }
+    "tabMoods"                  = @{ En = "Moods"; He = "$([char]1502)$([char]1510)$([char]1489)$([char]1497)$([char]32)$([char]1512)$([char]1493)$([char]1495)" }
 
-    "btnQuickCTT"            = @{ En = "CTT WinUtil"; He = "$([char]1499)$([char]1500)$([char]1497)$([char]32)$([char]1506)$([char]1494)$([char]1512)$([char]32)$([char]67)$([char]84)$([char]84)" }
-    "btnQuickCP"             = @{ En = "Control Panel"; He = "$([char]1500)$([char]1493)$([char]1495)$([char]32)$([char]1489)$([char]1511)$([char]1512)$([char]1492)" }
-    "btnQuickUpdate"         = @{ En = "Win Update"; He = "$([char]1506)$([char]1491)$([char]1499)$([char]1493)$([char]1504)$([char]1497)$([char]32)$([char]1493)$([char]1493)$([char]1497)$([char]1504)$([char]1491)$([char]1493)$([char]1505)" }
-    "btnQuickClean"          = @{ En = "Clean"; He = "$([char]1504)$([char]1497)$([char]1511)$([char]1493)$([char]1497)" }
+    "btnQuickCTT"               = @{ En = "CTT WinUtil"; He = "$([char]1499)$([char]1500)$([char]1497)$([char]32)$([char]1506)$([char]1494)$([char]1512)$([char]32)$([char]67)$([char]84)$([char]84)" }
+    "btnQuickCP"                = @{ En = "Control Panel"; He = "$([char]1500)$([char]1493)$([char]1495)$([char]32)$([char]1489)$([char]1511)$([char]1512)$([char]1492)" }
+    "btnQuickUpdate"            = @{ En = "Win Update"; He = "$([char]1506)$([char]1491)$([char]1499)$([char]1493)$([char]1504)$([char]1497)$([char]32)$([char]1493)$([char]1493)$([char]1497)$([char]1504)$([char]1491)$([char]1493)$([char]1505)" }
+    "btnQuickClean"             = @{ En = "Clean"; He = "$([char]1504)$([char]1497)$([char]1511)$([char]1493)$([char]1497)" }
     
     # New Quick Action Buttons
-    "btnQuickSettings"       = @{ En = "Settings"; He = "$([char]1492)$([char]1490)$([char]1491)$([char]1512)$([char]1493)$([char]1514)" }
-    "btnQuickDevicesClassic" = @{ En = "Devices (Old)"; He = "$([char]1492)$([char]1514)$([char]1511)$([char]1504)$([char]1497)$([char]1501)$([char]32)$([char]40)$([char]1497)$([char]1513)$([char]1503)$([char]41)" }
-    "btnQuickDevicesModern"  = @{ En = "Devices (New)"; He = "$([char]1492)$([char]1514)$([char]1511)$([char]1504)$([char]1497)$([char]1501)$([char]32)$([char]40)$([char]1495)$([char]1491)$([char]1513)$([char]41)" }
-    "btnQuickDevMgr"         = @{ En = "Device Manager"; He = "$([char]1502)$([char]1504)$([char]1492)$([char]1500)$([char]32)$([char]1492)$([char]1514)$([char]1511)$([char]1504)$([char]1497)$([char]1501)" }
-    "btnQuickPrintMgmt"      = @{ En = "Print Mgmt"; He = "$([char]1504)$([char]1497)$([char]1492)$([char]1493)$([char]1500)$([char]32)$([char]1502)$([char]1491)$([char]1508)$([char]1505)$([char]1493)$([char]1514)" }
+    "btnQuickSettings"          = @{ En = "Settings"; He = "$([char]1492)$([char]1490)$([char]1491)$([char]1512)$([char]1493)$([char]1514)" }
+    "btnQuickDevicesClassic"    = @{ En = "Devices (Old)"; He = "$([char]1492)$([char]1514)$([char]1511)$([char]1504)$([char]1497)$([char]1501)$([char]32)$([char]40)$([char]1497)$([char]1513)$([char]1503)$([char]41)" }
+    "btnQuickDevicesModern"     = @{ En = "Devices (New)"; He = "$([char]1492)$([char]1514)$([char]1511)$([char]1504)$([char]1497)$([char]1501)$([char]32)$([char]40)$([char]1495)$([char]1491)$([char]1513)$([char]41)" }
+    "btnQuickDevMgr"            = @{ En = "Device Manager"; He = "$([char]1502)$([char]1504)$([char]1492)$([char]1500)$([char]32)$([char]1492)$([char]1514)$([char]1511)$([char]1504)$([char]1497)$([char]1501)" }
+    "btnQuickPrintMgmt"         = @{ En = "Print Mgmt"; He = "$([char]1504)$([char]1497)$([char]1492)$([char]1493)$([char]1500)$([char]32)$([char]1502)$([char]1491)$([char]1508)$([char]1505)$([char]1493)$([char]1514)" }
 
     # Sub Headers
-    "btnExportHw"            = @{ En = "Export Report"; He = "$([char]1497)$([char]1510)$([char]1493)$([char]1488)$([char]32)$([char]1491)$([char]1493)$([char]34)$([char]1495)" }
+    "btnExportHw"               = @{ En = "Export Report"; He = "$([char]1497)$([char]1510)$([char]1493)$([char]1488)$([char]32)$([char]1491)$([char]1493)$([char]34)$([char]1495)" }
 
     # Tweaks Translations
-    "lblTweakTaskbar"        = @{ En = "Taskbar and Start Menu"; He = "$([char]1513)$([char]1493)$([char]1512)$([char]1514)$([char]32)$([char]1502)$([char]1513)$([char]1497)$([char]1502)$([char]1493)$([char]1514)$([char]32)$([char]1493)$([char]1514)$([char]1508)$([char]1512)$([char]1497)$([char]1496)$([char]32)$([char]1492)$([char]1514)$([char]1495)$([char]1500)$([char]1492)" }
-    "lblTweakExplorer"       = @{ En = "File Explorer"; He = "$([char]1505)$([char]1497)$([char]1497)$([char]1512)$([char]32)$([char]1492)$([char]1511)$([char]1489)$([char]1510)$([char]1497)$([char]1501)" }
-    "lblTweakSystem"         = @{ En = "System and Visuals"; He = "$([char]1502)$([char]1506)$([char]1512)$([char]1499)$([char]1514)$([char]32)$([char]1493)$([char]1493)$([char]1497)$([char]1494)$([char]1493)$([char]1488)$([char]1500)" }
-    "btnApplyTaskbar"        = @{ En = "Toggle Center/Left Align"; He = "$([char]1513)$([char]1497)$([char]1504)$([char]1493)$([char]1497)$([char]32)$([char]1497)$([char]1497)$([char]1513)$([char]1493)$([char]1512)$([char]32)$([char]1502)$([char]1512)$([char]1499)$([char]1494)$([char]47)$([char]1513)$([char]1502)$([char]1488)$([char]1500)" }
-    "btnSecondsClock"        = @{ En = "Toggle Seconds in Clock"; He = "$([char]1492)$([char]1510)$([char]1490)$([char]1514)$([char]32)$([char]1513)$([char]1504)$([char]1497)$([char]1493)$([char]1514)$([char]32)$([char]1489)$([char]1513)$([char]1506)$([char]1493)$([char]1503)" }
-    "btnDisableBing"         = @{ En = "Disable Bing Search"; He = "$([char]1489)$([char]1497)$([char]1496)$([char]1493)$([char]1500)$([char]32)$([char]1495)$([char]1497)$([char]1508)$([char]1493)$([char]1513)$([char]32)$([char]66)$([char]105)$([char]110)$([char]103)" }
-    "btnClassicContext"      = @{ En = "Classic Context Menu"; He = "$([char]1514)$([char]1508)$([char]1512)$([char]1496)$([char]32)$([char]1492)$([char]1511)$([char]1513)$([char]1512)$([char]32)$([char]1511)$([char]1500)$([char]1488)$([char]1505)$([char]1497)$([char]1514)" }
-    "btnFileExt"             = @{ En = "Show/Hide File Ext"; He = "$([char]1492)$([char]1510)$([char]1490)$([char]1514)$([char]32)$([char]1505)$([char]1497)$([char]1493)$([char]1502)$([char]1493)$([char]1514)$([char]32)$([char]1511)$([char]1489)$([char]1510)$([char]1497)$([char]1501)" }
-    "btnHiddenFiles"         = @{ En = "Show/Hide Hidden Files"; He = "$([char]1492)$([char]1510)$([char]1490)$([char]1514)$([char]32)$([char]1511)$([char]1489)$([char]1510)$([char]1497)$([char]1501)$([char]32)$([char]1495)$([char]1489)$([char]1493)$([char]1497)$([char]1497)$([char]1501)" }
-    "btnCompactMode"         = @{ En = "Toggle Compact Mode"; He = "$([char]1502)$([char]1510)$([char]1489)$([char]32)$([char]1510)$([char]1508)$([char]1493)$([char]1507)$([char]32)$([char]47)$([char]32)$([char]1512)$([char]1490)$([char]1497)$([char]1500)" }
-    "btnDarkMode"            = @{ En = "Toggle Dark/Light Mode"; He = "$([char]1502)$([char]1510)$([char]1489)$([char]32)$([char]1499)$([char]1492)$([char]1492)$([char]32)$([char]47)$([char]32)$([char]1489)$([char]1492)$([char]1497)$([char]1512)" }
+    "lblTweakTaskbar"           = @{ En = "Taskbar and Start Menu"; He = "$([char]1513)$([char]1493)$([char]1512)$([char]1514)$([char]32)$([char]1502)$([char]1513)$([char]1497)$([char]1502)$([char]1493)$([char]1514)$([char]32)$([char]1493)$([char]1514)$([char]1508)$([char]1512)$([char]1497)$([char]1496)$([char]32)$([char]1492)$([char]1514)$([char]1495)$([char]1500)$([char]1492)" }
+    "lblTweakExplorer"          = @{ En = "File Explorer"; He = "$([char]1505)$([char]1497)$([char]1497)$([char]1512)$([char]32)$([char]1492)$([char]1511)$([char]1489)$([char]1510)$([char]1497)$([char]1501)" }
+    "lblTweakSystem"            = @{ En = "System and Visuals"; He = "$([char]1502)$([char]1506)$([char]1512)$([char]1499)$([char]1514)$([char]32)$([char]1493)$([char]1493)$([char]1497)$([char]1494)$([char]1493)$([char]1488)$([char]1500)" }
+    "btnApplyTaskbar"           = @{ En = "Toggle Center/Left Align"; He = "$([char]1513)$([char]1497)$([char]1504)$([char]1493)$([char]1497)$([char]32)$([char]1497)$([char]1497)$([char]1513)$([char]1493)$([char]1512)$([char]32)$([char]1502)$([char]1512)$([char]1499)$([char]1494)$([char]47)$([char]1513)$([char]1502)$([char]1488)$([char]1500)" }
+    "btnSecondsClock"           = @{ En = "Toggle Seconds in Clock"; He = "$([char]1492)$([char]1510)$([char]1490)$([char]1514)$([char]32)$([char]1513)$([char]1504)$([char]1497)$([char]1493)$([char]1514)$([char]32)$([char]1489)$([char]1513)$([char]1506)$([char]1493)$([char]1503)" }
+    "btnDisableBing"            = @{ En = "Disable Bing Search"; He = "$([char]1489)$([char]1497)$([char]1496)$([char]1493)$([char]1500)$([char]32)$([char]1495)$([char]1497)$([char]1508)$([char]1493)$([char]1513)$([char]32)$([char]66)$([char]105)$([char]110)$([char]103)" }
+    "btnClassicContext"         = @{ En = "Classic Context Menu"; He = "$([char]1514)$([char]1508)$([char]1512)$([char]1496)$([char]32)$([char]1492)$([char]1511)$([char]1513)$([char]1512)$([char]32)$([char]1511)$([char]1500)$([char]1488)$([char]1505)$([char]1497)$([char]1514)" }
+    "btnFileExt"                = @{ En = "Show/Hide File Ext"; He = "$([char]1492)$([char]1510)$([char]1490)$([char]1514)$([char]32)$([char]1505)$([char]1497)$([char]1493)$([char]1502)$([char]1493)$([char]1514)$([char]32)$([char]1511)$([char]1489)$([char]1510)$([char]1497)$([char]1501)" }
+    "btnHiddenFiles"            = @{ En = "Show/Hide Hidden Files"; He = "$([char]1492)$([char]1510)$([char]1490)$([char]1514)$([char]32)$([char]1511)$([char]1489)$([char]1510)$([char]1497)$([char]1501)$([char]32)$([char]1495)$([char]1489)$([char]1493)$([char]1497)$([char]1497)$([char]1501)" }
+    "btnCompactMode"            = @{ En = "Toggle Compact Mode"; He = "$([char]1502)$([char]1510)$([char]1489)$([char]32)$([char]1510)$([char]1508)$([char]1493)$([char]1507)$([char]32)$([char]47)$([char]32)$([char]1512)$([char]1490)$([char]1497)$([char]1500)" }
+    "btnDarkMode"               = @{ En = "Toggle Dark/Light Mode"; He = "$([char]1502)$([char]1510)$([char]1489)$([char]32)$([char]1499)$([char]1492)$([char]1492)$([char]32)$([char]47)$([char]32)$([char]1489)$([char]1492)$([char]1497)$([char]1512)" }
     
     # System Health Center
-    "lblBeastHeader"         = @{ En = "System Health Center"; He = "$([char]1502)$([char]1512)$([char]1499)$([char]1494)$([char]32)$([char]1489)$([char]1512)$([char]1497)$([char]1488)$([char]1493)$([char]1514)$([char]32)$([char]1492)$([char]1502)$([char]1506)$([char]1512)$([char]1499)$([char]1514)" }
-    "lblBeastMaint"          = @{ En = "Maintenance and Repair"; He = "$([char]1514)$([char]1495)$([char]1494)$([char]1493)$([char]1511)$([char]1492)$([char]32)$([char]1493)$([char]1514)$([char]1497)$([char]1511)$([char]1493)$([char]1503)" }
-    "lblBeastHard"           = @{ En = "Hardware & Performance"; He = "$([char]1495)$([char]1493)$([char]1502)$([char]1512)$([char]1492)$([char]32)$([char]1493)$([char]1489)$([char]1497)$([char]1510)$([char]1493)$([char]1506)$([char]1497)$([char]1501)" }
-    "lblBeastNet"            = @{ En = "Network & Communication"; He = "$([char]1512)$([char]1513)$([char]1514)$([char]32)$([char]1493)$([char]1514)$([char]1511)$([char]1513)$([char]1493)$([char]1512)$([char]1514)" }
+    "lblBeastHeader"            = @{ En = "System Health Center"; He = "$([char]1502)$([char]1512)$([char]1499)$([char]1494)$([char]32)$([char]1489)$([char]1512)$([char]1497)$([char]1488)$([char]1493)$([char]1514)$([char]32)$([char]1492)$([char]1502)$([char]1506)$([char]1512)$([char]1499)$([char]1514)" }
+    "lblBeastMaint"             = @{ En = "Maintenance and Repair"; He = "$([char]1514)$([char]1495)$([char]1494)$([char]1493)$([char]1511)$([char]1492)$([char]32)$([char]1493)$([char]1514)$([char]1497)$([char]1511)$([char]1493)$([char]1503)" }
+    "lblBeastHard"              = @{ En = "Hardware & Performance"; He = "$([char]1495)$([char]1493)$([char]1502)$([char]1512)$([char]1492)$([char]32)$([char]1493)$([char]1489)$([char]1497)$([char]1510)$([char]1493)$([char]1506)$([char]1497)$([char]1501)" }
+    "lblBeastNet"               = @{ En = "Network & Communication"; He = "$([char]1512)$([char]1513)$([char]1514)$([char]32)$([char]1493)$([char]1514)$([char]1511)$([char]1513)$([char]1493)$([char]1512)$([char]1514)" }
 
     # Category Bubbles Guide
-    "lblBubAITitle"          = @{ En = "AI Bots"; He = "$([char]1489)$([char]1493)$([char]1496)$([char]1497)$([char]32)$([char]65)$([char]73)" }
-    "lblBubAIDesc"           = @{ En = "Access ChatGPT, Gemini & smart tools"; He = "$([char]1490)$([char]1497)$([char]1513)$([char]1492)$([char]32)$([char]1500)$([char]45)$([char]67)$([char]104)$([char]97)$([char]116)$([char]71)$([char]80)$([char]84)$([char]44)$([char]32)$([char]71)$([char]101)$([char]109)$([char]105)$([char]110)$([char]105)$([char]32)$([char]1493)$([char]1499)$([char]1500)$([char]1497)$([char]1501)$([char]32)$([char]1495)$([char]1499)$([char]1502)$([char]1497)$([char]1501)" }
-    "lblBubCTTTitle"         = @{ En = "CTT Tools"; He = "$([char]1499)$([char]1500)$([char]1497)$([char]32)$([char]67)$([char]84)$([char]84)" }
-    "lblBubCTTDesc"          = @{ En = "System utilities & installation helpers"; He = "$([char]1499)$([char]1500)$([char]1497)$([char]32)$([char]1502)$([char]1506)$([char]1512)$([char]1499)$([char]1514)$([char]32)$([char]1493)$([char]1506)$([char]1494)$([char]1512)$([char]1497)$([char]32)$([char]1492)$([char]1514)$([char]1511)$([char]1504)$([char]1492)" }
-    "lblBubTVTitle"          = @{ En = "Israel TV"; He = "$([char]1496)$([char]1500)$([char]1493)$([char]1497)$([char]1494)$([char]1497)$([char]1492)$([char]32)$([char]1497)$([char]1513)$([char]1512)$([char]1488)$([char]1500)$([char]1497)$([char]1514)" }
-    "lblBubTVDesc"           = @{ En = "Watch live Israeli TV channels"; He = "$([char]1510)$([char]1508)$([char]1497)$([char]1497)$([char]1492)$([char]32)$([char]1497)$([char]1513)$([char]1497)$([char]1512)$([char]1492)$([char]32)$([char]1489)$([char]1506)$([char]1512)$([char]1493)$([char]1510)$([char]1497)$([char]32)$([char]1496)$([char]1500)$([char]1493)$([char]1497)$([char]1494)$([char]1497)$([char]1492)" }
-    "lblBubUpdTitle"         = @{ En = "Updates"; He = "$([char]1506)$([char]1491)$([char]1499)$([char]1493)$([char]1504)$([char]1497)$([char]1501)" }
-    "lblBubUpdDesc"          = @{ En = "Check updates, history & fixes"; He = "$([char]1489)$([char]1491)$([char]1497)$([char]1511)$([char]1514)$([char]32)$([char]1506)$([char]1491)$([char]1499)$([char]1493)$([char]1504)$([char]1497)$([char]1501)$([char]44)$([char]32)$([char]1492)$([char]1497)$([char]1505)$([char]1496)$([char]1493)$([char]1512)$([char]1497)$([char]1492)$([char]32)$([char]1493)$([char]1514)$([char]1497)$([char]1511)$([char]1493)$([char]1504)$([char]1497)$([char]1501)" }
-    "lblBubHwTitle"          = @{ En = "Hardware"; He = "$([char]1495)$([char]1493)$([char]1502)$([char]1512)$([char]1492)" }
-    "lblBubHwDesc"           = @{ En = "Full specs (CPU, RAM, GPU)"; He = "$([char]1502)$([char]1512)$([char]1496)$([char]1497)$([char]32)$([char]1495)$([char]1493)$([char]1502)$([char]1512)$([char]1492)$([char]32)$([char]1502)$([char]1500)$([char]1488)$([char]1497)$([char]1501)" }
-    "lblBubWinTitle"         = @{ En = "Windows"; He = "$([char]1493)$([char]1493)$([char]1497)$([char]1504)$([char]1491)$([char]1493)$([char]1505)" }
-    "lblBubWinDesc"          = @{ En = "Built-in tools (Control Panel, CMD)"; He = "$([char]1499)$([char]1500)$([char]1497)$([char]1501)$([char]32)$([char]1502)$([char]1493)$([char]1489)$([char]1504)$([char]1497)$([char]1501)$([char]32)$([char]1513)$([char]1500)$([char]32)$([char]1492)$([char]1502)$([char]1506)$([char]1512)$([char]1499)$([char]1514)" }
-    "lblBubTwkTitle"         = @{ En = "Tweaks"; He = "$([char]1496)$([char]1493)$([char]1493)$([char]1497)$([char]1511)$([char]1497)$([char]1501)" }
-    "lblBubTwkDesc"          = @{ En = "Boost performance & customize UI"; He = "$([char]1513)$([char]1497)$([char]1508)$([char]1493)$([char]1512)$([char]32)$([char]1489)$([char]1497)$([char]1510)$([char]1493)$([char]1506)$([char]1497)$([char]1501)$([char]32)$([char]1493)$([char]1492)$([char]1514)$([char]1488)$([char]1502)$([char]1492)$([char]32)$([char]1488)$([char]1497)$([char]1513)$([char]1497)$([char]1514)" }
-    "lblBubClnTitle"         = @{ En = "Cleanup"; He = "$([char]1504)$([char]1497)$([char]1511)$([char]1493)$([char]1497)$([char]32)$([char]1502)$([char]1506)$([char]1512)$([char]1499)$([char]1514)" }
-    "lblBubClnDesc"          = @{ En = "Free space, clear cache & junk"; He = "$([char]1508)$([char]1504)$([char]1492)$([char]32)$([char]1513)$([char]1496)$([char]1495)$([char]44)$([char]32)$([char]1504)$([char]1511)$([char]1492)$([char]32)$([char]1502)$([char]1496)$([char]1502)$([char]1493)$([char]1503)$([char]32)$([char]1493)$([char]1494)$([char]1489)$([char]1500)" }
-    "lblBubSecTitle"         = @{ En = "Security"; He = "$([char]1488)$([char]1489)$([char]1496)$([char]1495)$([char]1492)" }
-    "lblBubSecDesc"          = @{ En = "Antivirus, Firewall & Privacy"; He = "$([char]1488)$([char]1500)$([char]1496)$([char]1497)$([char]45)$([char]1493)$([char]1497)$([char]1512)$([char]1493)$([char]1505)$([char]44)$([char]32)$([char]1495)$([char]1493)$([char]1502)$([char]1514)$([char]32)$([char]1488)$([char]1513)$([char]32)$([char]1493)$([char]1508)$([char]1512)$([char]1496)$([char]1497)$([char]1493)$([char]1514)" }
-    "lblBubMusTitle"         = @{ En = "Music"; He = "$([char]1502)$([char]1493)$([char]1494)$([char]1497)$([char]1511)$([char]1492)" }
-    "lblBubMusDesc"          = @{ En = "Music player, playlists & radio"; He = "$([char]1504)$([char]1490)$([char]1503)$([char]32)$([char]1502)$([char]1493)$([char]1494)$([char]1497)$([char]1511)$([char]1492)$([char]44)$([char]32)$([char]1512)$([char]1513)$([char]1497)$([char]1502)$([char]1493)$([char]1514)$([char]32)$([char]1492)$([char]1513)$([char]1502)$([char]1506)$([char]1492)$([char]32)$([char]1493)$([char]1512)$([char]1491)$([char]1497)$([char]1493)" }
-    "lblBubBstTitle"         = @{ En = "Beast Mode"; He = "$([char]1502)$([char]1510)$([char]1489)$([char]32)$([char]1495)$([char]1497)$([char]1492)" }
-    "lblBubBstDesc"          = @{ En = "Advanced tools & full optimization"; He = "$([char]1499)$([char]1500)$([char]1497)$([char]1501)$([char]32)$([char]1502)$([char]1514)$([char]1511)$([char]1491)$([char]1502)$([char]1497)$([char]1501)$([char]32)$([char]1493)$([char]1488)$([char]1493)$([char]1508)$([char]1496)$([char]1497)$([char]1502)$([char]1493)$([char]1494)$([char]1510)$([char]1497)$([char]1492)$([char]32)$([char]1502)$([char]1500)$([char]1488)$([char]1492)" }
-    "lblBeastSec"            = @{ En = "Security & System"; He = "$([char]1488)$([char]1489)$([char]1496)$([char]1495)$([char]1492)$([char]32)$([char]1493)$([char]1502)$([char]1506)$([char]1512)$([char]1499)$([char]1514)" }
+    "lblBubAITitle"             = @{ En = "AI Bots"; He = "$([char]1489)$([char]1493)$([char]1496)$([char]1497)$([char]32)$([char]65)$([char]73)" }
+    "lblBubAIDesc"              = @{ En = "Access ChatGPT, Gemini & smart tools"; He = "$([char]1490)$([char]1497)$([char]1513)$([char]1492)$([char]32)$([char]1500)$([char]45)$([char]67)$([char]104)$([char]97)$([char]116)$([char]71)$([char]80)$([char]84)$([char]44)$([char]32)$([char]71)$([char]101)$([char]109)$([char]105)$([char]110)$([char]105)$([char]32)$([char]1493)$([char]1499)$([char]1500)$([char]1497)$([char]1501)$([char]32)$([char]1495)$([char]1499)$([char]1502)$([char]1497)$([char]1501)" }
+    "lblBubCTTTitle"            = @{ En = "CTT Tools"; He = "$([char]1499)$([char]1500)$([char]1497)$([char]32)$([char]67)$([char]84)$([char]84)" }
+    "lblBubCTTDesc"             = @{ En = "System utilities & installation helpers"; He = "$([char]1499)$([char]1500)$([char]1497)$([char]32)$([char]1502)$([char]1506)$([char]1512)$([char]1499)$([char]1514)$([char]32)$([char]1493)$([char]1506)$([char]1494)$([char]1512)$([char]1497)$([char]32)$([char]1492)$([char]1514)$([char]1511)$([char]1504)$([char]1492)" }
+    "lblBubTVTitle"             = @{ En = "Israel TV"; He = "$([char]1496)$([char]1500)$([char]1493)$([char]1497)$([char]1494)$([char]1497)$([char]1492)$([char]32)$([char]1497)$([char]1513)$([char]1512)$([char]1488)$([char]1500)$([char]1497)$([char]1514)" }
+    "lblBubTVDesc"              = @{ En = "Watch live Israeli TV channels"; He = "$([char]1510)$([char]1508)$([char]1497)$([char]1497)$([char]1492)$([char]32)$([char]1497)$([char]1513)$([char]1497)$([char]1512)$([char]1492)$([char]32)$([char]1489)$([char]1506)$([char]1512)$([char]1493)$([char]1510)$([char]1497)$([char]32)$([char]1496)$([char]1500)$([char]1493)$([char]1497)$([char]1494)$([char]1497)$([char]1492)" }
+    "lblBubUpdTitle"            = @{ En = "Updates"; He = "$([char]1506)$([char]1491)$([char]1499)$([char]1493)$([char]1504)$([char]1497)$([char]1501)" }
+    "lblBubUpdDesc"             = @{ En = "Check updates, history & fixes"; He = "$([char]1489)$([char]1491)$([char]1497)$([char]1511)$([char]1514)$([char]32)$([char]1506)$([char]1491)$([char]1499)$([char]1493)$([char]1504)$([char]1497)$([char]1501)$([char]44)$([char]32)$([char]1492)$([char]1497)$([char]1505)$([char]1496)$([char]1493)$([char]1512)$([char]1497)$([char]1492)$([char]32)$([char]1493)$([char]1514)$([char]1497)$([char]1511)$([char]1493)$([char]1504)$([char]1497)$([char]1501)" }
+    "lblBubHwTitle"             = @{ En = "Hardware"; He = "$([char]1495)$([char]1493)$([char]1502)$([char]1512)$([char]1492)" }
+    "lblBubHwDesc"              = @{ En = "Full specs (CPU, RAM, GPU)"; He = "$([char]1502)$([char]1512)$([char]1496)$([char]1497)$([char]32)$([char]1495)$([char]1493)$([char]1502)$([char]1512)$([char]1492)$([char]32)$([char]1502)$([char]1500)$([char]1488)$([char]1497)$([char]1501)" }
+    "lblBubWinTitle"            = @{ En = "Windows"; He = "$([char]1493)$([char]1493)$([char]1497)$([char]1504)$([char]1491)$([char]1493)$([char]1505)" }
+    "lblBubWinDesc"             = @{ En = "Built-in tools (Control Panel, CMD)"; He = "$([char]1499)$([char]1500)$([char]1497)$([char]1501)$([char]32)$([char]1502)$([char]1493)$([char]1489)$([char]1504)$([char]1497)$([char]1501)$([char]32)$([char]1513)$([char]1500)$([char]32)$([char]1492)$([char]1502)$([char]1506)$([char]1512)$([char]1499)$([char]1514)" }
+    "lblBubTwkTitle"            = @{ En = "Tweaks"; He = "$([char]1496)$([char]1493)$([char]1493)$([char]1497)$([char]1511)$([char]1497)$([char]1501)" }
+    "lblBubTwkDesc"             = @{ En = "Boost performance & customize UI"; He = "$([char]1513)$([char]1497)$([char]1508)$([char]1493)$([char]1512)$([char]32)$([char]1489)$([char]1497)$([char]1510)$([char]1493)$([char]1506)$([char]1497)$([char]1501)$([char]32)$([char]1493)$([char]1492)$([char]1514)$([char]1488)$([char]1502)$([char]1492)$([char]32)$([char]1488)$([char]1497)$([char]1513)$([char]1497)$([char]1514)" }
+    "lblBubClnTitle"            = @{ En = "Cleanup"; He = "$([char]1504)$([char]1497)$([char]1511)$([char]1493)$([char]1497)$([char]32)$([char]1502)$([char]1506)$([char]1512)$([char]1499)$([char]1514)" }
+    "lblBubClnDesc"             = @{ En = "Free space, clear cache & junk"; He = "$([char]1508)$([char]1504)$([char]1492)$([char]32)$([char]1513)$([char]1496)$([char]1495)$([char]44)$([char]32)$([char]1504)$([char]1511)$([char]1492)$([char]32)$([char]1502)$([char]1496)$([char]1502)$([char]1493)$([char]1503)$([char]32)$([char]1493)$([char]1494)$([char]1489)$([char]1500)" }
+    "lblBubSecTitle"            = @{ En = "Security"; He = "$([char]1488)$([char]1489)$([char]1496)$([char]1495)$([char]1492)" }
+    "lblBubSecDesc"             = @{ En = "Antivirus, Firewall & Privacy"; He = "$([char]1488)$([char]1500)$([char]1496)$([char]1497)$([char]45)$([char]1493)$([char]1497)$([char]1512)$([char]1493)$([char]1505)$([char]44)$([char]32)$([char]1495)$([char]1493)$([char]1502)$([char]1514)$([char]32)$([char]1488)$([char]1513)$([char]32)$([char]1493)$([char]1508)$([char]1512)$([char]1496)$([char]1497)$([char]1493)$([char]1514)" }
+    "lblBubMusTitle"            = @{ En = "Music"; He = "$([char]1502)$([char]1493)$([char]1494)$([char]1497)$([char]1511)$([char]1492)" }
+    "lblBubMusDesc"             = @{ En = "Music player, playlists & radio"; He = "$([char]1504)$([char]1490)$([char]1503)$([char]32)$([char]1502)$([char]1493)$([char]1494)$([char]1497)$([char]1511)$([char]1492)$([char]44)$([char]32)$([char]1512)$([char]1513)$([char]1497)$([char]1502)$([char]1493)$([char]1514)$([char]32)$([char]1492)$([char]1513)$([char]1502)$([char]1506)$([char]1492)$([char]32)$([char]1493)$([char]1512)$([char]1491)$([char]1497)$([char]1493)" }
+    "lblBubBstTitle"            = @{ En = "Beast Mode"; He = "$([char]1502)$([char]1510)$([char]1489)$([char]32)$([char]1495)$([char]1497)$([char]1492)" }
+    "lblBubBstDesc"             = @{ En = "Advanced tools & full optimization"; He = "$([char]1499)$([char]1500)$([char]1497)$([char]1501)$([char]32)$([char]1502)$([char]1514)$([char]1511)$([char]1491)$([char]1502)$([char]1497)$([char]1501)$([char]32)$([char]1493)$([char]1488)$([char]1493)$([char]1508)$([char]1496)$([char]1497)$([char]1502)$([char]1493)$([char]1494)$([char]1510)$([char]1497)$([char]1492)$([char]32)$([char]1502)$([char]1500)$([char]1488)$([char]1492)" }
+    "lblBeastSec"               = @{ En = "Security & System"; He = "$([char]1488)$([char]1489)$([char]1496)$([char]1495)$([char]1492)$([char]32)$([char]1493)$([char]1502)$([char]1506)$([char]1512)$([char]1499)$([char]1514)" }
     
-    "btnBeastGlobalRepair"   = @{ En = "Full Repair (SFC/DISM)"; He = "$([char]1514)$([char]1497)$([char]1511)$([char]1493)$([char]1503)$([char]32)$([char]1502)$([char]1500)$([char]1488)$([char]32)$([char]40)$([char]83)$([char]70)$([char]67)$([char]47)$([char]68)$([char]73)$([char]83)$([char]77)$([char]41)" }
-    "btnBeastCleanTemp"      = @{ En = "Clean Temp Files"; He = "$([char]1504)$([char]1511)$([char]1492)$([char]32)$([char]1511)$([char]1489)$([char]1510)$([char]1497)$([char]1501)$([char]32)$([char]1494)$([char]1502)$([char]1504)$([char]1497)$([char]1497)$([char]1501)" }
-    "btnBeastEmptyRecycle"   = @{ En = "Empty Recycle Bin"; He = "$([char]1512)$([char]1493)$([char]1511)$([char]1503)$([char]32)$([char]1505)$([char]1500)$([char]32)$([char]1502)$([char]1497)$([char]1495)$([char]1493)$([char]1494)$([char]1493)$([char]1512)" }
-    "btnBeastResetStore"     = @{ En = "Reset Windows Store"; He = "$([char]1488)$([char]1497)$([char]1508)$([char]1493)$([char]1505)$([char]32)$([char]1495)$([char]1504)$([char]1493)$([char]1514)$([char]32)$([char]87)$([char]105)$([char]110)$([char]100)$([char]111)$([char]119)$([char]115)" }
-    "btnBeastIconCache"      = @{ En = "Reset Icon Cache"; He = "$([char]1488)$([char]1497)$([char]1508)$([char]1493)$([char]1505)$([char]32)$([char]1502)$([char]1496)$([char]1502)$([char]1493)$([char]1503)$([char]32)$([char]1505)$([char]1502)$([char]1500)$([char]1497)$([char]1501)" }
-    "btnBeastWinUpdate"      = @{ En = "Clean Update Cache"; He = "$([char]1504)$([char]1511)$([char]1492)$([char]32)$([char]1502)$([char]1496)$([char]1502)$([char]1493)$([char]1503)$([char]32)$([char]1506)$([char]1491)$([char]1499)$([char]1493)$([char]1504)$([char]1497)$([char]1501)" }
+    "btnBeastGlobalRepair"      = @{ En = "Full Repair (SFC/DISM)"; He = "$([char]1514)$([char]1497)$([char]1511)$([char]1493)$([char]1503)$([char]32)$([char]1502)$([char]1500)$([char]1488)$([char]32)$([char]40)$([char]83)$([char]70)$([char]67)$([char]47)$([char]68)$([char]73)$([char]83)$([char]77)$([char]41)" }
+    "btnBeastCleanTemp"         = @{ En = "Clean Temp Files"; He = "$([char]1504)$([char]1511)$([char]1492)$([char]32)$([char]1511)$([char]1489)$([char]1510)$([char]1497)$([char]1501)$([char]32)$([char]1494)$([char]1502)$([char]1504)$([char]1497)$([char]1497)$([char]1501)" }
+    "btnBeastEmptyRecycle"      = @{ En = "Empty Recycle Bin"; He = "$([char]1512)$([char]1493)$([char]1511)$([char]1503)$([char]32)$([char]1505)$([char]1500)$([char]32)$([char]1502)$([char]1497)$([char]1495)$([char]1493)$([char]1494)$([char]1493)$([char]1512)" }
+    "btnBeastResetStore"        = @{ En = "Reset Windows Store"; He = "$([char]1488)$([char]1497)$([char]1508)$([char]1493)$([char]1505)$([char]32)$([char]1495)$([char]1504)$([char]1493)$([char]1514)$([char]32)$([char]87)$([char]105)$([char]110)$([char]100)$([char]111)$([char]119)$([char]115)" }
+    "btnBeastIconCache"         = @{ En = "Reset Icon Cache"; He = "$([char]1488)$([char]1497)$([char]1508)$([char]1493)$([char]1505)$([char]32)$([char]1502)$([char]1496)$([char]1502)$([char]1493)$([char]1503)$([char]32)$([char]1505)$([char]1502)$([char]1500)$([char]1497)$([char]1501)" }
+    "btnBeastWinUpdate"         = @{ En = "Clean Update Cache"; He = "$([char]1504)$([char]1511)$([char]1492)$([char]32)$([char]1502)$([char]1496)$([char]1502)$([char]1493)$([char]1503)$([char]32)$([char]1506)$([char]1491)$([char]1499)$([char]1493)$([char]1504)$([char]1497)$([char]1501)" }
     
-    "btnBeastStress"         = @{ En = "Stress Test (WinSAT)"; He = "$([char]1489)$([char]1491)$([char]1497)$([char]1511)$([char]1514)$([char]32)$([char]1502)$([char]1488)$([char]1502)$([char]1509)$([char]32)$([char]40)$([char]87)$([char]105)$([char]110)$([char]83)$([char]65)$([char]84)$([char]41)" }
-    "btnBeastRAM"            = @{ En = "Check RAM & Slots"; He = "$([char]1489)$([char]1491)$([char]1497)$([char]1511)$([char]1514)$([char]32)$([char]1494)$([char]1497)$([char]1499)$([char]1512)$([char]1493)$([char]1503)$([char]32)$([char]1493)$([char]1505)$([char]1500)$([char]1493)$([char]1496)$([char]1497)$([char]1501)" }
-    "btnBeastSMART"          = @{ En = "Disk Health (SMART)"; He = "$([char]1489)$([char]1512)$([char]1497)$([char]1488)$([char]1493)$([char]1514)$([char]32)$([char]1492)$([char]1491)$([char]1497)$([char]1505)$([char]1511)$([char]32)$([char]40)$([char]83)$([char]77)$([char]65)$([char]82)$([char]84)$([char]41)" }
-    "btnBeastCPU"            = @{ En = "CPU Details"; He = "$([char]1508)$([char]1512)$([char]1514)$([char]1497)$([char]32)$([char]1502)$([char]1506)$([char]1489)$([char]1491)" }
-    "btnBeastBattery"        = @{ En = "Battery Report (HTML)"; He = "$([char]1491)$([char]1493)$([char]34)$([char]1495)$([char]32)$([char]1505)$([char]1493)$([char]1500)$([char]1500)$([char]1492)$([char]32)$([char]40)$([char]72)$([char]84)$([char]77)$([char]76)$([char]41)" }
-    "btnBeastHighPerf"       = @{ En = "Max Performance"; He = "$([char]1489)$([char]1510)$([char]1493)$([char]1506)$([char]1497)$([char]1501)$([char]32)$([char]1502)$([char]1511)$([char]1505)$([char]1497)$([char]1502)$([char]1500)$([char]1497)$([char]1497)$([char]1501)" }
+    "btnBeastStress"            = @{ En = "Stress Test (WinSAT)"; He = "$([char]1489)$([char]1491)$([char]1497)$([char]1511)$([char]1514)$([char]32)$([char]1502)$([char]1488)$([char]1502)$([char]1509)$([char]32)$([char]40)$([char]87)$([char]105)$([char]110)$([char]83)$([char]65)$([char]84)$([char]41)" }
+    "btnBeastRAM"               = @{ En = "Check RAM & Slots"; He = "$([char]1489)$([char]1491)$([char]1497)$([char]1511)$([char]1514)$([char]32)$([char]1494)$([char]1497)$([char]1499)$([char]1512)$([char]1493)$([char]1503)$([char]32)$([char]1493)$([char]1505)$([char]1500)$([char]1493)$([char]1496)$([char]1497)$([char]1501)" }
+    "btnBeastSMART"             = @{ En = "Disk Health (SMART)"; He = "$([char]1489)$([char]1512)$([char]1497)$([char]1488)$([char]1493)$([char]1514)$([char]32)$([char]1492)$([char]1491)$([char]1497)$([char]1505)$([char]1511)$([char]32)$([char]40)$([char]83)$([char]77)$([char]65)$([char]82)$([char]84)$([char]41)" }
+    "btnBeastCPU"               = @{ En = "CPU Details"; He = "$([char]1508)$([char]1512)$([char]1514)$([char]1497)$([char]32)$([char]1502)$([char]1506)$([char]1489)$([char]1491)" }
+    "btnBeastBattery"           = @{ En = "Battery Report (HTML)"; He = "$([char]1491)$([char]1493)$([char]34)$([char]1495)$([char]32)$([char]1505)$([char]1493)$([char]1500)$([char]1500)$([char]1492)$([char]32)$([char]40)$([char]72)$([char]84)$([char]77)$([char]76)$([char]41)" }
+    "btnBeastHighPerf"          = @{ En = "Max Performance"; He = "$([char]1489)$([char]1510)$([char]1493)$([char]1506)$([char]1497)$([char]1501)$([char]32)$([char]1502)$([char]1511)$([char]1505)$([char]1497)$([char]1502)$([char]1500)$([char]1497)$([char]1497)$([char]1501)" }
     
-    "btnBeastNetReset"       = @{ En = "Reset Network & IP"; He = "$([char]1488)$([char]1497)$([char]1508)$([char]1493)$([char]1505)$([char]32)$([char]1512)$([char]1513)$([char]1514)$([char]32)$([char]1493)$([char]45)$([char]73)$([char]80)" }
-    "btnBeastDNS"            = @{ En = "Flush DNS Cache"; He = "$([char]1504)$([char]1497)$([char]1511)$([char]1493)$([char]1497)$([char]32)$([char]1502)$([char]1496)$([char]1502)$([char]1493)$([char]1503)$([char]32)$([char]68)$([char]78)$([char]83)" }
-    "btnBeastPorts"          = @{ En = "Scan Open Ports"; He = "$([char]1505)$([char]1512)$([char]1497)$([char]1511)$([char]1514)$([char]32)$([char]1508)$([char]1493)$([char]1512)$([char]1496)$([char]1497)$([char]1501)$([char]32)$([char]1508)$([char]1514)$([char]1493)$([char]1495)$([char]1497)$([char]1501)" }
-    "btnBeastPublicIP"       = @{ En = "Show Public IP"; He = "$([char]1492)$([char]1510)$([char]1490)$([char]1514)$([char]32)$([char]73)$([char]80)$([char]32)$([char]1510)$([char]1497)$([char]1489)$([char]1493)$([char]1512)$([char]1497)" }
-    "btnBeastWiFi"           = @{ En = "Wi-Fi Profiles List"; He = "$([char]1512)$([char]1513)$([char]1497)$([char]1502)$([char]1514)$([char]32)$([char]1508)$([char]1512)$([char]1493)$([char]1508)$([char]1497)$([char]1500)$([char]1497)$([char]32)$([char]87)$([char]105)$([char]45)$([char]70)$([char]105)" }
-    "btnBeastPing"           = @{ En = "Ping Test (Google)"; He = "$([char]1489)$([char]1491)$([char]1497)$([char]1511)$([char]1514)$([char]32)$([char]1508)$([char]1497)$([char]1504)$([char]1490)$([char]32)$([char]40)$([char]71)$([char]111)$([char]111)$([char]103)$([char]108)$([char]101)$([char]41)" }
+    "btnBeastNetReset"          = @{ En = "Reset Network & IP"; He = "$([char]1488)$([char]1497)$([char]1508)$([char]1493)$([char]1505)$([char]32)$([char]1512)$([char]1513)$([char]1514)$([char]32)$([char]1493)$([char]45)$([char]73)$([char]80)" }
+    "btnBeastDNS"               = @{ En = "Flush DNS Cache"; He = "$([char]1504)$([char]1497)$([char]1511)$([char]1493)$([char]1497)$([char]32)$([char]1502)$([char]1496)$([char]1502)$([char]1493)$([char]1503)$([char]32)$([char]68)$([char]78)$([char]83)" }
+    "btnBeastPorts"             = @{ En = "Scan Open Ports"; He = "$([char]1505)$([char]1512)$([char]1497)$([char]1511)$([char]1514)$([char]32)$([char]1508)$([char]1493)$([char]1512)$([char]1496)$([char]1497)$([char]1501)$([char]32)$([char]1508)$([char]1514)$([char]1493)$([char]1495)$([char]1497)$([char]1501)" }
+    "btnBeastPublicIP"          = @{ En = "Show Public IP"; He = "$([char]1492)$([char]1510)$([char]1490)$([char]1514)$([char]32)$([char]73)$([char]80)$([char]32)$([char]1510)$([char]1497)$([char]1489)$([char]1493)$([char]1512)$([char]1497)" }
+    "btnBeastWiFi"              = @{ En = "Wi-Fi Profiles List"; He = "$([char]1512)$([char]1513)$([char]1497)$([char]1502)$([char]1514)$([char]32)$([char]1508)$([char]1512)$([char]1493)$([char]1508)$([char]1497)$([char]1500)$([char]1497)$([char]32)$([char]87)$([char]105)$([char]45)$([char]70)$([char]105)" }
+    "btnBeastPing"              = @{ En = "Ping Test (Google)"; He = "$([char]1489)$([char]1491)$([char]1497)$([char]1511)$([char]1514)$([char]32)$([char]1508)$([char]1497)$([char]1504)$([char]1490)$([char]32)$([char]40)$([char]71)$([char]111)$([char]111)$([char]103)$([char]108)$([char]101)$([char]41)" }
     
-    "btnBeastProductKey"     = @{ En = "Extract Product Key"; He = "$([char]1495)$([char]1497)$([char]1500)$([char]1493)$([char]1509)$([char]32)$([char]1502)$([char]1508)$([char]1514)$([char]1495)$([char]32)$([char]1502)$([char]1493)$([char]1510)$([char]1512)" }
-    "btnBeastRestorePoint"   = @{ En = "Create Restore Point"; He = "$([char]1497)$([char]1510)$([char]1497)$([char]1512)$([char]1514)$([char]32)$([char]1504)$([char]1511)$([char]1493)$([char]1491)$([char]1514)$([char]32)$([char]1513)$([char]1495)$([char]1493)$([char]1512)" }
-    "btnBeastTopRAM"         = @{ En = "Top RAM Processes"; He = "$([char]1514)$([char]1492)$([char]1500)$([char]1497)$([char]1499)$([char]1497)$([char]1501)$([char]32)$([char]1494)$([char]1493)$([char]1500)$([char]1500)$([char]1497)$([char]32)$([char]1494)$([char]1497)$([char]1499)$([char]1512)$([char]1493)$([char]1503)" }
-    "btnBeastStartup"        = @{ En = "Startup Programs"; He = "$([char]1514)$([char]1493)$([char]1499)$([char]1504)$([char]1493)$([char]1514)$([char]32)$([char]1513)$([char]1506)$([char]1493)$([char]1500)$([char]1493)$([char]1514)$([char]32)$([char]1489)$([char]1488)$([char]1514)$([char]1493)$([char]1500)" }
-    "btnBeastUptime"         = @{ En = "System Uptime"; He = "$([char]1494)$([char]1502)$([char]1503)$([char]32)$([char]1508)$([char]1506)$([char]1497)$([char]1500)$([char]1493)$([char]1514)$([char]32)$([char]1492)$([char]1502)$([char]1506)$([char]1512)$([char]1499)$([char]1514)" }
-    "btnBeastEventLog"       = @{ En = "Clear Event Logs"; He = "$([char]1504)$([char]1497)$([char]1511)$([char]1493)$([char]1497)$([char]32)$([char]1497)$([char]1493)$([char]1502)$([char]1504)$([char]1497)$([char]32)$([char]1488)$([char]1497)$([char]1512)$([char]1493)$([char]1506)$([char]1497)$([char]1501)" }
+    "btnBeastProductKey"        = @{ En = "Extract Product Key"; He = "$([char]1495)$([char]1497)$([char]1500)$([char]1493)$([char]1509)$([char]32)$([char]1502)$([char]1508)$([char]1514)$([char]1495)$([char]32)$([char]1502)$([char]1493)$([char]1510)$([char]1512)" }
+    "btnBeastRestorePoint"      = @{ En = "Create Restore Point"; He = "$([char]1497)$([char]1510)$([char]1497)$([char]1512)$([char]1514)$([char]32)$([char]1504)$([char]1511)$([char]1493)$([char]1491)$([char]1514)$([char]32)$([char]1513)$([char]1495)$([char]1493)$([char]1512)" }
+    "btnBeastTopRAM"            = @{ En = "Top RAM Processes"; He = "$([char]1514)$([char]1492)$([char]1500)$([char]1497)$([char]1499)$([char]1497)$([char]1501)$([char]32)$([char]1494)$([char]1493)$([char]1500)$([char]1500)$([char]1497)$([char]32)$([char]1494)$([char]1497)$([char]1499)$([char]1512)$([char]1493)$([char]1503)" }
+    "btnBeastStartup"           = @{ En = "Startup Programs"; He = "$([char]1514)$([char]1493)$([char]1499)$([char]1504)$([char]1493)$([char]1514)$([char]32)$([char]1513)$([char]1506)$([char]1493)$([char]1500)$([char]1493)$([char]1514)$([char]32)$([char]1489)$([char]1488)$([char]1514)$([char]1493)$([char]1500)" }
+    "btnBeastUptime"            = @{ En = "System Uptime"; He = "$([char]1494)$([char]1502)$([char]1503)$([char]32)$([char]1508)$([char]1506)$([char]1497)$([char]1500)$([char]1493)$([char]1514)$([char]32)$([char]1492)$([char]1502)$([char]1506)$([char]1512)$([char]1499)$([char]1514)" }
+    "btnBeastEventLog"          = @{ En = "Clear Event Logs"; He = "$([char]1504)$([char]1497)$([char]1511)$([char]1493)$([char]1497)$([char]32)$([char]1497)$([char]1493)$([char]1502)$([char]1504)$([char]1497)$([char]32)$([char]1488)$([char]1497)$([char]1512)$([char]1493)$([char]1506)$([char]1497)$([char]1501)" }
     
-    "btnBeastTaskMgr"        = @{ En = "Task Manager"; He = "$([char]1502)$([char]1504)$([char]1492)$([char]1500)$([char]32)$([char]1492)$([char]1513)$([char]1497)$([char]1502)$([char]1493)$([char]1514)" }
-    "btnBeastDevMgr"         = @{ En = "Device Manager"; He = "$([char]1502)$([char]1504)$([char]1492)$([char]1500)$([char]32)$([char]1492)$([char]1492)$([char]1514)$([char]1511)$([char]1504)$([char]1497)$([char]1501)" }
-    "btnBeastDiskMgr"        = @{ En = "Disk Management"; He = "$([char]1504)$([char]1497)$([char]1492)$([char]1493)$([char]1500)$([char]32)$([char]1491)$([char]1497)$([char]1505)$([char]1511)$([char]1497)$([char]1501)" }
-    "btnBeastRegEdit"        = @{ En = "Registry Editor"; He = "$([char]1506)$([char]1493)$([char]1512)$([char]1498)$([char]32)$([char]1492)$([char]1512)$([char]1497)$([char]1513)$([char]1493)$([char]1502)" }
-    "btnBeastNetplwiz"       = @{ En = "User Management"; He = "$([char]1504)$([char]1497)$([char]1492)$([char]1493)$([char]1500)$([char]32)$([char]1502)$([char]1513)$([char]1514)$([char]1502)$([char]1513)$([char]1497)$([char]1501)" }
-    "btnGameMode"            = @{ En = "Enable Game Mode"; He = "$([char]1492)$([char]1508)$([char]1506)$([char]1500)$([char]1514)$([char]32)$([char]1502)$([char]1510)$([char]1489)$([char]32)$([char]1502)$([char]1513)$([char]1492)$([char]1511)" }
-    "btnMouseAccel"          = @{ En = "Disable Mouse Accel"; He = "$([char]1489)$([char]1497)$([char]1496)$([char]1493)$([char]1500)$([char]32)$([char]1492)$([char]1488)$([char]1510)$([char]1514)$([char]32)$([char]1506)$([char]1499)$([char]1489)$([char]1512)" }
-    "btnIconSettings"        = @{ En = "Desktop Icon Settings"; He = "$([char]1492)$([char]1490)$([char]1491)$([char]1512)$([char]1493)$([char]1514)$([char]32)$([char]1505)$([char]1502)$([char]1500)$([char]1497)$([char]32)$([char]1513)$([char]1493)$([char]1500)$([char]1495)$([char]1503)$([char]32)$([char]1506)$([char]1489)$([char]1493)$([char]1491)$([char]1492)" }
-    "lblBeastQuickTools"     = @{ En = "Quick Access Tools"; He = "$([char]1499)$([char]1500)$([char]1497)$([char]32)$([char]1490)$([char]1497)$([char]1513)$([char]1492)$([char]32)$([char]1502)$([char]1492)$([char]1497)$([char]1512)$([char]1492)" }
+    "btnBeastTaskMgr"           = @{ En = "Task Manager"; He = "$([char]1502)$([char]1504)$([char]1492)$([char]1500)$([char]32)$([char]1492)$([char]1513)$([char]1497)$([char]1502)$([char]1493)$([char]1514)" }
+    "btnBeastDevMgr"            = @{ En = "Device Manager"; He = "$([char]1502)$([char]1504)$([char]1492)$([char]1500)$([char]32)$([char]1492)$([char]1492)$([char]1514)$([char]1511)$([char]1504)$([char]1497)$([char]1501)" }
+    "btnBeastDiskMgr"           = @{ En = "Disk Management"; He = "$([char]1504)$([char]1497)$([char]1492)$([char]1493)$([char]1500)$([char]32)$([char]1491)$([char]1497)$([char]1505)$([char]1511)$([char]1497)$([char]1501)" }
+    "btnBeastRegEdit"           = @{ En = "Registry Editor"; He = "$([char]1506)$([char]1493)$([char]1512)$([char]1498)$([char]32)$([char]1492)$([char]1512)$([char]1497)$([char]1513)$([char]1493)$([char]1502)" }
+    "btnBeastNetplwiz"          = @{ En = "User Management"; He = "$([char]1504)$([char]1497)$([char]1492)$([char]1493)$([char]1500)$([char]32)$([char]1502)$([char]1513)$([char]1514)$([char]1502)$([char]1513)$([char]1497)$([char]1501)" }
+    "btnGameMode"               = @{ En = "Enable Game Mode"; He = "$([char]1492)$([char]1508)$([char]1506)$([char]1500)$([char]1514)$([char]32)$([char]1502)$([char]1510)$([char]1489)$([char]32)$([char]1502)$([char]1513)$([char]1492)$([char]1511)" }
+    "btnMouseAccel"             = @{ En = "Disable Mouse Accel"; He = "$([char]1489)$([char]1497)$([char]1496)$([char]1493)$([char]1500)$([char]32)$([char]1492)$([char]1488)$([char]1510)$([char]1514)$([char]32)$([char]1506)$([char]1499)$([char]1489)$([char]1512)" }
+    "btnIconSettings"           = @{ En = "Desktop Icon Settings"; He = "$([char]1492)$([char]1490)$([char]1491)$([char]1512)$([char]1493)$([char]1514)$([char]32)$([char]1505)$([char]1502)$([char]1500)$([char]1497)$([char]32)$([char]1513)$([char]1493)$([char]1500)$([char]1495)$([char]1503)$([char]32)$([char]1506)$([char]1489)$([char]1493)$([char]1491)$([char]1492)" }
+    "lblBeastQuickTools"        = @{ En = "Quick Access Tools"; He = "$([char]1499)$([char]1500)$([char]1497)$([char]32)$([char]1490)$([char]1497)$([char]1513)$([char]1492)$([char]32)$([char]1502)$([char]1492)$([char]1497)$([char]1512)$([char]1492)" }
 
-    "lblKbdSysProp" = @{ En = "System Properties"; He = "$([char]1502)$([char]1488)$([char]1508)$([char]1497)$([char]1497)$([char]1504)$([char]1497)$([char]32)$([char]1502)$([char]1506)$([char]1512)$([char]1499)$([char]1514)" }
-    "lblKbdSnap" = @{ En = "Snap Window Left/Right"; He = "$([char]1492)$([char]1510)$([char]1502)$([char]1491)$([char]32)$([char]1495)$([char]1500)$([char]1493)$([char]1503)$([char]32)$([char]1497)$([char]1502)$([char]1497)$([char]1504)$([char]1492)$([char]47)$([char]1513)$([char]1502)$([char]1488)$([char]1500)$([char]1492)" }
-    "lblKbdRun" = @{ En = "Open Run Dialog"; He = "$([char]1492)$([char]1508)$([char]1506)$([char]1500)$([char]32)$([char]40)$([char]82)$([char]117)$([char]110)$([char]41)" }
-    "lblHdrTaskSys" = @{ En = " Task Manager & System"; He = "$([char]32)$([char]1502)$([char]1504)$([char]1492)$([char]1500)$([char]32)$([char]1502)$([char]1513)$([char]1497)$([char]1502)$([char]1493)$([char]1514)$([char]32)$([char]1493)$([char]1502)$([char]1506)$([char]1512)$([char]1499)$([char]1514)" }
+    "lblKbdSysProp"             = @{ En = "System Properties"; He = "$([char]1502)$([char]1488)$([char]1508)$([char]1497)$([char]1497)$([char]1504)$([char]1497)$([char]32)$([char]1502)$([char]1506)$([char]1512)$([char]1499)$([char]1514)" }
+    "lblKbdSnap"                = @{ En = "Snap Window Left/Right"; He = "$([char]1492)$([char]1510)$([char]1502)$([char]1491)$([char]32)$([char]1495)$([char]1500)$([char]1493)$([char]1503)$([char]32)$([char]1497)$([char]1502)$([char]1497)$([char]1504)$([char]1492)$([char]47)$([char]1513)$([char]1502)$([char]1488)$([char]1500)$([char]1492)" }
+    "lblKbdRun"                 = @{ En = "Open Run Dialog"; He = "$([char]1492)$([char]1508)$([char]1506)$([char]1500)$([char]32)$([char]40)$([char]82)$([char]117)$([char]110)$([char]41)" }
+    "lblHdrTaskSys"             = @{ En = " Task Manager & System"; He = "$([char]32)$([char]1502)$([char]1504)$([char]1492)$([char]1500)$([char]32)$([char]1502)$([char]1513)$([char]1497)$([char]1502)$([char]1493)$([char]1514)$([char]32)$([char]1493)$([char]1502)$([char]1506)$([char]1512)$([char]1499)$([char]1514)" }
     "lblKeyboardShortcutsTitle" = @{ En = " Keyboard Shortcuts"; He = "$([char]32)$([char]1511)$([char]1497)$([char]1510)$([char]1493)$([char]1512)$([char]1497)$([char]32)$([char]1502)$([char]1511)$([char]1500)$([char]1491)$([char]1514)" }
-    "lblKbdLock" = @{ En = "Lock Computer"; He = "$([char]1504)$([char]1506)$([char]1497)$([char]1500)$([char]1514)$([char]32)$([char]1502)$([char]1495)$([char]1513)$([char]1489)" }
-    "lblKbdPrtScn" = @{ En = "Screenshot to Clipboard"; He = "$([char]1510)$([char]1500)$([char]1501)$([char]32)$([char]1502)$([char]1505)$([char]1498)$([char]32)$([char]1500)$([char]1500)$([char]1493)$([char]1495)$([char]32)$([char]1492)$([char]1513)$([char]1502)$([char]1493)$([char]1512)$([char]1493)$([char]1514)" }
-    "lblKbdMax" = @{ En = "Maximize Window"; He = "$([char]1492)$([char]1490)$([char]1491)$([char]1500)$([char]32)$([char]1495)$([char]1500)$([char]1493)$([char]1503)" }
-    "lblKbdSnip" = @{ En = "Snipping Tool (Screenshot)"; He = "$([char]1499)$([char]1500)$([char]1497)$([char]32)$([char]1495)$([char]1497)$([char]1514)$([char]1493)$([char]1498)$([char]32)$([char]1502)$([char]1505)$([char]1498)" }
-    "lblKbdSecScreen" = @{ En = "Security Options Screen"; He = "$([char]1502)$([char]1505)$([char]1498)$([char]32)$([char]1488)$([char]1489)$([char]1496)$([char]1495)$([char]1492)" }
-    "lblKbdMin" = @{ En = "Minimize/Restore Window"; He = "$([char]1502)$([char]1494)$([char]1506)$([char]1512)$([char]47)$([char]1513)$([char]1495)$([char]1494)$([char]1512)$([char]32)$([char]1495)$([char]1500)$([char]1493)$([char]1503)" }
-    "lblKbdEmoji" = @{ En = "Emoji Picker"; He = "$([char]1514)$([char]1508)$([char]1512)$([char]1497)$([char]1496)$([char]32)$([char]1505)$([char]1502)$([char]1497)$([char]1497)$([char]1500)$([char]1497)$([char]1501)$([char]32)$([char]40)$([char]1488)$([char]1497)$([char]1502)$([char]1493)$([char]1490)$([char]39)$([char]1497)$([char]41)" }
-    "lblKbdSettings" = @{ En = "Open Settings"; He = "$([char]1492)$([char]1490)$([char]1491)$([char]1512)$([char]1493)$([char]1514)" }
-    "lblKbdTaskMgr" = @{ En = "Open Task Manager"; He = "$([char]1502)$([char]1504)$([char]1492)$([char]1500)$([char]32)$([char]1492)$([char]1502)$([char]1513)$([char]1497)$([char]1502)$([char]1493)$([char]1514)" }
-    "lblKbdExplorer" = @{ En = "Open File Explorer"; He = "$([char]1505)$([char]1497)$([char]1497)$([char]1512)$([char]32)$([char]1492)$([char]1511)$([char]1489)$([char]1510)$([char]1497)$([char]1501)" }
-    "lblHdrWinMgmt" = @{ En = " Window Management"; He = "$([char]32)$([char]1504)$([char]1497)$([char]1492)$([char]1493)$([char]1500)$([char]32)$([char]1495)$([char]1500)$([char]1493)$([char]1504)$([char]1493)$([char]1514)" }
-    "lblHdrClip" = @{ En = " Screenshot & Clipboard"; He = "$([char]32)$([char]1510)$([char]1497)$([char]1500)$([char]1493)$([char]1501)$([char]32)$([char]1502)$([char]1505)$([char]1498)$([char]32)$([char]1493)$([char]1500)$([char]1493)$([char]1495)$([char]32)$([char]1492)$([char]1506)$([char]1514)$([char]1511)$([char]1492)" }
-    "lblKbdQuickLink" = @{ En = "Quick Link Menu"; He = "$([char]1514)$([char]1508)$([char]1512)$([char]1497)$([char]1496)$([char]32)$([char]1502)$([char]1513)$([char]1514)$([char]1502)$([char]1513)$([char]32)$([char]1502)$([char]1514)$([char]1511)$([char]1491)$([char]1501)" }
-    "lblKbdClipHist" = @{ En = "Clipboard History"; He = "$([char]1492)$([char]1497)$([char]1505)$([char]1496)$([char]1493)$([char]1512)$([char]1497)$([char]1497)$([char]1514)$([char]32)$([char]1492)$([char]1506)$([char]1514)$([char]1511)$([char]1493)$([char]1514)" }
-    "lblKbdSwitch" = @{ En = "Switch Between Windows"; He = "$([char]1506)$([char]1489)$([char]1493)$([char]1512)$([char]32)$([char]1489)$([char]1497)$([char]1503)$([char]32)$([char]1495)$([char]1500)$([char]1493)$([char]1504)$([char]1493)$([char]1514)" }
-    "lblKbdClose" = @{ En = "Close Active Window"; He = "$([char]1505)$([char]1490)$([char]1493)$([char]1512)$([char]32)$([char]1495)$([char]1500)$([char]1493)$([char]1503)$([char]32)$([char]1508)$([char]1506)$([char]1497)$([char]1500)" }
-    "lblHdrGeneralWin" = @{ En = " General Windows"; He = "$([char]32)$([char]1499)$([char]1500)$([char]1500)$([char]1497)$([char]32)$([char]45)$([char]32)$([char]1493)$([char]1493)$([char]1497)$([char]1504)$([char]1491)$([char]1493)$([char]1505)" }
-    "lblKbdDesktop" = @{ En = "Show/Hide Desktop"; He = "$([char]1492)$([char]1510)$([char]1490)$([char]47)$([char]1492)$([char]1505)$([char]1514)$([char]1512)$([char]32)$([char]1513)$([char]1493)$([char]1500)$([char]1495)$([char]1503)$([char]32)$([char]1506)$([char]1489)$([char]1493)$([char]1491)$([char]1492)" }
-    "lblKbdTaskView" = @{ En = "Task View (Virtual Desktops)"; He = "$([char]1514)$([char]1510)$([char]1493)$([char]1490)$([char]1514)$([char]32)$([char]1502)$([char]1513)$([char]1497)$([char]1502)$([char]1493)$([char]1514)$([char]32)$([char]40)$([char]1512)$([char]1497)$([char]1489)$([char]1493)$([char]1497)$([char]32)$([char]1513)$([char]1493)$([char]1500)$([char]1495)$([char]1504)$([char]1493)$([char]1514)$([char]41)" }
+    "lblKbdLock"                = @{ En = "Lock Computer"; He = "$([char]1504)$([char]1506)$([char]1497)$([char]1500)$([char]1514)$([char]32)$([char]1502)$([char]1495)$([char]1513)$([char]1489)" }
+    "lblKbdPrtScn"              = @{ En = "Screenshot to Clipboard"; He = "$([char]1510)$([char]1500)$([char]1501)$([char]32)$([char]1502)$([char]1505)$([char]1498)$([char]32)$([char]1500)$([char]1500)$([char]1493)$([char]1495)$([char]32)$([char]1492)$([char]1513)$([char]1502)$([char]1493)$([char]1512)$([char]1493)$([char]1514)" }
+    "lblKbdMax"                 = @{ En = "Maximize Window"; He = "$([char]1492)$([char]1490)$([char]1491)$([char]1500)$([char]32)$([char]1495)$([char]1500)$([char]1493)$([char]1503)" }
+    "lblKbdSnip"                = @{ En = "Snipping Tool (Screenshot)"; He = "$([char]1499)$([char]1500)$([char]1497)$([char]32)$([char]1495)$([char]1497)$([char]1514)$([char]1493)$([char]1498)$([char]32)$([char]1502)$([char]1505)$([char]1498)" }
+    "lblKbdSecScreen"           = @{ En = "Security Options Screen"; He = "$([char]1502)$([char]1505)$([char]1498)$([char]32)$([char]1488)$([char]1489)$([char]1496)$([char]1495)$([char]1492)" }
+    "lblKbdMin"                 = @{ En = "Minimize/Restore Window"; He = "$([char]1502)$([char]1494)$([char]1506)$([char]1512)$([char]47)$([char]1513)$([char]1495)$([char]1494)$([char]1512)$([char]32)$([char]1495)$([char]1500)$([char]1493)$([char]1503)" }
+    "lblKbdEmoji"               = @{ En = "Emoji Picker"; He = "$([char]1514)$([char]1508)$([char]1512)$([char]1497)$([char]1496)$([char]32)$([char]1505)$([char]1502)$([char]1497)$([char]1497)$([char]1500)$([char]1497)$([char]1501)$([char]32)$([char]40)$([char]1488)$([char]1497)$([char]1502)$([char]1493)$([char]1490)$([char]39)$([char]1497)$([char]41)" }
+    "lblKbdSettings"            = @{ En = "Open Settings"; He = "$([char]1492)$([char]1490)$([char]1491)$([char]1512)$([char]1493)$([char]1514)" }
+    "lblKbdTaskMgr"             = @{ En = "Open Task Manager"; He = "$([char]1502)$([char]1504)$([char]1492)$([char]1500)$([char]32)$([char]1492)$([char]1502)$([char]1513)$([char]1497)$([char]1502)$([char]1493)$([char]1514)" }
+    "lblKbdExplorer"            = @{ En = "Open File Explorer"; He = "$([char]1505)$([char]1497)$([char]1497)$([char]1512)$([char]32)$([char]1492)$([char]1511)$([char]1489)$([char]1510)$([char]1497)$([char]1501)" }
+    "lblHdrWinMgmt"             = @{ En = " Window Management"; He = "$([char]32)$([char]1504)$([char]1497)$([char]1492)$([char]1493)$([char]1500)$([char]32)$([char]1495)$([char]1500)$([char]1493)$([char]1504)$([char]1493)$([char]1514)" }
+    "lblHdrClip"                = @{ En = " Screenshot & Clipboard"; He = "$([char]32)$([char]1510)$([char]1497)$([char]1500)$([char]1493)$([char]1501)$([char]32)$([char]1502)$([char]1505)$([char]1498)$([char]32)$([char]1493)$([char]1500)$([char]1493)$([char]1495)$([char]32)$([char]1492)$([char]1506)$([char]1514)$([char]1511)$([char]1492)" }
+    "lblKbdQuickLink"           = @{ En = "Quick Link Menu"; He = "$([char]1514)$([char]1508)$([char]1512)$([char]1497)$([char]1496)$([char]32)$([char]1502)$([char]1513)$([char]1514)$([char]1502)$([char]1513)$([char]32)$([char]1502)$([char]1514)$([char]1511)$([char]1491)$([char]1501)" }
+    "lblKbdClipHist"            = @{ En = "Clipboard History"; He = "$([char]1492)$([char]1497)$([char]1505)$([char]1496)$([char]1493)$([char]1512)$([char]1497)$([char]1497)$([char]1514)$([char]32)$([char]1492)$([char]1506)$([char]1514)$([char]1511)$([char]1493)$([char]1514)" }
+    "lblKbdSwitch"              = @{ En = "Switch Between Windows"; He = "$([char]1506)$([char]1489)$([char]1493)$([char]1512)$([char]32)$([char]1489)$([char]1497)$([char]1503)$([char]32)$([char]1495)$([char]1500)$([char]1493)$([char]1504)$([char]1493)$([char]1514)" }
+    "lblKbdClose"               = @{ En = "Close Active Window"; He = "$([char]1505)$([char]1490)$([char]1493)$([char]1512)$([char]32)$([char]1495)$([char]1500)$([char]1493)$([char]1503)$([char]32)$([char]1508)$([char]1506)$([char]1497)$([char]1500)" }
+    "lblHdrGeneralWin"          = @{ En = " General Windows"; He = "$([char]32)$([char]1499)$([char]1500)$([char]1500)$([char]1497)$([char]32)$([char]45)$([char]32)$([char]1493)$([char]1493)$([char]1497)$([char]1504)$([char]1491)$([char]1493)$([char]1505)" }
+    "lblKbdDesktop"             = @{ En = "Show/Hide Desktop"; He = "$([char]1492)$([char]1510)$([char]1490)$([char]47)$([char]1492)$([char]1505)$([char]1514)$([char]1512)$([char]32)$([char]1513)$([char]1493)$([char]1500)$([char]1495)$([char]1503)$([char]32)$([char]1506)$([char]1489)$([char]1493)$([char]1491)$([char]1492)" }
+    "lblKbdTaskView"            = @{ En = "Task View (Virtual Desktops)"; He = "$([char]1514)$([char]1510)$([char]1493)$([char]1490)$([char]1514)$([char]32)$([char]1502)$([char]1513)$([char]1497)$([char]1502)$([char]1493)$([char]1514)$([char]32)$([char]40)$([char]1512)$([char]1497)$([char]1489)$([char]1493)$([char]1497)$([char]32)$([char]1513)$([char]1493)$([char]1500)$([char]1495)$([char]1504)$([char]1493)$([char]1514)$([char]41)" }
 
     # Additional Sidebar, Dashboard & Cleanup Translations
     "btnKeyboardShortcuts"   = @{ En = "Shortcuts"; He = "$([char]1511)$([char]1497)$([char]1510)$([char]1493)$([char]1512)$([char]1497)$([char]32)$([char]1502)$([char]1511)$([char]1500)$([char]1491)$([char]1514)" }
@@ -985,7 +1019,7 @@ function Toggle-Language {
     $global:isHebrew = $script:isHebrew
     $mode = $(if ($script:isHebrew) { "He" } else { "En" })
     $flow = $(if ($script:isHebrew) { [System.Windows.FlowDirection]::RightToLeft } else { [System.Windows.FlowDirection]::LeftToRight })
-        # Fix: Keep background from flipping by only mirroring the content grid
+    # Fix: Keep background from flipping by only mirroring the content grid
     $mainGrid = Get-GuiElement "MainGrid"
     if ($mainGrid) { $mainGrid.FlowDirection = $flow }
     # Keep window LeftToRight for the Background ImageBrush
@@ -1001,7 +1035,7 @@ function Toggle-Language {
     }
     $sidebar = Get-GuiElement "SidebarBorder"
     if ($sidebar) {
-        $sidebar.CornerRadius = if ($script:isHebrew) { New-Object System.Windows.CornerRadius(0,12,12,0) } else { New-Object System.Windows.CornerRadius(12,0,0,12) }
+        $sidebar.CornerRadius = if ($script:isHebrew) { New-Object System.Windows.CornerRadius(0, 12, 12, 0) } else { New-Object System.Windows.CornerRadius(12, 0, 0, 12) }
     }
     if (Get-Command Update-Greeting-Smart -ErrorAction SilentlyContinue) { Update-Greeting-Smart }
     $culture = if ($script:isHebrew) { $script:cultureHe } else { $script:cultureEn }
@@ -1021,7 +1055,7 @@ function Invoke-SearchChoice {
     param($Term)
     [xml]$dialogXaml = @"
     <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="Smart Search" Height="220" Width="450" WindowStartupLocation="CenterScreen" WindowStyle="None" AllowsTransparency="True" Background="Transparent" Topmost="True"><Border CornerRadius="15" BorderThickness="1" BorderBrush="#8A2BE2" Background="#1E1E1E"><Effect><DropShadowEffect BlurRadius="15" ShadowDepth="5" Opacity="0.5"/></Effect><StackPanel Margin="20"><TextBlock Text="Smart Search" Foreground="#8A2BE2" FontWeight="Bold" FontSize="18" Margin="0,0,0,10"/><TextBlock Foreground="White" FontSize="14" TextWrapping="Wrap" Margin="0,0,0,5">No internal feature found for '<Run Name="runSearchTerm" Foreground="#00E0FF" FontWeight="Bold" Text="..."/>'.</TextBlock><TextBlock Text="Where would you like to search?" Foreground="#B0B0B0" FontSize="14" Margin="0,0,0,20"/><StackPanel Orientation="Horizontal" HorizontalAlignment="Center"><Button Name="btnPC" Content=" Computer" Width="130" Height="35" Margin="5" Background="#333333" Foreground="White" BorderThickness="0" Cursor="Hand"/><Button Name="btnWeb" Content=" Web" Width="130" Height="35" Margin="5" Background="#8A2BE2" Foreground="White" BorderThickness="0" Cursor="Hand"/><Button Name="btnCancel" Content=" Cancel" Width="100" Height="35" Margin="5" Background="#E81123" Foreground="White" BorderThickness="0" Cursor="Hand"/></StackPanel></StackPanel></Border></Window>
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="Smart Search" Height="230" Width="460" WindowStartupLocation="CenterScreen" WindowStyle="None" AllowsTransparency="True" Background="Transparent" Topmost="True"><Border CornerRadius="16" BorderThickness="1" BorderBrush="#38BDF8" Background="#0F172A"><Border.Effect><DropShadowEffect BlurRadius="24" ShadowDepth="6" Opacity="0.55"/></Border.Effect><StackPanel Margin="24"><TextBlock Text="Smart Search" Foreground="#38BDF8" FontWeight="Bold" FontSize="18" Margin="0,0,0,10"/><TextBlock Foreground="#F8FAFC" FontSize="14" TextWrapping="Wrap" Margin="0,0,0,6">No internal feature found for '<Run Name="runSearchTerm" Foreground="#38BDF8" FontWeight="Bold" Text="..."/>'.</TextBlock><TextBlock Text="Where would you like to search?" Foreground="#94A3B8" FontSize="13.5" Margin="0,0,0,22"/><StackPanel Orientation="Horizontal" HorizontalAlignment="Center"><Button Name="btnPC" Content=" Computer" Width="130" Height="36" Margin="5" Background="#1E293B" Foreground="#F8FAFC" BorderThickness="0" Cursor="Hand"><Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="8"/></Style></Button.Resources></Button><Button Name="btnWeb" Content=" Web" Width="130" Height="36" Margin="5" Background="#0284C7" Foreground="White" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold"><Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="8"/></Style></Button.Resources></Button><Button Name="btnCancel" Content=" Cancel" Width="100" Height="36" Margin="5" Background="#DC2626" Foreground="White" BorderThickness="0" Cursor="Hand"><Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="8"/></Style></Button.Resources></Button></StackPanel></StackPanel></Border></Window>
 "@
     $reader = (New-Object System.Xml.XmlNodeReader $dialogXaml)
     $dialog = [Windows.Markup.XamlReader]::Load($reader)

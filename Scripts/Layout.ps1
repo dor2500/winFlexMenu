@@ -1,37 +1,37 @@
-﻿$xaml = @"
+$xaml = @"
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:wfi="clr-namespace:System.Windows.Forms.Integration;assembly=WindowsFormsIntegration"
-        Title="WinFlexOS V3.2" Height="950" Width="1450"
+        Title="WinFlexOS V3.3" Height="950" Width="1450"
         WindowStartupLocation="CenterScreen" 
         WindowStyle="None" AllowsTransparency="True" Background="Transparent"
         FontFamily="{DynamicResource ThemeFont}" Name="MainWindow">
     
     <Window.Resources>
         <!-- COLORS -->
-        <SolidColorBrush x:Key="ThemeBg" Color="#0F0F0F"/>
-        <SolidColorBrush x:Key="ThemeSidebar" Color="#141414"/>
-        <SolidColorBrush x:Key="ThemeCardBg" Color="#1E1E1E"/>
-        <SolidColorBrush x:Key="ThemeFg" Color="#FFFFFF"/>          
-        <SolidColorBrush x:Key="ThemeSubText" Color="#B0B0B0"/>     
-        <SolidColorBrush x:Key="ThemeAccent" Color="#00BFFF"/>      
-        <SolidColorBrush x:Key="ThemeBorder" Color="#2A2A2A"/>
-        <SolidColorBrush x:Key="ThemeSidebarFg" Color="#B0B0B0"/>   
-        <SolidColorBrush x:Key="ThemeWinCtrl" Color="#AAAAAA"/>     
+        <SolidColorBrush x:Key="ThemeBg" Color="#090D16"/>
+        <SolidColorBrush x:Key="ThemeSidebar" Color="#0D1322"/>
+        <SolidColorBrush x:Key="ThemeCardBg" Color="#131C2E"/>
+        <SolidColorBrush x:Key="ThemeFg" Color="#F8FAFC"/>          
+        <SolidColorBrush x:Key="ThemeSubText" Color="#94A3B8"/>     
+        <SolidColorBrush x:Key="ThemeAccent" Color="#38BDF8"/>      
+        <SolidColorBrush x:Key="ThemeBorder" Color="#1E293B"/>
+        <SolidColorBrush x:Key="ThemeSidebarFg" Color="#CBD5E1"/>   
+        <SolidColorBrush x:Key="ThemeWinCtrl" Color="#94A3B8"/>     
         
         <!-- DYNAMIC STYLING RESOURCES -->
-        <CornerRadius x:Key="ThemeCornerRadius">16</CornerRadius>
+        <CornerRadius x:Key="ThemeCornerRadius">14</CornerRadius>
         <SolidColorBrush x:Key="ThemeTitleBg" Color="Transparent"/>
-        <SolidColorBrush x:Key="ThemeTitleFg" Color="#00BFFF"/>
+        <SolidColorBrush x:Key="ThemeTitleFg" Color="#38BDF8"/>
         <Thickness x:Key="ThemeBorderThickness">1</Thickness>
-        <FontFamily x:Key="ThemeFont">Bahnschrift, Segoe UI, sans-serif</FontFamily>
+        <FontFamily x:Key="ThemeFont">Segoe UI Variable Display, Segoe UI, sans-serif</FontFamily>
         
         <!-- VISIBILITY TOGGLES -->
         <Visibility x:Key="VisModern">Visible</Visibility>
         <Visibility x:Key="VisRetro">Collapsed</Visibility>
 
-        <DropShadowEffect x:Key="NeonGlow" BlurRadius="15" ShadowDepth="0" Color="{Binding Color, Source={StaticResource ThemeAccent}}" Opacity="0.4"/>
-        <DropShadowEffect x:Key="CardShadow" BlurRadius="20" ShadowDepth="5" Direction="270" Color="Black" Opacity="0.2"/>
+        <DropShadowEffect x:Key="NeonGlow" BlurRadius="18" ShadowDepth="0" Color="{Binding Color, Source={StaticResource ThemeAccent}}" Opacity="0.35"/>
+        <DropShadowEffect x:Key="CardShadow" BlurRadius="24" ShadowDepth="6" Direction="270" Color="Black" Opacity="0.35"/>
 
         <!-- CONTEXT MENU STYLE -->
         <Style TargetType="ContextMenu">
@@ -117,7 +117,7 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ComboBoxItem">
-                        <Border Name="Bd" Background="{TemplateBinding Background}" Padding="5">
+                        <Border Name="Bd" Background="{TemplateBinding Background}" Padding="10,6" Margin="3,1" CornerRadius="6">
                             <ContentPresenter />
                         </Border>
                         <ControlTemplate.Triggers>
@@ -138,8 +138,8 @@
              <Setter Property="Foreground" Value="{DynamicResource ThemeFg}"/>
              <Setter Property="Background" Value="{DynamicResource ThemeCardBg}"/>
              <Setter Property="BorderBrush" Value="{DynamicResource ThemeBorder}"/>
-             <Setter Property="Height" Value="30"/>
-             <Setter Property="FontSize" Value="14"/>
+             <Setter Property="Height" Value="34"/>
+             <Setter Property="FontSize" Value="13.5"/>
              <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ComboBox">
@@ -147,7 +147,7 @@
                             <ToggleButton Name="ToggleButton" Grid.Column="2" Focusable="false" IsChecked="{Binding Path=IsDropDownOpen,Mode=TwoWay,RelativeSource={RelativeSource TemplatedParent}}" ClickMode="Press">
                                 <ToggleButton.Template>
                                     <ControlTemplate TargetType="ToggleButton">
-                                        <Border Background="{DynamicResource ThemeCardBg}" BorderBrush="{DynamicResource ThemeBorder}" BorderThickness="1" CornerRadius="6">
+                                        <Border Background="{DynamicResource ThemeCardBg}" BorderBrush="{DynamicResource ThemeBorder}" BorderThickness="1" CornerRadius="8">
                                             <Grid>
                                                 <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="20"/></Grid.ColumnDefinitions>
                                                 <Path Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Fill="{DynamicResource ThemeSubText}" Data="M 0 0 L 4 4 L 8 0 Z"/>
@@ -159,7 +159,7 @@
                             <ContentPresenter Name="ContentSite" IsHitTestVisible="False"  Content="{TemplateBinding SelectionBoxItem}" Margin="10,0,23,0" VerticalAlignment="Center" HorizontalAlignment="Left" />
                             <Popup Name="Popup" Placement="Bottom" IsOpen="{TemplateBinding IsDropDownOpen}" AllowsTransparency="True" Focusable="False" PopupAnimation="Slide">
                                 <Grid Name="DropDown" SnapsToDevicePixels="True" MinWidth="{TemplateBinding ActualWidth}" MaxHeight="{TemplateBinding MaxDropDownHeight}">
-                                    <Border x:Name="DropDownBorder" Background="{DynamicResource ThemeCardBg}" BorderThickness="1" BorderBrush="{DynamicResource ThemeBorder}" CornerRadius="6"/>
+                                    <Border x:Name="DropDownBorder" Background="{DynamicResource ThemeCardBg}" BorderThickness="1" BorderBrush="{DynamicResource ThemeBorder}" CornerRadius="10" Effect="{StaticResource CardShadow}"/>
                                     <ScrollViewer Margin="4,6,4,6" SnapsToDevicePixels="True"><StackPanel IsItemsHost="True" /></ScrollViewer>
                                 </Grid>
                             </Popup>
@@ -186,23 +186,22 @@
         <Style x:Key="SidebarBtn" TargetType="Button">
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Foreground" Value="{DynamicResource ThemeSidebarFg}"/>
-            <Setter Property="Height" Value="36"/>
-            <Setter Property="FontSize" Value="14"/> 
+            <Setter Property="Height" Value="38"/>
+            <Setter Property="FontSize" Value="13.5"/> 
             <Setter Property="FontWeight" Value="Normal"/>
-            <Setter Property="Margin" Value="10,1"/>
+            <Setter Property="Margin" Value="10,2"/>
             <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Effect" Value="{DynamicResource NeonGlow}"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border Name="Bd" Background="{TemplateBinding Background}" CornerRadius="8" RenderTransformOrigin="0.5,0.5">
+                        <Border Name="Bd" Background="{TemplateBinding Background}" CornerRadius="10" RenderTransformOrigin="0.5,0.5">
                             <Border.RenderTransform>
                                 <ScaleTransform x:Name="SidebarScale" ScaleX="1" ScaleY="1"/>
                             </Border.RenderTransform>
                             <Grid>
                                 <Grid.ColumnDefinitions><ColumnDefinition Width="4"/><ColumnDefinition Width="40"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
-                                <Border Name="Indicator" Grid.Column="0" Width="3" Height="25" Background="Transparent" CornerRadius="1.5"/>
-                                <TextBlock Name="btnIcon" Text="{TemplateBinding Tag}" Grid.Column="1" FontFamily="Segoe MDL2 Assets" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{TemplateBinding Foreground}"/>
+                                <Border Name="Indicator" Grid.Column="0" Width="4" Height="20" Background="Transparent" CornerRadius="2"/>
+                                <TextBlock Name="btnIcon" Text="{TemplateBinding Tag}" Grid.Column="1" FontFamily="Segoe MDL2 Assets" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{TemplateBinding Foreground}"/>
                                 <ContentPresenter Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Left" TextElement.Foreground="{TemplateBinding Foreground}"/>
                             </Grid>
                         </Border>
@@ -210,18 +209,18 @@
                             <EventTrigger RoutedEvent="MouseEnter">
                                 <BeginStoryboard>
                                     <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetName="SidebarScale" Storyboard.TargetProperty="ScaleX" To="1.05" Duration="0:0:0.2"/>
-                                        <DoubleAnimation Storyboard.TargetName="SidebarScale" Storyboard.TargetProperty="ScaleY" To="1.05" Duration="0:0:0.2"/>
-                                        <ColorAnimation Storyboard.TargetName="Bd" Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)" To="#15888888" Duration="0:0:0.2"/>
+                                        <DoubleAnimation Storyboard.TargetName="SidebarScale" Storyboard.TargetProperty="ScaleX" To="1.015" Duration="0:0:0.15"/>
+                                        <DoubleAnimation Storyboard.TargetName="SidebarScale" Storyboard.TargetProperty="ScaleY" To="1.015" Duration="0:0:0.15"/>
+                                        <ColorAnimation Storyboard.TargetName="Bd" Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)" To="#18FFFFFF" Duration="0:0:0.15"/>
                                     </Storyboard>
                                 </BeginStoryboard>
                             </EventTrigger>
                             <EventTrigger RoutedEvent="MouseLeave">
                                 <BeginStoryboard>
                                     <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetName="SidebarScale" Storyboard.TargetProperty="ScaleX" To="1" Duration="0:0:0.2"/>
-                                        <DoubleAnimation Storyboard.TargetName="SidebarScale" Storyboard.TargetProperty="ScaleY" To="1" Duration="0:0:0.2"/>
-                                        <ColorAnimation Storyboard.TargetName="Bd" Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)" To="Transparent" Duration="0:0:0.3"/>
+                                        <DoubleAnimation Storyboard.TargetName="SidebarScale" Storyboard.TargetProperty="ScaleX" To="1" Duration="0:0:0.15"/>
+                                        <DoubleAnimation Storyboard.TargetName="SidebarScale" Storyboard.TargetProperty="ScaleY" To="1" Duration="0:0:0.15"/>
+                                        <ColorAnimation Storyboard.TargetName="Bd" Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)" To="Transparent" Duration="0:0:0.2"/>
                                     </Storyboard>
                                 </BeginStoryboard>
                             </EventTrigger>
@@ -234,22 +233,22 @@
         <Style x:Key="SidebarBtnAccent" TargetType="Button">
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Foreground" Value="{DynamicResource ThemeAccent}"/>
-            <Setter Property="Height" Value="36"/>
-            <Setter Property="FontSize" Value="14"/> 
+            <Setter Property="Height" Value="38"/>
+            <Setter Property="FontSize" Value="13.5"/> 
             <Setter Property="FontWeight" Value="Bold"/>
-            <Setter Property="Margin" Value="10,1"/>
+            <Setter Property="Margin" Value="10,2"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border Name="Bd" Background="{TemplateBinding Background}" CornerRadius="8" RenderTransformOrigin="0.5,0.5">
+                        <Border Name="Bd" Background="{TemplateBinding Background}" CornerRadius="10" RenderTransformOrigin="0.5,0.5">
                             <Border.RenderTransform>
                                 <ScaleTransform x:Name="AccentScale" ScaleX="1" ScaleY="1"/>
                             </Border.RenderTransform>
                             <Grid>
                                 <Grid.ColumnDefinitions><ColumnDefinition Width="4"/><ColumnDefinition Width="40"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
-                                <Border Name="Indicator" Grid.Column="0" Width="3" Height="25" Background="Transparent" CornerRadius="1.5"/>
-                                <TextBlock Name="btnIcon" Text="{TemplateBinding Tag}" Grid.Column="1" FontFamily="Segoe MDL2 Assets" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{TemplateBinding Foreground}"/>
+                                <Border Name="Indicator" Grid.Column="0" Width="4" Height="20" Background="Transparent" CornerRadius="2"/>
+                                <TextBlock Name="btnIcon" Text="{TemplateBinding Tag}" Grid.Column="1" FontFamily="Segoe MDL2 Assets" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{TemplateBinding Foreground}"/>
                                 <ContentPresenter Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Left" TextElement.Foreground="{TemplateBinding Foreground}"/>
                             </Grid>
                         </Border>
@@ -257,18 +256,18 @@
                             <EventTrigger RoutedEvent="MouseEnter">
                                 <BeginStoryboard>
                                     <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetName="AccentScale" Storyboard.TargetProperty="ScaleX" To="1.05" Duration="0:0:0.2"/>
-                                        <DoubleAnimation Storyboard.TargetName="AccentScale" Storyboard.TargetProperty="ScaleY" To="1.05" Duration="0:0:0.2"/>
-                                        <ColorAnimation Storyboard.TargetName="Bd" Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)" To="#15888888" Duration="0:0:0.2"/>
+                                        <DoubleAnimation Storyboard.TargetName="AccentScale" Storyboard.TargetProperty="ScaleX" To="1.015" Duration="0:0:0.15"/>
+                                        <DoubleAnimation Storyboard.TargetName="AccentScale" Storyboard.TargetProperty="ScaleY" To="1.015" Duration="0:0:0.15"/>
+                                        <ColorAnimation Storyboard.TargetName="Bd" Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)" To="#18FFFFFF" Duration="0:0:0.15"/>
                                     </Storyboard>
                                 </BeginStoryboard>
                             </EventTrigger>
                             <EventTrigger RoutedEvent="MouseLeave">
                                 <BeginStoryboard>
                                     <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetName="AccentScale" Storyboard.TargetProperty="ScaleX" To="1" Duration="0:0:0.2"/>
-                                        <DoubleAnimation Storyboard.TargetName="AccentScale" Storyboard.TargetProperty="ScaleY" To="1" Duration="0:0:0.2"/>
-                                        <ColorAnimation Storyboard.TargetName="Bd" Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)" To="Transparent" Duration="0:0:0.3"/>
+                                        <DoubleAnimation Storyboard.TargetName="AccentScale" Storyboard.TargetProperty="ScaleX" To="1" Duration="0:0:0.15"/>
+                                        <DoubleAnimation Storyboard.TargetName="AccentScale" Storyboard.TargetProperty="ScaleY" To="1" Duration="0:0:0.15"/>
+                                        <ColorAnimation Storyboard.TargetName="Bd" Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)" To="Transparent" Duration="0:0:0.2"/>
                                     </Storyboard>
                                 </BeginStoryboard>
                             </EventTrigger>
@@ -281,41 +280,60 @@
         <Style x:Key="ActionBtn" TargetType="Button">
             <Setter Property="Background" Value="{DynamicResource ThemeCardBg}"/> 
             <Setter Property="Foreground" Value="{DynamicResource ThemeFg}"/>
-            <Setter Property="Height" Value="40"/>
+            <Setter Property="Height" Value="38"/>
             <Setter Property="Margin" Value="5"/>
-            <Setter Property="Padding" Value="15,0"/>
+            <Setter Property="Padding" Value="16,0"/>
+            <Setter Property="FontSize" Value="13.5"/>
             <Setter Property="BorderThickness" Value="{DynamicResource ThemeBorderThickness}"/>
             <Setter Property="BorderBrush" Value="{DynamicResource ThemeBorder}"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                         <Border Name="Bd" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="{DynamicResource ThemeCornerRadius}" RenderTransformOrigin="0.5,0.5">
+                         <Border Name="Bd" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="10" RenderTransformOrigin="0.5,0.5">
                             <Border.RenderTransform>
                                 <ScaleTransform x:Name="ActionScale" ScaleX="1" ScaleY="1"/>
                             </Border.RenderTransform>
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" TextBlock.FontWeight="Normal"/>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" TextBlock.FontWeight="Medium"/>
                          </Border>
                          <ControlTemplate.Triggers>
                             <EventTrigger RoutedEvent="MouseEnter">
                                 <BeginStoryboard>
                                     <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetName="ActionScale" Storyboard.TargetProperty="ScaleX" To="1.05" Duration="0:0:0.15"/>
-                                        <DoubleAnimation Storyboard.TargetName="ActionScale" Storyboard.TargetProperty="ScaleY" To="1.05" Duration="0:0:0.15"/>
+                                        <DoubleAnimation Storyboard.TargetName="ActionScale" Storyboard.TargetProperty="ScaleX" To="1.02" Duration="0:0:0.14"/>
+                                        <DoubleAnimation Storyboard.TargetName="ActionScale" Storyboard.TargetProperty="ScaleY" To="1.02" Duration="0:0:0.14"/>
                                     </Storyboard>
                                 </BeginStoryboard>
                             </EventTrigger>
                             <EventTrigger RoutedEvent="MouseLeave">
                                 <BeginStoryboard>
                                     <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetName="ActionScale" Storyboard.TargetProperty="ScaleX" To="1" Duration="0:0:0.2"/>
-                                        <DoubleAnimation Storyboard.TargetName="ActionScale" Storyboard.TargetProperty="ScaleY" To="1" Duration="0:0:0.2"/>
+                                        <DoubleAnimation Storyboard.TargetName="ActionScale" Storyboard.TargetProperty="ScaleX" To="1" Duration="0:0:0.18"/>
+                                        <DoubleAnimation Storyboard.TargetName="ActionScale" Storyboard.TargetProperty="ScaleY" To="1" Duration="0:0:0.18"/>
                                     </Storyboard>
                                 </BeginStoryboard>
                             </EventTrigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="ActionScale" Storyboard.TargetProperty="ScaleX" To="0.98" Duration="0:0:0.06"/>
+                                            <DoubleAnimation Storyboard.TargetName="ActionScale" Storyboard.TargetProperty="ScaleY" To="0.98" Duration="0:0:0.06"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="ActionScale" Storyboard.TargetProperty="ScaleX" To="1.02" Duration="0:0:0.1"/>
+                                            <DoubleAnimation Storyboard.TargetName="ActionScale" Storyboard.TargetProperty="ScaleY" To="1.02" Duration="0:0:0.1"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+                            </Trigger>
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter TargetName="Bd" Property="Background" Value="{DynamicResource ThemeAccent}"/>
-                                <Setter TargetName="Bd" Property="BorderBrush" Value="Transparent"/>
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource ThemeAccent}"/>
                                 <Setter Property="Foreground" Value="White"/>
                             </Trigger>
                          </ControlTemplate.Triggers>
@@ -351,8 +369,8 @@
         <Style x:Key="CardStyle" TargetType="Border">
             <Setter Property="Background" Value="{DynamicResource ThemeCardBg}"/>
             <Setter Property="CornerRadius" Value="{DynamicResource ThemeCornerRadius}"/>
-            <Setter Property="Padding" Value="0"/>
-            <Setter Property="Margin" Value="0,0,0,20"/>
+            <Setter Property="Padding" Value="20"/>
+            <Setter Property="Margin" Value="0,0,0,18"/>
             <Setter Property="Effect" Value="{StaticResource CardShadow}"/>
             <Setter Property="BorderThickness" Value="{DynamicResource ThemeBorderThickness}"/>
             <Setter Property="BorderBrush" Value="{DynamicResource ThemeBorder}"/>
@@ -360,19 +378,21 @@
         
         <Style TargetType="TabItem">
             <Setter Property="Foreground" Value="{DynamicResource ThemeSubText}"/>
-            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontSize" Value="13.5"/>
             <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="TabItem">
-                        <Border Name="Border" BorderThickness="0,0,0,2" BorderBrush="Transparent" Margin="0,0,10,0" Padding="10,5">
+                        <Border Name="Border" CornerRadius="8" Background="Transparent" BorderThickness="1" BorderBrush="Transparent" Margin="0,0,8,6" Padding="14,7">
                             <ContentPresenter ContentSource="Header"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="Border" Property="Background" Value="#2238BDF8"/>
                                 <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource ThemeAccent}"/>
                                 <Setter Property="Foreground" Value="{DynamicResource ThemeAccent}"/>
-                                <Setter Property="FontWeight" Value="Bold"/>
+                                <Setter Property="FontWeight" Value="SemiBold"/>
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter Property="Foreground" Value="{DynamicResource ThemeFg}"/>
@@ -384,15 +404,17 @@
         </Style>
 
         <Style x:Key="WinCtrlBtn" TargetType="Button">
-            <Setter Property="Width" Value="45"/> <Setter Property="Height" Value="35"/>
+            <Setter Property="Width" Value="40"/> <Setter Property="Height" Value="32"/>
+            <Setter Property="Margin" Value="2,0"/>
             <Setter Property="Background" Value="Transparent"/> 
             <Setter Property="Foreground" Value="{DynamicResource ThemeWinCtrl}"/>
             <Setter Property="FontFamily" Value="Segoe MDL2 Assets"/>
             <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border Name="Bd" Background="{TemplateBinding Background}">
+                        <Border Name="Bd" Background="{TemplateBinding Background}" CornerRadius="8">
                              <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
@@ -407,17 +429,19 @@
         </Style>
         
         <Style x:Key="CloseBtn" TargetType="Button">
-            <Setter Property="Width" Value="45"/>
-            <Setter Property="Height" Value="35"/>
+            <Setter Property="Width" Value="40"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="Margin" Value="2,0"/>
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Foreground" Value="{DynamicResource ThemeWinCtrl}"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="FontFamily" Value="Segoe MDL2 Assets"/>
             <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border Name="Bd" Background="{TemplateBinding Background}" CornerRadius="0,12,0,0">
+                        <Border Name="Bd" Background="{TemplateBinding Background}" CornerRadius="8">
                              <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
@@ -461,29 +485,31 @@
             <Grid.ColumnDefinitions><ColumnDefinition Width="260"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
 
             <!-- SIDEBAR -->
-            <Border Name="SidebarBorder" Grid.Column="0" Background="{DynamicResource ThemeSidebar}" CornerRadius="12,0,0,12">
+            <Border Name="SidebarBorder" Grid.Column="0" Background="{DynamicResource ThemeSidebar}" CornerRadius="12,0,0,12" BorderBrush="{DynamicResource ThemeBorder}" BorderThickness="0,0,1,0">
                 <Grid>
                     <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
                     
-                    <StackPanel Grid.Row="0" Margin="0,18,0,12">
+                    <StackPanel Grid.Row="0" Margin="0,20,0,14">
                         <!-- Logo -->
-                        <Border Name="LogoBorder" Width="46" Height="46" CornerRadius="14" Background="{DynamicResource ThemeAccent}" HorizontalAlignment="Center" Margin="0,0,0,8">
+                        <Border Name="LogoBorder" Width="48" Height="48" CornerRadius="14" Background="{DynamicResource ThemeAccent}" Effect="{StaticResource NeonGlow}" HorizontalAlignment="Center" Margin="0,0,0,8">
                             <TextBlock Name="LogoIcon" Text="&#xE7F4;" FontFamily="Segoe MDL2 Assets" FontSize="22" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
-                        <TextBlock Name="AppTitle" Text="WinFlexOS" FontSize="20" FontWeight="Bold" Foreground="{DynamicResource ThemeFg}" HorizontalAlignment="Center"/>
-                        <TextBlock Text="V3.2 Ultimate" FontSize="10" Foreground="{DynamicResource ThemeSubText}" HorizontalAlignment="Center"/>
+                        <TextBlock Name="AppTitle" Text="WinFlexOS" FontSize="21" FontWeight="Bold" Foreground="{DynamicResource ThemeFg}" HorizontalAlignment="Center"/>
+                        <Border Background="#1F38BDF8" CornerRadius="6" Padding="8,2" HorizontalAlignment="Center" Margin="0,4,0,0">
+                            <TextBlock Text="V3.3 FLUENT" FontSize="10" FontWeight="SemiBold" Foreground="{DynamicResource ThemeAccent}"/>
+                        </Border>
                     </StackPanel>
 
                     <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="10,0">
                         <StackPanel Name="stkSidebar">
-                            <TextBlock Name="lblGen" Text="GENERAL" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource ThemeSubText}" Margin="15,0,0,4"/>
+                            <TextBlock Name="lblGen" Text="GENERAL" FontSize="10.5" FontWeight="Bold" Opacity="0.65" Foreground="{DynamicResource ThemeSubText}" Margin="18,14,0,5"/>
 
                             <Button Name="btnHome" Content="Dashboard" Tag="&#xE80F;" Style="{StaticResource SidebarBtn}"/>
                             <Button Name="btnAIBots" Content="AI &amp; Automation" Tag="&#xE99A;" Style="{StaticResource SidebarBtn}"/>
                             <Button Name="btnEssentials" Content="Essentials (CTT)" Tag="&#xE90F;" Style="{StaticResource SidebarBtn}"/>
                             <Button Name="btnUpdateMgr" Content="Update Manager" Tag="&#xE895;" Style="{StaticResource SidebarBtn}"/>
 
-                            <TextBlock Name="lblSys" Text="SYSTEM" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource ThemeSubText}" Margin="15,10,0,4"/>
+                            <TextBlock Name="lblSys" Text="SYSTEM" FontSize="10.5" FontWeight="Bold" Opacity="0.65" Foreground="{DynamicResource ThemeSubText}" Margin="18,14,0,5"/>
                             <Button Name="btnWindowsTools" Content="Win Tools" Tag="&#xE7F8;" Style="{StaticResource SidebarBtn}"/>
                             <Button Name="btnSysInfoTools" Content="Hardware" Tag="&#xE946;" Style="{StaticResource SidebarBtn}"/>
                             <Button Name="btnTweaks" Content="Tweaks" Tag="&#xE790;" Style="{StaticResource SidebarBtn}"/>
@@ -491,7 +517,7 @@
                             <!-- NEON GLOW APPLIED -->
                             <Button Name="btnBeast" Content="System Health" Tag="&#xE946;" Style="{StaticResource SidebarBtn}" ToolTip="Advanced system diagnostics and repair center"/>
 
-                            <TextBlock Name="lblAdv" Text="ADVANCED" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource ThemeSubText}" Margin="15,10,0,4"/>
+                            <TextBlock Name="lblAdv" Text="ADVANCED" FontSize="10.5" FontWeight="Bold" Opacity="0.65" Foreground="{DynamicResource ThemeSubText}" Margin="18,14,0,5"/>
                             <Button Name="btnSecurity" Content="Security" Tag="&#xE72E;" Style="{StaticResource SidebarBtn}"/>
                             <Button Name="btnUserMgmt" Content="Users" Tag="&#xE779;" Style="{StaticResource SidebarBtn}"/>
                             <Button Name="btnKeyboardShortcuts" Content="Keyboard Shortcuts" Tag="&#xE92E;" Style="{StaticResource SidebarBtn}"/>
@@ -513,7 +539,7 @@
                 <Grid.RowDefinitions><RowDefinition Height="60"/><RowDefinition Height="*"/></Grid.RowDefinitions>
                 
                 <!-- TOP BAR -->
-                <Border Name="TitleBar" Grid.Row="0" Background="Transparent" Margin="0,0,10,0">
+                <Border Name="TitleBar" Grid.Row="0" Background="Transparent" Margin="20,8,14,0">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>      <!-- Left Spacer -->
@@ -522,7 +548,7 @@
                         </Grid.ColumnDefinitions>
 
                         <!-- CENTER: Rounded "Pill" Search Box -->
-                        <Border Grid.Column="1" Width="400" Height="40" Background="{DynamicResource ThemeCardBg}" BorderBrush="{DynamicResource ThemeBorder}" BorderThickness="1" CornerRadius="20">
+                        <Border Grid.Column="1" Width="430" Height="40" Background="{DynamicResource ThemeCardBg}" BorderBrush="{DynamicResource ThemeBorder}" BorderThickness="1" CornerRadius="12" Effect="{StaticResource CardShadow}">
                             <Grid>
                                 <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="40"/></Grid.ColumnDefinitions>
                                 
@@ -538,13 +564,13 @@
                         <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
                             
                             <!-- LANGUAGE BUTTON (VISIBLE) -->
-                            <Button Name="btnLang" Content="&#xE774;" Style="{StaticResource WinCtrlBtn}" Width="50" Height="40" Margin="0,0,20,0" FontSize="22" FontFamily="Segoe MDL2 Assets" Foreground="{DynamicResource ThemeWinCtrl}" ToolTip="Switch Hebrew/English"/>
+                            <Button Name="btnLang" Content="&#xE774;" Style="{StaticResource WinCtrlBtn}" Width="44" Height="36" Margin="0,0,14,0" FontSize="20" FontFamily="Segoe MDL2 Assets" Foreground="{DynamicResource ThemeWinCtrl}" ToolTip="Switch Hebrew/English"/>
 
                             <!-- Theme Text Larger -->
-                            <TextBlock Name="lblThemeTxt" Text="Theme:" VerticalAlignment="Center" Margin="0,0,10,0" Foreground="{DynamicResource ThemeSubText}" FontSize="16"/>
-                            <ComboBox Name="cmbThemes" Foreground="{DynamicResource ThemeFg}" Width="140" Height="32" FontSize="14" Margin="0,0,5,0"/>
-                            <Button Name="btnThemeCustom" Content="&#xED25;" Style="{StaticResource WinCtrlBtn}" Width="32" Height="32" Margin="0,0,15,0" FontSize="18" Foreground="{DynamicResource ThemeWinCtrl}" Visibility="Collapsed" ToolTip="Change Custom Background" FontFamily="Segoe MDL2 Assets"/>
-                            <Button Name="btnMin" Content="&#xE921;" Style="{StaticResource WinCtrlBtn}" Margin="10,0,0,0"/>
+                            <TextBlock Name="lblThemeTxt" Text="Theme:" VerticalAlignment="Center" Margin="0,0,10,0" Foreground="{DynamicResource ThemeSubText}" FontSize="13" FontWeight="SemiBold"/>
+                            <ComboBox Name="cmbThemes" Foreground="{DynamicResource ThemeFg}" Width="155" Height="34" FontSize="13.5" Margin="0,0,6,0"/>
+                            <Button Name="btnThemeCustom" Content="&#xED25;" Style="{StaticResource WinCtrlBtn}" Width="34" Height="34" Margin="0,0,12,0" FontSize="16" Foreground="{DynamicResource ThemeWinCtrl}" Visibility="Collapsed" ToolTip="Change Custom Background" FontFamily="Segoe MDL2 Assets"/>
+                            <Button Name="btnMin" Content="&#xE921;" Style="{StaticResource WinCtrlBtn}" Margin="8,0,2,0"/>
                             <Button Name="btnMax" Content="&#xE922;" Style="{StaticResource WinCtrlBtn}"/>
                             <Button Name="btnClose" Content="&#xE8BB;" Style="{StaticResource CloseBtn}"/>
                         </StackPanel>
@@ -560,7 +586,8 @@
                             <!-- 1. HOME -->
                             <StackPanel Name="pnlHome" Visibility="Visible">
                                 <!-- DYNAMIC DASHBOARD HEADER -->
-                                <TextBlock Name="lblGreeting" Text="Good Evening, User" FontSize="32" FontWeight="Bold" Foreground="{DynamicResource ThemeFg}" FontFamily="Segoe UI Variable Display, Segoe UI" Margin="0,0,0,16"/>
+                                <TextBlock Name="lblGreeting" Text="Good Evening, User" FontSize="32" FontWeight="Bold" Foreground="{DynamicResource ThemeFg}" FontFamily="Segoe UI Variable Display, Segoe UI" Margin="0"/>
+                                <TextBlock Text="System Control, AI Hub &amp; Live Diagnostics Suite" FontSize="13.5" Foreground="{DynamicResource ThemeSubText}" Margin="0,2,0,18"/>
 
                                 <!-- 2-COLUMN LAYOUT -->
                                 <Grid Margin="0,0,0,18">
@@ -576,12 +603,12 @@
                                             <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
                                             
                                             <!-- Dynamic Title Bar -->
-                                            <Grid Grid.Row="0" Background="{DynamicResource ThemeTitleBg}" Margin="0,0,0,10">
+                                            <Grid Grid.Row="0" Background="{DynamicResource ThemeTitleBg}" Margin="0,0,0,12">
                                                 <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-                                                <TextBlock Name="lblSysStatus" Text=" System Status" FontSize="16" FontWeight="SemiBold" Foreground="{DynamicResource ThemeTitleFg}" VerticalAlignment="Center" Padding="5"/>
+                                                <TextBlock Name="lblSysStatus" Text=" System Status" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource ThemeTitleFg}" VerticalAlignment="Center" Padding="2"/>
                                             </Grid>
 
-                                            <Grid Grid.Row="1" Margin="15">
+                                            <Grid Grid.Row="1" Margin="4">
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="*"/>    <!-- Text Info -->
                                                     <ColumnDefinition Width="30"/>   <!-- Spacer -->
@@ -602,7 +629,7 @@
                                                         <!-- RAM Ring -->
                                                         <StackPanel HorizontalAlignment="Center" Margin="0,0,24,0">
                                                             <Grid Width="96" Height="96">
-                                                                <Ellipse Width="80" Height="80" Stroke="#333333" StrokeThickness="9" Fill="Transparent"/>
+                                                                <Ellipse Width="80" Height="80" Stroke="#26888888" StrokeThickness="9" Fill="Transparent"/>
                                                                 <Ellipse Name="arcRamFill" Width="80" Height="80"
                                                                          Stroke="{DynamicResource ThemeAccent}" StrokeThickness="9"
                                                                          Fill="Transparent" StrokeDashOffset="0"
@@ -610,7 +637,7 @@
                                                                          RenderTransformOrigin="0.5,0.5">
                                                                     <Ellipse.RenderTransform><RotateTransform Angle="-90"/></Ellipse.RenderTransform>
                                                                 </Ellipse>
-                                                                <TextBlock Name="txtRamPercModern" Text="0%" FontSize="15" FontWeight="Bold"
+                                                                <TextBlock Name="txtRamPercModern" Text="0%" FontSize="16" FontWeight="Bold"
                                                                            Foreground="{DynamicResource ThemeFg}"
                                                                            HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                                             </Grid>
@@ -622,7 +649,7 @@
                                                         <!-- Disk Ring -->
                                                         <StackPanel HorizontalAlignment="Center">
                                                             <Grid Width="96" Height="96">
-                                                                <Ellipse Width="80" Height="80" Stroke="#333333" StrokeThickness="9" Fill="Transparent"/>
+                                                                <Ellipse Width="80" Height="80" Stroke="#26888888" StrokeThickness="9" Fill="Transparent"/>
                                                                 <Ellipse Name="arcDiskFill" Width="80" Height="80"
                                                                          Stroke="{DynamicResource ThemeAccent}" StrokeThickness="9"
                                                                          Fill="Transparent" StrokeDashOffset="0"
@@ -630,7 +657,7 @@
                                                                          RenderTransformOrigin="0.5,0.5">
                                                                     <Ellipse.RenderTransform><RotateTransform Angle="-90"/></Ellipse.RenderTransform>
                                                                 </Ellipse>
-                                                                <TextBlock Name="txtDiskPercModern" Text="0%" FontSize="15" FontWeight="Bold"
+                                                                <TextBlock Name="txtDiskPercModern" Text="0%" FontSize="16" FontWeight="Bold"
                                                                            Foreground="{DynamicResource ThemeFg}"
                                                                            HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                                             </Grid>
@@ -670,8 +697,11 @@
                                     <!-- RIGHT CARD: SIMPLE CLOCK -->
                                     <Border Grid.Column="2" Style="{StaticResource CardStyle}">
                                         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                                            <TextBlock Name="lblTimeClock" Text="--:--" FontSize="72" FontWeight="Bold" Foreground="{DynamicResource ThemeFg}" HorizontalAlignment="Center" TextAlignment="Center" Width="380" FontFamily="Consolas"/>
-                                            <TextBlock Name="lblDateClock" Text="..." FontSize="16" Foreground="{DynamicResource ThemeSubText}" HorizontalAlignment="Center" Margin="0,10,0,0"/>
+                                            <Border Background="#1F38BDF8" CornerRadius="6" Padding="10,3" HorizontalAlignment="Center" Margin="0,0,0,8">
+                                                <TextBlock Text="LIVE SYSTEM TIME" FontSize="10" FontWeight="Bold" Foreground="{DynamicResource ThemeAccent}"/>
+                                            </Border>
+                                            <TextBlock Name="lblTimeClock" Text="--:--" FontSize="64" FontWeight="Bold" Foreground="{DynamicResource ThemeFg}" HorizontalAlignment="Center" TextAlignment="Center" Width="380" FontFamily="Segoe UI Variable Display, Segoe UI"/>
+                                            <TextBlock Name="lblDateClock" Text="..." FontSize="14.5" FontWeight="Medium" Foreground="{DynamicResource ThemeSubText}" HorizontalAlignment="Center" Margin="0,6,0,0"/>
                                         </StackPanel>
                                     </Border>
 
@@ -770,18 +800,44 @@
                                                 <Setter Property="Background" Value="{DynamicResource ThemeCardBg}"/>
                                                 <Setter Property="BorderBrush" Value="{DynamicResource ThemeBorder}"/>
                                                 <Setter Property="BorderThickness" Value="1"/>
-                                                <Setter Property="Margin" Value="4"/>
-                                                <Setter Property="Height" Value="74"/>
+                                                <Setter Property="Margin" Value="5"/>
+                                                <Setter Property="Height" Value="82"/>
                                                 <Setter Property="Cursor" Value="Hand"/>
                                                 <Setter Property="Template">
                                                     <Setter.Value>
                                                         <ControlTemplate TargetType="Button">
-                                                            <Border Background="{TemplateBinding Background}" 
+                                                            <Border Name="BubBd"
+                                                                    Background="{TemplateBinding Background}" 
                                                                     BorderBrush="{TemplateBinding BorderBrush}" 
                                                                     BorderThickness="{TemplateBinding BorderThickness}" 
-                                                                    CornerRadius="12" Padding="8">
+                                                                    CornerRadius="12" Padding="10,8" RenderTransformOrigin="0.5,0.5">
+                                                                <Border.RenderTransform>
+                                                                    <ScaleTransform x:Name="BubScale" ScaleX="1" ScaleY="1"/>
+                                                                </Border.RenderTransform>
                                                                 <ContentPresenter/>
                                                             </Border>
+                                                            <ControlTemplate.Triggers>
+                                                                <EventTrigger RoutedEvent="MouseEnter">
+                                                                    <BeginStoryboard>
+                                                                        <Storyboard>
+                                                                            <DoubleAnimation Storyboard.TargetName="BubScale" Storyboard.TargetProperty="ScaleX" To="1.03" Duration="0:0:0.15"/>
+                                                                            <DoubleAnimation Storyboard.TargetName="BubScale" Storyboard.TargetProperty="ScaleY" To="1.03" Duration="0:0:0.15"/>
+                                                                        </Storyboard>
+                                                                    </BeginStoryboard>
+                                                                </EventTrigger>
+                                                                <EventTrigger RoutedEvent="MouseLeave">
+                                                                    <BeginStoryboard>
+                                                                        <Storyboard>
+                                                                            <DoubleAnimation Storyboard.TargetName="BubScale" Storyboard.TargetProperty="ScaleX" To="1" Duration="0:0:0.15"/>
+                                                                            <DoubleAnimation Storyboard.TargetName="BubScale" Storyboard.TargetProperty="ScaleY" To="1" Duration="0:0:0.15"/>
+                                                                        </Storyboard>
+                                                                    </BeginStoryboard>
+                                                                </EventTrigger>
+                                                                <Trigger Property="IsMouseOver" Value="True">
+                                                                    <Setter TargetName="BubBd" Property="BorderBrush" Value="{DynamicResource ThemeAccent}"/>
+                                                                    <Setter TargetName="BubBd" Property="Background" Value="#1F38BDF8"/>
+                                                                </Trigger>
+                                                            </ControlTemplate.Triggers>
                                                         </ControlTemplate>
                                                     </Setter.Value>
                                                 </Setter>
@@ -1369,7 +1425,7 @@
                                         <Border Style="{StaticResource CardStyle}">
                                             <StackPanel>
                                                 <TextBlock Text="Custom Request" FontSize="18" Foreground="{DynamicResource ThemeAccent}" Margin="0,0,0,10"/>
-                                                <TextBox Name="txtCustomInput" Height="60" TextWrapping="Wrap" Background="#111" Foreground="White" BorderBrush="{DynamicResource ThemeBorder}" BorderThickness="1" Padding="10" FontSize="14" AcceptsReturn="True"/>
+                                                <TextBox Name="txtCustomInput" Height="60" TextWrapping="Wrap" Background="{DynamicResource ThemeBg}" Foreground="{DynamicResource ThemeFg}" BorderBrush="{DynamicResource ThemeBorder}" BorderThickness="1" Padding="10" FontSize="14" AcceptsReturn="True"/>
                                                 <WrapPanel Margin="0,15,0,0">
                                                     <Button Name="btnLaunchCustom" Content="Launch Gemini" Width="200" Style="{StaticResource ActionBtn}" Background="{DynamicResource ThemeAccent}" Foreground="White" FontWeight="Bold"/>
                                                     <Button Name="btnCopyPrompt" Content="Copy Full Prompt" Width="180" Style="{StaticResource ActionBtn}"/>
@@ -2388,8 +2444,8 @@
                                                     <ColumnDefinition Width="*"/>
                                                     <ColumnDefinition Width="120"/>
                                                 </Grid.ColumnDefinitions>
-                                                <TextBox Name="txtGSearch" Grid.Column="0" Background="#0d1b2e" Foreground="{DynamicResource ThemeFg}" BorderBrush="#334" BorderThickness="1" Padding="8,4" FontSize="12" Margin="0,0,6,0" Height="30" VerticalContentAlignment="Center"/>
-                                                <ComboBox Name="cmbGFilter" Grid.Column="1" Background="#0d1b2e" Foreground="{DynamicResource ThemeFg}" BorderBrush="#334" Height="30" FontSize="11">
+                                                <TextBox Name="txtGSearch" Grid.Column="0" Background="{DynamicResource ThemeBg}" Foreground="{DynamicResource ThemeFg}" BorderBrush="{DynamicResource ThemeBorder}" BorderThickness="1" Padding="8,4" FontSize="12" Margin="0,0,6,0" Height="30" VerticalContentAlignment="Center"/>
+                                                <ComboBox Name="cmbGFilter" Grid.Column="1" Background="{DynamicResource ThemeBg}" Foreground="{DynamicResource ThemeFg}" BorderBrush="{DynamicResource ThemeBorder}" Height="30" FontSize="11">
                                                     <ComboBoxItem Content="All" IsSelected="True"/>
                                                     <ComboBoxItem Content="Steam"/>
                                                     <ComboBoxItem Content="Epic"/>
@@ -2478,7 +2534,7 @@
                                             <Button Name="btnClearBeastLog" Content=" Clear" Width="80" Height="25" Style="{StaticResource ActionBtn}" HorizontalAlignment="Right"/>
                                         </Grid>
                                         <ScrollViewer Height="150" VerticalScrollBarVisibility="Auto">
-                                            <TextBlock Name="txtBeastLog" TextWrapping="Wrap" Foreground="#00FF00" Background="#050505" Padding="10" FontFamily="Consolas" FontSize="11"/>
+                                            <TextBlock Name="txtBeastLog" TextWrapping="Wrap" Foreground="#38BDF8" Background="#090D16" Padding="10" FontFamily="Consolas" FontSize="11"/>
                                         </ScrollViewer>
                                     </StackPanel>
                                 </Border>
@@ -2499,7 +2555,7 @@
                                     <Border Grid.Column="0" Style="{StaticResource CardStyle}" Padding="15">
                                         <StackPanel>
                                             <TextBlock Name="lblBeastMaint" Text="Maintenance &amp; Repair" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource ThemeAccent}" Margin="0,0,0,10"/>
-                                            <Button Name="btnBeastGlobalRepair" Content="Full Repair (SFC/DISM)" Style="{StaticResource ActionBtn}" Background="DarkRed"/>
+                                            <Button Name="btnBeastGlobalRepair" Content="Full Repair (SFC/DISM)" Style="{StaticResource ActionBtn}" Background="#DC2626" Foreground="White"/>
                                             <Button Name="btnBeastCleanTemp" Content="Clean Temp Files" Style="{StaticResource ActionBtn}"/>
                                             <Button Name="btnBeastEmptyRecycle" Content="Empty Recycle Bin" Style="{StaticResource ActionBtn}"/>
                                             <Button Name="btnBeastResetStore" Content="Reset Windows Store" Style="{StaticResource ActionBtn}"/>
@@ -2512,12 +2568,12 @@
                                     <Border Grid.Column="2" Style="{StaticResource CardStyle}" Padding="15">
                                         <StackPanel>
                                             <TextBlock Name="lblBeastHard" Text="Hardware &amp; Performance" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource ThemeAccent}" Margin="0,0,0,10"/>
-                                            <Button Name="btnBeastStress" Content="Stress Test (WinSAT)" Style="{StaticResource ActionBtn}" Background="DarkOrange"/>
+                                            <Button Name="btnBeastStress" Content="Stress Test (WinSAT)" Style="{StaticResource ActionBtn}" Background="#EA580C" Foreground="White"/>
                                             <Button Name="btnBeastRAM" Content="Check RAM &amp; Slots" Style="{StaticResource ActionBtn}"/>
                                             <Button Name="btnBeastSMART" Content="Disk Health (SMART)" Style="{StaticResource ActionBtn}"/>
                                             <Button Name="btnBeastCPU" Content="CPU Details" Style="{StaticResource ActionBtn}"/>
                                             <Button Name="btnBeastBattery" Content="Battery Report (HTML)" Style="{StaticResource ActionBtn}"/>
-                                            <Button Name="btnBeastHighPerf" Content="Max Performance" Style="{StaticResource ActionBtn}" Background="Gold" Foreground="Black"/>
+                                            <Button Name="btnBeastHighPerf" Content="Max Performance" Style="{StaticResource ActionBtn}" Background="#2563EB" Foreground="White"/>
                                         </StackPanel>
                                     </Border>
 
@@ -2538,12 +2594,12 @@
                                     <Border Grid.Column="6" Style="{StaticResource CardStyle}" Padding="15">
                                         <StackPanel>
                                             <TextBlock Name="lblBeastSec" Text="Security &amp; System" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource ThemeAccent}" Margin="0,0,0,10"/>
-                                            <Button Name="btnBeastProductKey" Content="Extract Product Key" Style="{StaticResource ActionBtn}" Background="Gold" Foreground="Black"/>
+                                            <Button Name="btnBeastProductKey" Content="Extract Product Key" Style="{StaticResource ActionBtn}" Background="#0284C7" Foreground="White"/>
                                             <Button Name="btnBeastRestorePoint" Content="Create Restore Point" Style="{StaticResource ActionBtn}"/>
                                             <Button Name="btnBeastTopRAM" Content="Top RAM Processes" Style="{StaticResource ActionBtn}"/>
                                             <Button Name="btnBeastStartup" Content="Startup Programs" Style="{StaticResource ActionBtn}"/>
                                             <Button Name="btnBeastUptime" Content="System Uptime" Style="{StaticResource ActionBtn}"/>
-                                            <Button Name="btnBeastEventLog" Content="Clear Event Logs" Style="{StaticResource ActionBtn}" Background="SaddleBrown"/>
+                                            <Button Name="btnBeastEventLog" Content="Clear Event Logs" Style="{StaticResource ActionBtn}" Background="#7C3AED" Foreground="White"/>
                                         </StackPanel>
                                     </Border>
                                 </Grid>
@@ -2575,7 +2631,7 @@
                                             <Button Name="btnRefreshHistory" Content=" Refresh" Width="100" Height="30" Style="{StaticResource ActionBtn}" HorizontalAlignment="Right"/>
                                         </Grid>
                                         
-                                        <ListBox Name="lstUpdateHistory" Height="200" Background="#0A0A0A" BorderThickness="1" BorderBrush="{DynamicResource ThemeBorder}" Foreground="{DynamicResource ThemeFg}" FontSize="12" FontFamily="Consolas" Padding="5">
+                                        <ListBox Name="lstUpdateHistory" Height="200" Background="#090D16" BorderThickness="1" BorderBrush="{DynamicResource ThemeBorder}" Foreground="{DynamicResource ThemeFg}" FontSize="12" FontFamily="Consolas" Padding="5">
                                             <ListBox.ItemContainerStyle>
                                                 <Style TargetType="ListBoxItem">
                                                     <Setter Property="Background" Value="Transparent"/>
@@ -2606,7 +2662,7 @@
                                             
                                             <StackPanel Grid.Column="2" Orientation="Horizontal">
                                                 <Button Name="btnAnalyzeUpdate" Content=" Analyze" Width="120" Height="35" Style="{StaticResource ActionBtn}" Margin="0,0,10,0"/>
-                                                <Button Name="btnUninstallUpdate" Content=" Uninstall" Width="120" Height="35" Style="{StaticResource ActionBtn}" Background="DarkRed"/>
+                                                <Button Name="btnUninstallUpdate" Content=" Uninstall" Width="120" Height="35" Style="{StaticResource ActionBtn}" Background="#DC2626" Foreground="White"/>
                                             </StackPanel>
                                         </Grid>
                                     </StackPanel>
@@ -2617,7 +2673,7 @@
                                     <StackPanel>
                                         <TextBlock Text=" Analysis Report" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource ThemeAccent}" Margin="0,0,0,10"/>
                                         <ScrollViewer Height="150" VerticalScrollBarVisibility="Auto">
-                                            <TextBlock Name="txtAnalysisReport" TextWrapping="Wrap" Foreground="{DynamicResource ThemeFg}" Background="#0A0A0A" Padding="10" FontFamily="Consolas" FontSize="11" Text="No analysis performed yet. Enter a KB ID and click Analyze."/>
+                                            <TextBlock Name="txtAnalysisReport" TextWrapping="Wrap" Foreground="{DynamicResource ThemeFg}" Background="#090D16" Padding="10" FontFamily="Consolas" FontSize="11" Text="No analysis performed yet. Enter a KB ID and click Analyze."/>
                                         </ScrollViewer>
                                     </StackPanel>
                                 </Border>
@@ -2710,9 +2766,9 @@
                                                 <Button Name="btnRadEco99" Content="Eco 99FM" Style="{StaticResource ActionBtn}" Margin="0,2" HorizontalContentAlignment="Left" Padding="10,0"/>
                                                 
                                                 <Separator Background="{DynamicResource ThemeBorder}" Margin="0,15"/>
-                                                <Button Name="btnStopTV" Content="Stop Stream" Background="#8B0000" Foreground="White" FontWeight="Bold" Margin="0,5" ToolTip="Stop current TV or radio playback"/>
-                                                <Button Name="btnCinemaMode" Content=" Cinema Mode" Background="#007ACC" Foreground="White" FontWeight="Bold" Margin="0,5" ToolTip="Maximize Player Area"/>
-                                                <Button Name="btnLaunchExternal" Content=" Launch External Player" Background="#333333" Foreground="#AAAAAA"  FontSize="11" Margin="0,5" ToolTip="Open in separate window if player fails"/>
+                                                <Button Name="btnStopTV" Content="Stop Stream" Style="{StaticResource ActionBtn}" Background="#DC2626" Foreground="White" FontWeight="Bold" Margin="0,4" ToolTip="Stop current TV or radio playback"/>
+                                                <Button Name="btnCinemaMode" Content=" Cinema Mode" Style="{StaticResource ActionBtn}" Background="#0284C7" Foreground="White" FontWeight="Bold" Margin="0,4" ToolTip="Maximize Player Area"/>
+                                                <Button Name="btnLaunchExternal" Content=" Launch External Player" Style="{StaticResource ActionBtn}" Background="#334155" Foreground="White" FontSize="11.5" Margin="0,4" ToolTip="Open in separate window if player fails"/>
                                             </StackPanel>
                                         </ScrollViewer>
                                     </Border>
@@ -2790,7 +2846,7 @@
                                         <WrapPanel HorizontalAlignment="Center">
                                             <Button Name="btnRemoteMsg" Content=" Send Msg" Width="140" Style="{StaticResource ActionBtn}"/>
                                             <Button Name="btnRemoteRestart" Content=" Remote Restart" Width="140" Style="{StaticResource ActionBtn}"/>
-                                            <Button Name="btnRemoteShutdown" Content=" Remote Shutdown" Width="140" Style="{StaticResource ActionBtn}" Background="#800000"/>
+                                            <Button Name="btnRemoteShutdown" Content=" Remote Shutdown" Width="140" Style="{StaticResource ActionBtn}" Background="#DC2626" Foreground="White"/>
                                         </WrapPanel>
                                     </StackPanel>
                                 </Border>
